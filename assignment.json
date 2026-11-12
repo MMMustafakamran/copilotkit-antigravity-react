@@ -631,8 +631,7 @@
      "clip": "ANTIGRAVITY-react-08-ToolRendering",
      "loom": "https://www.loom.com/share/77ba1957561a4eb592f99fb4fbdf3e58"
     }
-   ],
-   "recheck": "marked for re-check 2026-11-11 (finding unverifiable from saved evidence)"
+   ]
   },
   {
    "id": "generative-ui-state-rendering",
@@ -681,8 +680,7 @@
      "clip": "ANTIGRAVITY-react-10-Components",
      "loom": "https://www.loom.com/share/7a65be5318564b0f81db7ccd40aa594b"
     }
-   ],
-   "recheck": "marked for re-check 2026-11-11 (finding unverifiable from saved evidence)"
+   ]
   },
   {
    "id": "gui-surfaces",
@@ -708,8 +706,7 @@
      "loom": null
     }
    ],
-   "added": "2026-11-10",
-   "recheck": "harness now serves the doc's own [[...slug]] runtime (GET+POST) at /api/copilotkit-gui; old probes 404ed GET /api/copilotkit/info. Re-check in CI."
+   "added": "2026-11-10"
   },
   {
    "id": "gui-catalogs",
@@ -734,8 +731,7 @@
      "loom": null
     }
    ],
-   "added": "2026-11-10",
-   "recheck": "harness now serves the doc's own [[...slug]] runtime (GET+POST) at /api/copilotkit-gui; old probes 404ed GET /api/copilotkit/info. Re-check in CI."
+   "added": "2026-11-10"
   },
   {
    "id": "gui-standard-catalog",
@@ -760,8 +756,7 @@
      "loom": null
     }
    ],
-   "added": "2026-11-10",
-   "recheck": "harness now serves the doc's own [[...slug]] runtime (GET+POST) at /api/copilotkit-gui; old probes 404ed GET /api/copilotkit/info. Re-check in CI."
+   "added": "2026-11-10"
   },
   {
    "id": "gui-state-and-actions",
@@ -787,8 +782,7 @@
      "loom": null
     }
    ],
-   "added": "2026-11-10",
-   "recheck": "harness now serves the doc's own [[...slug]] runtime (GET+POST) at /api/copilotkit-gui; old probes 404ed GET /api/copilotkit/info. Re-check in CI."
+   "added": "2026-11-10"
   },
   {
    "id": "gui-theming",
@@ -813,8 +807,7 @@
      "loom": null
     }
    ],
-   "added": "2026-11-10",
-   "recheck": "harness now serves the doc's own [[...slug]] runtime (GET+POST) at /api/copilotkit-gui; old probes 404ed GET /api/copilotkit/info. Re-check in CI."
+   "added": "2026-11-10"
   },
   {
    "id": "gui-transports",
@@ -840,8 +833,7 @@
      "loom": null
     }
    ],
-   "added": "2026-11-10",
-   "recheck": "harness now serves the doc's own [[...slug]] runtime (GET+POST) at /api/copilotkit-gui; old probes 404ed GET /api/copilotkit/info. Re-check in CI."
+   "added": "2026-11-10"
   },
   {
    "id": "gui-markdown-mode",
@@ -867,8 +859,7 @@
      "loom": null
     }
    ],
-   "added": "2026-11-10",
-   "recheck": "harness now serves the doc's own [[...slug]] runtime (GET+POST) at /api/copilotkit-gui; old probes 404ed GET /api/copilotkit/info. Re-check in CI."
+   "added": "2026-11-10"
   },
   {
    "id": "gui-from-a2ui",
@@ -894,8 +885,7 @@
      "loom": null
     }
    ],
-   "added": "2026-11-10",
-   "recheck": "harness now serves the doc's own [[...slug]] runtime (GET+POST) at /api/copilotkit-gui; old probes 404ed GET /api/copilotkit/info. Re-check in CI."
+   "added": "2026-11-10"
   },
   {
    "id": "a2ui",
@@ -970,8 +960,7 @@
      "loom": null
     }
    ],
-   "added": "2026-11-10",
-   "recheck": "marked for re-check 2026-11-11 (finding unverifiable from saved evidence)"
+   "added": "2026-11-10"
   },
   {
    "id": "json-render",
@@ -1320,8 +1309,7 @@
      "clip": "ANTIGRAVITY-react-14-Inspector",
      "loom": "https://www.loom.com/share/1d5304fce80f4798be95589eafa54996"
     }
-   ],
-   "recheck": "marked for re-check 2026-11-11 (finding unverifiable from saved evidence)"
+   ]
   }
  ]
 }
