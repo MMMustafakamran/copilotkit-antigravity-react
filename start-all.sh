@@ -7,6 +7,7 @@
 # Backends use --env-file because the doc's .env is never loaded (FINDINGS.md #1).
 cd "$(dirname "$0")"
 mkdir -p logs
+# over keys/models (Gemini has credit again, 2026-11-12). backend/.env (CI) sets GOOGLE_GEMINI_BASE_URL to it; OpenAI is the fallback.
 (cd backend && uv run --env-file .env uvicorn main:app --port 8040 > ../logs/backend-8040.log 2>&1) &
 (cd backend && uv run --env-file .env uvicorn interrupt_main:app --port 8041 > ../logs/backend-8041.log 2>&1) &
 (cd backend && uv run --env-file .env uvicorn shared_state_main:app --port 8042 > ../logs/backend-8042.log 2>&1) &

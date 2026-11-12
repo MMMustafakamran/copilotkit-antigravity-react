@@ -7,7 +7,7 @@ Stack: `@copilotkit/react-core`/`runtime` 1.85.0, `@ag-ui/client` 1.0.4, `next` 
 ### [Components and surfaces](https://docs.copilotkit.ai/google-antigravity/generative-ui/components)
 **#42 On Antigravity, "Do step 3 only. Your runtime needs no change" renders no UI.**
 - **Doc:** "Already have CopilotKit running? Do step 3 only … when the provider sends a catalog, the runtime gives that run a `render_ui` tool." The page's actual walkthrough is an OpenAI/TanStack `BuiltInAgent`, not Antigravity.
-- **Result:** the Antigravity quickstart agent with the doc's `<CopilotKitProvider … generativeUI={{ ui: standardUI }}>` gets the doc's own prompt "Compare the Starter, Team, and Enterprise plans in a table". No `standardUI` component renders; the latest probe ended with an empty assistant reply after 105 s (earlier runs: a plain Markdown table). RE-CHECK: the harness now serves the doc's own step-2 runtime shape (`[[...slug]]`, GET + POST) at `/api/copilotkit-gui`; the earlier probes ran on the quickstart's POST-only route, where `GET /api/copilotkit/info` 404s.
+- **Result:** the Antigravity quickstart agent with the doc's `<CopilotKitProvider … generativeUI={{ ui: standardUI }}>` gets the doc's own prompt "Compare the Starter, Team, and Enterprise plans in a table". No `standardUI` component renders; the latest probe ended with an empty assistant reply after 105 s (earlier runs: a plain Markdown table). Re-checked 2026-11-12 (CI 43178874580) on the doc's own step-2 runtime shape (`[[...slug]]`, GET + POST, harness path `/api/copilotkit-gui`): reply "I don't have plan details…" as plain text, no component.
 
 ### [Sub-Agents](https://docs.copilotkit.ai/google-antigravity/multi-agent/subagents)
 **#49 The sub-agents server crashes on start: `httpx` is imported but never installed.**
@@ -42,47 +42,47 @@ Stack: `@copilotkit/react-core`/`runtime` 1.85.0, `@ag-ui/client` 1.0.4, `next` 
 ### [Fixed Schema](https://docs.copilotkit.ai/google-antigravity/generative-ui/a2ui/fixed-schema)
 **#73 The flight card renders but stays empty: no airline, airports or price, only "Flight Details" and the Book button.**
 - **Doc:** Code tab `a2ui_fixed.py`, `flight_schema.json`, `catalog.ts`, `definitions.ts`, `renderers.tsx`, `route.ts` (harness frontend files identical to the tabs).
-- **Result:** the agent says "Here is the United flight from SFO to JFK for $289." and the card renders empty. RE-CHECK the final frame in the next run.
+- **Result:** the agent says "Here is the United flight from SFO to JFK for $289." and the card renders empty. Re-checked 2026-11-12: card shows only "Flight Details", "1-stop · economy", blank TOTAL and "Book flight".
 
 ### [Surfaces](https://docs.copilotkit.ai/google-antigravity/generative-ui/components/surfaces)
 **#87 The agent calls `render_ui` but nothing renders, neither in the page target nor in the chat.**
 - **Doc:** `<GenerativeUISurface id="featured" ui={shopUI} ... fallback={<ProductRow products={products} />} />`.
-- **Result:** console `[CopilotKit] The agent called the tool "render_ui", and no renderer is registered for it`; the featured row keeps its fallback, the chat shows an empty assistant message. RE-CHECK on the doc's own runtime shape (see #42).
+- **Result:** console `[CopilotKit] The agent called the tool "render_ui", and no renderer is registered for it`; the featured row keeps its fallback, the chat shows an empty assistant message. Same on the doc's own runtime shape (re-checked 2026-11-12, see #42).
 
 ### [Catalogs](https://docs.copilotkit.ai/google-antigravity/generative-ui/components/catalogs)
 **#89 The agent calls `render_ui`, but no catalog component renders; the reply stays empty.**
 - **Doc:** `createGenerativeUI({ id: "acme/shop@1", components: { ProductGrid, ProductCard } })` + `<CopilotKitProvider runtimeUrl="/api/copilotkit" generativeUI={{ ui: shopUI }}>`.
-- **Result:** "no renderer is registered" for `render_ui`; no ProductGrid/ProductCard, empty assistant bubble. RE-CHECK as #87.
+- **Result:** "no renderer is registered" for `render_ui`; no ProductGrid/ProductCard, empty assistant bubble. Same on the doc's own runtime shape (re-checked 2026-11-12).
 
 ### [Standard catalog](https://docs.copilotkit.ai/google-antigravity/generative-ui/components/standard-catalog)
 **#90 No standard component renders; the agent answers with a plain Markdown table.**
 - **Doc:** `<CopilotKitProvider runtimeUrl="/api/copilotkit" generativeUI={{ ui: standardUI }}>`.
-- **Result:** "Compare the Starter, Team, and Enterprise plans in a table" gets a Markdown table, no standard Table/Card. RE-CHECK as #87.
+- **Result:** "Compare the Starter, Team, and Enterprise plans in a table" gets a Markdown table, no standard Table/Card. Same on the doc's own runtime shape (re-checked 2026-11-12).
 
 ### [State and actions](https://docs.copilotkit.ai/google-antigravity/generative-ui/components/state-and-actions)
 **#91 No product card renders.**
 - **Doc:** `shopUI` with `state: { cart: cartSchema }`, `bind: { inCart }`, `functions: { addToCart }` + `useGenerativeUIState` / `useGenerativeUIFunction`.
-- **Result:** latest probe: empty reply, no ProductCard. Earlier runs: the tab crashed after `render_ui`, or `AntigravityExecutionError: Model produced invalid output`. RE-CHECK as #87.
+- **Result:** latest probe: empty reply, no ProductCard. Earlier runs: the tab crashed after `render_ui`, or `AntigravityExecutionError: Model produced invalid output`. Same on the doc's own runtime shape (re-checked 2026-11-12).
 
 ### [Theming](https://docs.copilotkit.ai/google-antigravity/generative-ui/components/theming)
 **#94 Nothing renders, so the theme can't be seen.**
 - **Doc:** `generativeUI={{ ui: standardUI, theme: { "--a2ui-color-accent": "#d97706", ... } }}`.
-- **Result:** empty reply, no component. RE-CHECK as #87.
+- **Result:** empty reply, no component. Same on the doc's own runtime shape (re-checked 2026-11-12).
 
 ### [Transports](https://docs.copilotkit.ai/google-antigravity/generative-ui/components/transports)
 **#95 No Antigravity agent setup on the page (only LangGraph `CopilotKitMiddleware`); with the Antigravity agent no UI renders.**
 - **Doc:** "Your agent must use the tools and the context entries of the run. The built-in agent does this. For a LangGraph Python agent, add CopilotKitMiddleware."
-- **Result:** tool transport with the Antigravity agent gives a plain Markdown table, no generated UI. RE-CHECK as #87.
+- **Result:** tool transport with the Antigravity agent gives a plain Markdown table, no generated UI. Same on the doc's own runtime shape (re-checked 2026-11-12).
 
 ### [Markdown mode](https://docs.copilotkit.ai/google-antigravity/generative-ui/components/markdown-mode)
 **#97 No a2ui block or UI; the page doesn't say how to pass the context to an Antigravity agent.**
 - **Doc:** `generativeUI={{ ui: standardUI, transport: "markdown" }}`; "Any other agent needs one thing: put the run's context entries into its system prompt."
-- **Result:** the Antigravity agent writes `index.html`/`style.css`/`script.js` and links them as `[blocked]`; no a2ui block, no surface. RE-CHECK as #87.
+- **Result:** the Antigravity agent writes `index.html`/`style.css`/`script.js` and links them as `[blocked]`; no a2ui block, no surface. Same on the doc's own runtime shape (re-checked 2026-11-12).
 
 ### [Adopt from A2UI](https://docs.copilotkit.ai/google-antigravity/generative-ui/components/from-a2ui)
 **#99 No Airport/Arrow UI renders.**
 - **Doc:** `createGenerativeUI({ id: "acme/flights@1", extends: [standardUI], components: { Airport, Arrow } })` + `generativeUI={{ ui: appUI }}`.
-- **Result:** latest probe: empty reply. Earlier run: the agent called `generate_image` and the run ended with `AntigravityExecutionError ... Multimodal function responses are not supported for this model`. RE-CHECK as #87.
+- **Result:** latest probe: empty reply. Earlier run: the agent called `generate_image` and the run ended with `AntigravityExecutionError ... Multimodal function responses are not supported for this model`. Same on the doc's own runtime shape (re-checked 2026-11-12).
 
 ## Minor notes
 - #1 Quickstart: `main.py` reads `os.environ["GEMINI_API_KEY"]` but nothing loads the `.env` the page creates (no `load_dotenv`, start command has no `--env-file`): `KeyError: 'GEMINI_API_KEY'` on start. Harness starts it with `uv run --env-file .env`.
@@ -108,10 +108,8 @@ Stack: `@copilotkit/react-core`/`runtime` 1.85.0, `@ag-ui/client` 1.0.4, `next` 
 - #27 [Sub-Agents](https://docs.copilotkit.ai/google-antigravity/multi-agent/subagents): `subagents.py` imports `MODEL, aimock_headers, api_key, gemini_base_url` and `build` from the unpublished `agents._common` (`ModuleNotFoundError: No module named 'agents'` as published). `aimock_headers` is CopilotKit's test-mock plumbing shown as user code. With the showcase's `_common.py` (harness), the supervisor delegates research → writing → critique.
 - #29 [Generative UI](https://docs.copilotkit.ai/google-antigravity/generative-ui) hub: "Your Components" links to `/google-antigravity/generative-ui/your-components` (404). "Display Only" and "Interactive" link to `/generative-ui/display` and `/generative-ui/interactive`, which redirect (301) out of the Antigravity docs.
 - #33 [WebMCP](https://docs.copilotkit.ai/google-antigravity/webmcp): `searchOrders(status)` is called but defined in neither `OrderSearch.tsx` nor the `webmcp.ts` tab. The second snippet imports `@copilotkit/core`, which no install step adds. With a harness `searchOrders` stub, both snippets work on Chromium 156.
-- #34 [Inspector](https://docs.copilotkit.ai/google-antigravity/inspector): "Open **Agent**. Your connected agent should be listed." With the agent connected and a run completed, the Agent pane showed "No agent selected. Select an agent from the dropdown above". RE-CHECK: no recent run captured the Agent pane.
 - #35 Inspector: the "disable Inspector" snippet `<CopilotKit runtimeUrl="/api/copilotkit" enableInspector={false}>` has no `agent`, so against the Antigravity runtime it throws `useAgent: Agent 'default' not found after runtime sync`.
 - #36 [Tool Rendering](https://docs.copilotkit.ai/google-antigravity/generative-ui/tool-rendering): the prose says the catch-all handles "`get_stock_price` and `roll_dice`", but the tool in the Code tab's `tool_rendering.py` is `roll_d20`; `tool_rendering.py` builds on the unpublished `agents._common`.
-- #38 Tool Rendering: a tool that raises (seen: `get_stock_price` → `There was an error executing get_stock_price: …`) still shows the built-in card's **Done** pill; the page describes only "Running → Done". RE-CHECK: needs a frame of an erroring tool card.
 - #39 [State Rendering](https://docs.copilotkit.ai/google-antigravity/generative-ui/state-rendering): `gen_ui_agent.py`'s `set_steps` uses `experimental_get_state`/`experimental_set_state` without imports, and the frontend `useAgent({ agentId: "shared-state-streaming" })` is a fragment naming an agent the page never registers. With imports added, `set_steps` streams one `STATE_SNAPSHOT` per call mid-run.
 - #40 Quickstart / every page: the quickstart's `AntigravityAgent(...)` leaves all built-in tools on (web search, file and shell work, artifacts); only the HITL callout mentions `CapabilitiesConfig(enabled_tools=[BuiltinTools.FINISH])`. Seen on Windows: a run called `search_web`, wrote an artifact outside the allowed directory and died with `RUN_ERROR AntigravityExecutionError: … is not a valid artifact path`.
 - #41 Components and surfaces: `import { standardUI } from "@copilotkit/react-core/v2/generative-ui"` fails with `Module not found: Can't resolve 'maplibre-gl'` (optional peer dependency); the React install line doesn't add it (it's named only in the Angular optional-libraries note). Harness installs `maplibre-gl`.
@@ -149,5 +147,6 @@ Stack: `@copilotkit/react-core`/`runtime` 1.85.0, `@ag-ui/client` 1.0.4, `next` 
 - #98 Markdown mode: only built-in / LangGraph Python agent guidance (see #97).
 - #100 Adopt from A2UI: `Airport` and `Arrow` React components are never shown (only the A2UI "Before" definitions).
 - #101 Components as Tools: Code tab `page.tsx` imports `PieChart`/`pieChartPropsSchema` from `./pie-chart` and `useSuggestions` from `./suggestions`; no tab shows either file (the tabs are `gen_ui_tool_based.py`, `page.tsx`, `bar-chart.tsx`, `route.ts`).
+- #102 [Components and surfaces](https://docs.copilotkit.ai/google-antigravity/generative-ui/components) (also Surfaces, Standard catalog, State and actions, Theming): the new React Native links go to `/google-antigravity/react-native`, a 404 (added 2026-11-12).
 
 ## Build-only (`tsc` / `next build`; `npm run dev` runs fine)
