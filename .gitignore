@@ -1,0 +1,29 @@
+node_modules/
+.next/
+dist/
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+logs/
+*.log
+autorecorder/videos/
+autorecorder/test-results/
+*.webm
+*.mp4
+*.db
+*.db-*
+tmp/
+# recorder / pipeline run output
+runs/
+# never commit keys
+*.env
+*.env.txt
+reference-*.wav
+ref16k.wav
+sample-full.wav
+
+# generated after install by autorecorder/scripts/write-versions.mjs
+frontend/VERSIONS.md

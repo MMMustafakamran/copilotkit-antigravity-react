@@ -1,0 +1,1327 @@
+{
+ "framework": "Google Antigravity",
+ "ui": "react",
+ "repo": "Antigravity-react",
+ "docBase": "https://docs.copilotkit.ai/google-antigravity/",
+ "versions": {
+  "@copilotkit/react-core": "1.85.0",
+  "@copilotkit/runtime": "1.85.0",
+  "@ag-ui/client": "1.0.4",
+  "next": "16.4.5",
+  "react": "19.3.0",
+  "google-antigravity": "0.1.23",
+  "ag-ui-antigravity": "0.2.1",
+  "fastapi": "0.162.0",
+  "uvicorn": "0.54.0",
+  "copilotkit": "4.33.1"
+ },
+ "testedContext": {
+  "os": "Microsoft Windows 11 Pro",
+  "packageManager": "npm 11 (Node 26.7.0)"
+ },
+ "report": {
+  "style": "status",
+  "h1": "Google Antigravity",
+  "title": "Google Antigravity status",
+  "quickstartHeading": "Quickstart",
+  "quickstartHeader": [
+   "Frontend",
+   "Quickstart"
+  ],
+  "clipsToUpload": false,
+  "columns": [
+   "Page/Section",
+   "Results"
+  ],
+  "resultColumn": 1,
+  "guidesHeading": "Guides (React)"
+ },
+ "sections": [
+  {
+   "label": "Basics",
+   "cells": [
+    "Section"
+   ]
+  },
+  {
+   "label": "Chat",
+   "cells": [
+    "Sub section"
+   ]
+  },
+  {
+   "label": "Prebuilt Components",
+   "cells": [
+    "Sub section"
+   ]
+  },
+  {
+   "label": "Custom Look and Feel",
+   "cells": [
+    "Sub section"
+   ]
+  },
+  {
+   "label": "Chat​",
+   "cells": [
+    "Sub section"
+   ]
+  },
+  {
+   "label": "Threads",
+   "cells": [
+    "Sub section"
+   ]
+  },
+  {
+   "label": "Basics​",
+   "cells": [
+    "Section"
+   ]
+  },
+  {
+   "label": "Generative UI",
+   "cells": [
+    "Section"
+   ]
+  },
+  {
+   "label": "Controlled",
+   "cells": [
+    "Sub section"
+   ]
+  },
+  {
+   "label": "Declarative",
+   "cells": [
+    "Sub section"
+   ]
+  },
+  {
+   "label": "Components and surfaces",
+   "cells": [
+    "Sub section"
+   ]
+  },
+  {
+   "label": "A2UI",
+   "cells": [
+    "Sub section"
+   ]
+  },
+  {
+   "label": "Declarative​",
+   "cells": [
+    "Sub section"
+   ]
+  },
+  {
+   "label": "Open-ended",
+   "cells": [
+    "Sub section"
+   ]
+  },
+  {
+   "label": "Interactivity",
+   "cells": [
+    "Section"
+   ]
+  },
+  {
+   "label": "Shared state",
+   "cells": [
+    "Sub section"
+   ]
+  },
+  {
+   "label": "Human-in-the-loop",
+   "cells": [
+    "Sub section"
+   ]
+  },
+  {
+   "label": "Interactivity​",
+   "cells": [
+    "Section"
+   ]
+  },
+  {
+   "label": "Agent capabilities",
+   "cells": [
+    "Section"
+   ]
+  },
+  {
+   "label": "Backend",
+   "cells": [
+    "Section"
+   ]
+  },
+  {
+   "label": "Debugging",
+   "cells": [
+    "Sub section"
+   ]
+  }
+ ],
+ "pages": [
+  {
+   "id": "quickstart-cli",
+   "label": "CLI / Start from Scratch",
+   "kind": "quickstart",
+   "group": null,
+   "child": false,
+   "docPath": "quickstart",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    1,
+    2,
+    4,
+    5,
+    6,
+    40
+   ],
+   "notes": [
+    "Note: `copilotkit init --framework antigravity` fails (unsupported framework); copying the starter from the CopilotKit repo works"
+   ],
+   "block": null,
+   "links": []
+  },
+  {
+   "id": "quickstart",
+   "label": "React",
+   "kind": "quickstart",
+   "group": null,
+   "child": false,
+   "docPath": "quickstart",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    1,
+    2,
+    4,
+    5,
+    6,
+    40
+   ],
+   "notes": [
+    "Note: `main.py` reads GEMINI_API_KEY but nothing loads `.env`; start with `uv run --env-file .env`"
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-01-Quickstart",
+     "loom": "https://www.loom.com/share/1764e7c6d51542a6b12c333620b8f8f6"
+    }
+   ]
+  },
+  {
+   "id": "prebuilt-chat",
+   "label": "CopilotChat",
+   "kind": "guide",
+   "group": "Prebuilt Components",
+   "child": true,
+   "docPath": "prebuilt-components/chat",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    52
+   ],
+   "notes": [
+    "Note: the page imports useAgenticChatSuggestions from ./suggestions, which it never shows."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-15-CopilotChat",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "prebuilt-sidebar",
+   "label": "CopilotSidebar",
+   "kind": "guide",
+   "group": "Prebuilt Components",
+   "child": true,
+   "docPath": "prebuilt-components/sidebar",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    53
+   ],
+   "notes": [
+    "Note: ./main-content and ./suggestions-mount are imported but never shown."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-16-CopilotSidebar",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "prebuilt-popup",
+   "label": "CopilotPopup",
+   "kind": "guide",
+   "group": "Prebuilt Components",
+   "child": true,
+   "docPath": "prebuilt-components/popup",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    54
+   ],
+   "notes": [
+    "Note: ./main-content and ./suggestions-mount are imported but never shown."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-17-CopilotPopup",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "chat-controls",
+   "label": "Open, close, and feedback",
+   "kind": "guide",
+   "group": "Prebuilt Components",
+   "child": true,
+   "docPath": "prebuilt-components/chat-controls",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    55
+   ],
+   "notes": [
+    "Note: analytics.track in the feedback snippet is never defined"
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-18-ChatControls",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "clf-css",
+   "label": "CSS Customization",
+   "kind": "guide",
+   "group": "Custom Look and Feel",
+   "child": true,
+   "docPath": "custom-look-and-feel/css",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    56,
+    57
+   ],
+   "notes": [
+    "Note: the CSS variables snippet imports from @copilotkit/react-ui (v1, never installed) and the icons snippet uses placeholder components."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-36-CSSCustomization",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "clf-slots",
+   "label": "Slots (Subcomponents)",
+   "kind": "guide",
+   "group": "Custom Look and Feel",
+   "child": true,
+   "docPath": "custom-look-and-feel/slots",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    59
+   ],
+   "notes": [
+    "Note: the \"two levels\" snippet uses CustomToolbar and CustomCopyButton, defined nowhere."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-37-Slots",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "clf-markdown",
+   "label": "Markdown Rendering",
+   "kind": "guide",
+   "group": "Custom Look and Feel",
+   "child": true,
+   "docPath": "custom-look-and-feel/markdown",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [],
+   "notes": [],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-38-MarkdownRendering",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "clf-headless-ui",
+   "label": "Headless UI",
+   "kind": "guide",
+   "group": "Custom Look and Feel",
+   "child": true,
+   "docPath": "custom-look-and-feel/headless-ui",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    60
+   ],
+   "notes": [
+    "Note: the snippets are fragments (no component, `visible`, Avatar/cn/AttachmentChip never shown) and agent \"headless-simple\" is never registered; recorded with harness stand-ins."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-39-HeadlessUI",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "clf-reasoning-messages",
+   "label": "Reasoning Messages",
+   "kind": "guide",
+   "group": "Custom Look and Feel",
+   "child": true,
+   "docPath": "custom-look-and-feel/reasoning-messages",
+   "reachable": "sidebar",
+   "status": "❌",
+   "findings": [
+    61
+   ],
+   "notes": [
+    "Issue: no reasoning message renders; the page's backend (reasoning.py in the Code tab) takes its model from agents._common, which isn't published, so no reasoning model is named."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": "Issue",
+     "clip": "ANTIGRAVITY-react-40-ReasoningMessages",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "multimodal-attachments",
+   "label": "Multimodal Attachments",
+   "kind": "guide",
+   "group": "Chat​",
+   "child": true,
+   "docPath": "multimodal-attachments",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    62
+   ],
+   "notes": [
+    "Note: the snippet uses agentId=\"my-agent\", u have to swap in your own agent id."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-23-MultimodalAttachments",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "voice",
+   "label": "Voice",
+   "kind": "guide",
+   "group": "Chat​",
+   "child": true,
+   "docPath": "voice",
+   "reachable": "sidebar",
+   "status": "❌",
+   "findings": [
+    63
+   ],
+   "notes": [
+    "Issue: page.tsx imports ./voice-chat, which no tab shows; Next fails with \"Module not found: Can't resolve './voice-chat'\" and the build error blanks every route of the app."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": "Not Working",
+     "clip": "ANTIGRAVITY-react-24-Voice",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "reasoning",
+   "label": "Reasoning",
+   "kind": "guide",
+   "group": "Chat​",
+   "child": true,
+   "docPath": "generative-ui/reasoning",
+   "reachable": "sidebar",
+   "status": "❌",
+   "findings": [
+    64
+   ],
+   "notes": [
+    "Issue: no reasoning block renders; useReasoningCustomSuggestions is never defined and the backend's reasoning model comes from the unpublished agents._common."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": "Issue",
+     "clip": "ANTIGRAVITY-react-25-Reasoning",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "threads-drawer",
+   "label": "Threads Drawer",
+   "kind": "guide",
+   "group": "Threads",
+   "child": true,
+   "docPath": "prebuilt-components/copilot-threads-drawer",
+   "reachable": "sidebar",
+   "status": "N/A",
+   "findings": [
+    67
+   ],
+   "notes": [
+    "Note: needs the CopilotKit Intelligence platform (threads)."
+   ],
+   "block": null,
+   "links": [],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "headless-threads",
+   "label": "Headless Threads",
+   "kind": "guide",
+   "group": "Threads",
+   "child": true,
+   "docPath": "headless-threads",
+   "reachable": "sidebar",
+   "status": "N/A",
+   "findings": [
+    68,
+    69,
+    70
+   ],
+   "notes": [
+    "Note: needs the CopilotKit Intelligence platform (threads)."
+   ],
+   "block": null,
+   "links": [],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "frontend-tools",
+   "label": "Frontend Tools",
+   "kind": "guide",
+   "group": "Basics​",
+   "child": false,
+   "docPath": "frontend-tools",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    7,
+    8,
+    9,
+    10,
+    11
+   ],
+   "notes": [
+    "Note: ./background and ./suggestions are imported but never shown; the agent snippet imports the unpublished agents._common."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-02-FrontendTools",
+     "loom": "https://www.loom.com/share/4f377b3c6c9b4a2fb28161eba6f15fe8"
+    }
+   ]
+  },
+  {
+   "id": "gen-ui-tool-based",
+   "label": "Components as Tools",
+   "kind": "guide",
+   "group": "Controlled",
+   "child": true,
+   "docPath": "generative-ui/tool-based",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    78,
+    101
+   ],
+   "notes": [
+    "Note: ./pie-chart and ./suggestions are imported but never shown; the backend imports the unpublished agents._common."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-19-ComponentsAsTools",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "generative-ui-tool-rendering",
+   "label": "Tool Rendering",
+   "kind": "guide",
+   "group": "Controlled",
+   "child": true,
+   "docPath": "generative-ui/tool-rendering",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    36,
+    38
+   ],
+   "notes": [
+    "Note: prose says roll_dice, the tool is roll_d20; the backend imports the unpublished agents._common."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-08-ToolRendering",
+     "loom": "https://www.loom.com/share/77ba1957561a4eb592f99fb4fbdf3e58"
+    }
+   ],
+   "recheck": "marked for re-check 2026-11-11 (finding unverifiable from saved evidence)"
+  },
+  {
+   "id": "generative-ui-state-rendering",
+   "label": "State Rendering",
+   "kind": "guide",
+   "group": "Controlled",
+   "child": true,
+   "docPath": "generative-ui/state-rendering",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    39
+   ],
+   "notes": [
+    "Note: set_steps uses experimental_get_state/experimental_set_state without imports."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-07-StateRendering",
+     "loom": "https://www.loom.com/share/a8deef3c368b4e07ad9134b5e1f9af14"
+    }
+   ]
+  },
+  {
+   "id": "generative-ui-components",
+   "label": "Components and Surfaces",
+   "kind": "guide",
+   "group": "Components and surfaces",
+   "child": true,
+   "docPath": "generative-ui/components",
+   "reachable": "sidebar",
+   "status": "❌",
+   "findings": [
+    41,
+    42
+   ],
+   "notes": [
+    "Issue: \"Do step 3 only\" with the Antigravity agent renders no component (latest run: empty reply). Re-check pending on the doc's own [[...slug]] runtime."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-10-Components",
+     "loom": "https://www.loom.com/share/7a65be5318564b0f81db7ccd40aa594b"
+    }
+   ],
+   "recheck": "marked for re-check 2026-11-11 (finding unverifiable from saved evidence)"
+  },
+  {
+   "id": "gui-surfaces",
+   "label": "Surfaces",
+   "kind": "guide",
+   "group": "Components and surfaces",
+   "child": true,
+   "docPath": "generative-ui/components/surfaces",
+   "reachable": "sidebar",
+   "status": "❌",
+   "findings": [
+    87,
+    88
+   ],
+   "notes": [
+    "Issue: the agent calls render_ui but nothing renders, neither in the page target nor in the chat. Same problem as the Components and surfaces page."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": "Issue",
+     "clip": "ANTIGRAVITY-react-28-Surfaces",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10",
+   "recheck": "harness now serves the doc's own [[...slug]] runtime (GET+POST) at /api/copilotkit-gui; old probes 404ed GET /api/copilotkit/info. Re-check in CI."
+  },
+  {
+   "id": "gui-catalogs",
+   "label": "Catalogs",
+   "kind": "guide",
+   "group": "Components and surfaces",
+   "child": true,
+   "docPath": "generative-ui/components/catalogs",
+   "reachable": "sidebar",
+   "status": "❌",
+   "findings": [
+    89
+   ],
+   "notes": [
+    "Issue: the agent calls render_ui, but no catalog component renders, the reply stays empty."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": "Issue",
+     "clip": "ANTIGRAVITY-react-29-Catalogs",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10",
+   "recheck": "harness now serves the doc's own [[...slug]] runtime (GET+POST) at /api/copilotkit-gui; old probes 404ed GET /api/copilotkit/info. Re-check in CI."
+  },
+  {
+   "id": "gui-standard-catalog",
+   "label": "Standard catalog",
+   "kind": "guide",
+   "group": "Components and surfaces",
+   "child": true,
+   "docPath": "generative-ui/components/standard-catalog",
+   "reachable": "sidebar",
+   "status": "❌",
+   "findings": [
+    90
+   ],
+   "notes": [
+    "Issue: no standard component renders, the agent answers with a plain markdown table. Same as the Components and surfaces page."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": "Issue",
+     "clip": "ANTIGRAVITY-react-30-StandardCatalog",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10",
+   "recheck": "harness now serves the doc's own [[...slug]] runtime (GET+POST) at /api/copilotkit-gui; old probes 404ed GET /api/copilotkit/info. Re-check in CI."
+  },
+  {
+   "id": "gui-state-and-actions",
+   "label": "State and actions",
+   "kind": "guide",
+   "group": "Components and surfaces",
+   "child": true,
+   "docPath": "generative-ui/components/state-and-actions",
+   "reachable": "sidebar",
+   "status": "❌",
+   "findings": [
+    91,
+    92
+   ],
+   "notes": [
+    "Issue: no product card renders; the run errors (AntigravityExecutionError: Model produced invalid output) or the tab crashes."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": "Issue",
+     "clip": "ANTIGRAVITY-react-31-StateAndActions",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10",
+   "recheck": "harness now serves the doc's own [[...slug]] runtime (GET+POST) at /api/copilotkit-gui; old probes 404ed GET /api/copilotkit/info. Re-check in CI."
+  },
+  {
+   "id": "gui-theming",
+   "label": "Theming",
+   "kind": "guide",
+   "group": "Components and surfaces",
+   "child": true,
+   "docPath": "generative-ui/components/theming",
+   "reachable": "sidebar",
+   "status": "❌",
+   "findings": [
+    94
+   ],
+   "notes": [
+    "Issue: nothing renders (render_ui has no renderer), so the theme can't be seen."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": "Issue",
+     "clip": "ANTIGRAVITY-react-32-Theming",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10",
+   "recheck": "harness now serves the doc's own [[...slug]] runtime (GET+POST) at /api/copilotkit-gui; old probes 404ed GET /api/copilotkit/info. Re-check in CI."
+  },
+  {
+   "id": "gui-transports",
+   "label": "Transports",
+   "kind": "guide",
+   "group": "Components and surfaces",
+   "child": true,
+   "docPath": "generative-ui/components/transports",
+   "reachable": "sidebar",
+   "status": "❌",
+   "findings": [
+    95,
+    96
+   ],
+   "notes": [
+    "Issue: no Antigravity agent setup on the page (only LangGraph CopilotKitMiddleware); with the Antigravity agent no UI renders."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": "Issue",
+     "clip": "ANTIGRAVITY-react-33-Transports",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10",
+   "recheck": "harness now serves the doc's own [[...slug]] runtime (GET+POST) at /api/copilotkit-gui; old probes 404ed GET /api/copilotkit/info. Re-check in CI."
+  },
+  {
+   "id": "gui-markdown-mode",
+   "label": "Markdown mode",
+   "kind": "guide",
+   "group": "Components and surfaces",
+   "child": true,
+   "docPath": "generative-ui/components/markdown-mode",
+   "reachable": "sidebar",
+   "status": "❌",
+   "findings": [
+    97,
+    98
+   ],
+   "notes": [
+    "Issue: no a2ui block or UI; the Antigravity agent writes html files instead. The page doesn't say how to pass the context to an Antigravity agent."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": "Issue",
+     "clip": "ANTIGRAVITY-react-34-MarkdownMode",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10",
+   "recheck": "harness now serves the doc's own [[...slug]] runtime (GET+POST) at /api/copilotkit-gui; old probes 404ed GET /api/copilotkit/info. Re-check in CI."
+  },
+  {
+   "id": "gui-from-a2ui",
+   "label": "Adopt from A2UI",
+   "kind": "guide",
+   "group": "Components and surfaces",
+   "child": true,
+   "docPath": "generative-ui/components/from-a2ui",
+   "reachable": "sidebar",
+   "status": "❌",
+   "findings": [
+    99,
+    100
+   ],
+   "notes": [
+    "Issue: no Airport/Arrow UI renders; the run ends in an AntigravityExecutionError."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": "Issue",
+     "clip": "ANTIGRAVITY-react-35-FromA2UI",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10",
+   "recheck": "harness now serves the doc's own [[...slug]] runtime (GET+POST) at /api/copilotkit-gui; old probes 404ed GET /api/copilotkit/info. Re-check in CI."
+  },
+  {
+   "id": "a2ui",
+   "label": "A2UI",
+   "kind": "guide",
+   "group": "A2UI",
+   "child": true,
+   "docPath": "generative-ui/a2ui",
+   "reachable": "sidebar",
+   "status": "❌",
+   "findings": [
+    71
+   ],
+   "notes": [
+    "Issue: the page only shows fragments; myCatalog is never defined and no agent is named, and with the guessed setup the chat never replies."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": "Issue",
+     "clip": "ANTIGRAVITY-react-41-A2UI",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "a2ui-dynamic-schema",
+   "label": "Dynamic Schema",
+   "kind": "guide",
+   "group": "A2UI",
+   "child": true,
+   "docPath": "generative-ui/a2ui/dynamic-schema",
+   "reachable": "sidebar",
+   "status": "❌",
+   "findings": [
+    72
+   ],
+   "notes": [
+    "Issue: no dashboard renders; the chat shows \"A2UI render error: Cannot read properties of undefined (reading 'map')\"."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": "Issue",
+     "clip": "ANTIGRAVITY-react-42-A2UIDynamicSchema",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "a2ui-fixed-schema",
+   "label": "Fixed Schema",
+   "kind": "guide",
+   "group": "A2UI",
+   "child": true,
+   "docPath": "generative-ui/a2ui/fixed-schema",
+   "reachable": "sidebar",
+   "status": "❌",
+   "findings": [
+    73
+   ],
+   "notes": [
+    "Issue: the flight card renders but stays empty: no airline, airports or price, only \"Flight Details\" and the Book button."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": "Issue",
+     "clip": "ANTIGRAVITY-react-43-A2UIFixedSchema",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10",
+   "recheck": "marked for re-check 2026-11-11 (finding unverifiable from saved evidence)"
+  },
+  {
+   "id": "json-render",
+   "label": "JSON Render",
+   "kind": "guide",
+   "group": "Declarative​",
+   "child": true,
+   "docPath": "generative-ui/json-render",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    74
+   ],
+   "notes": [],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-44-JSONRender",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "hashbrown",
+   "label": "Hashbrown",
+   "kind": "guide",
+   "group": "Declarative​",
+   "child": true,
+   "docPath": "generative-ui/hashbrown",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    75
+   ],
+   "notes": [],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-45-Hashbrown",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "generative-ui-mcp-apps",
+   "label": "MCP Apps",
+   "kind": "guide",
+   "group": "Open-ended",
+   "child": true,
+   "docPath": "generative-ui/mcp-apps",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    44
+   ],
+   "notes": [
+    "Note: the \"with Intelligence\" example uses a BuiltInAgent with gpt-6-luna, not Antigravity."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-11-McpApps",
+     "loom": "https://www.loom.com/share/35611018d5ad4a1bb7cf36d262b2d193"
+    }
+   ]
+  },
+  {
+   "id": "open-generative-ui",
+   "label": "Open Generative UI",
+   "kind": "guide",
+   "group": "Open-ended",
+   "child": true,
+   "docPath": "generative-ui/open-generative-ui",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [],
+   "notes": [],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-46-OpenGenerativeUI",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "shared-state",
+   "label": "Shared State",
+   "kind": "guide",
+   "group": "Shared state",
+   "child": true,
+   "docPath": "shared-state",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    24,
+    25
+   ],
+   "notes": [
+    "Note: `set_notes` uses `experimental_get_state`/`experimental_set_state` without importing them from `ag_ui_antigravity`; `build()` comes from the unpublished agents._common."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-06-SharedState",
+     "loom": "https://www.loom.com/share/6f1926633bcc41ceaf379edf6781370a"
+    }
+   ]
+  },
+  {
+   "id": "rendering-in-app",
+   "label": "Render agent state in your app",
+   "kind": "guide",
+   "group": "Shared state",
+   "child": true,
+   "docPath": "shared-state/rendering-in-app",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    79,
+    80
+   ],
+   "notes": [
+    "Note: canvas renders from agent.state as shown; page assumes an agent named default."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-20-RenderingInApp",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "shared-state-streaming",
+   "label": "State Streaming",
+   "kind": "guide",
+   "group": "Shared state",
+   "child": true,
+   "docPath": "shared-state/streaming",
+   "reachable": "sidebar",
+   "status": "N/A",
+   "findings": [],
+   "notes": [
+    "Note: Not available for Google Antigravity (the page says \"Not supported on Google Antigravity: Google Antigravity doesn't support Shared State: Streaming\")"
+   ],
+   "block": null,
+   "links": []
+  },
+  {
+   "id": "agent-readonly",
+   "label": "Agent Read-Only Context",
+   "kind": "guide",
+   "group": "Shared state",
+   "child": true,
+   "docPath": "shared-state/agent-readonly",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    81,
+    82,
+    83
+   ],
+   "notes": [
+    "Note: app_context.py imports build from the unpublished agents._common, and ./demo-layout and ./suggestions are never shown."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-21-AgentReadonlyContext",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "human-in-the-loop",
+   "label": "HITL Overview",
+   "kind": "guide",
+   "group": "Human-in-the-loop",
+   "child": true,
+   "docPath": "human-in-the-loop",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    47
+   ],
+   "notes": [
+    "Note: hitl.py imports build from the unpublished agents._common."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-03-HumanInTheLoop",
+     "loom": "https://www.loom.com/share/8f258bd3516e437da9db8f6efb967eec"
+    }
+   ]
+  },
+  {
+   "id": "human-in-the-loop-useinterrupt",
+   "label": "useInterrupt",
+   "kind": "guide",
+   "group": "Human-in-the-loop",
+   "child": true,
+   "docPath": "human-in-the-loop/useInterrupt",
+   "reachable": "sidebar",
+   "status": "N/A",
+   "findings": [],
+   "notes": [
+    "Note: Not available for Google Antigravity (the page says \"Not supported on Google Antigravity: Google Antigravity doesn't support Human in the Loop: Interrupts\")"
+   ],
+   "block": null,
+   "links": []
+  },
+  {
+   "id": "human-in-the-loop-headless",
+   "label": "Headless Interrupts",
+   "kind": "guide",
+   "group": "Human-in-the-loop",
+   "child": true,
+   "docPath": "human-in-the-loop/headless",
+   "reachable": "sidebar",
+   "status": "N/A",
+   "findings": [],
+   "notes": [
+    "Note: Not available for Google Antigravity (the page says \"Not supported on Google Antigravity: Google Antigravity doesn't support Human in the Loop: Headless Interrupts\")"
+   ],
+   "block": null,
+   "links": []
+  },
+  {
+   "id": "governed-actions",
+   "label": "Governed Action Approval UI",
+   "kind": "guide",
+   "group": "Human-in-the-loop",
+   "child": true,
+   "docPath": "human-in-the-loop/governed-actions",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    84,
+    85,
+    86
+   ],
+   "notes": [
+    "Note: only the useHumanInTheLoop approval card can be tried; the useInterrupt variant has no backend shown for Antigravity."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-22-GovernedActions",
+     "loom": null
+    }
+   ],
+   "added": "2026-11-10"
+  },
+  {
+   "id": "webmcp",
+   "label": "WebMCP",
+   "kind": "guide",
+   "group": "Interactivity​",
+   "child": false,
+   "docPath": "webmcp",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    33
+   ],
+   "notes": [
+    "Note: `searchOrders()` isn't defined on the page."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-13-WebMCP",
+     "loom": "https://www.loom.com/share/dd91582209e44123a6c64034a7536f8f"
+    }
+   ]
+  },
+  {
+   "id": "multi-agent-subagents",
+   "label": "Sub-Agents",
+   "kind": "guide",
+   "group": "Agent capabilities",
+   "child": false,
+   "docPath": "multi-agent/subagents",
+   "reachable": "sidebar",
+   "status": "❌",
+   "findings": [
+    27,
+    49
+   ],
+   "notes": [
+    "Issue: the sub-agents server won't start: `subagents.py` imports `httpx`, which the page's install step never installs (`ModuleNotFoundError: No module named 'httpx'` since google-genai 3.0)."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": "Not Working",
+     "clip": "ANTIGRAVITY-react-12-SubAgents",
+     "loom": "https://www.loom.com/share/efa35b48a225492e971e7d929c6a0c5d"
+    }
+   ]
+  },
+  {
+   "id": "inspector",
+   "label": "Inspector",
+   "kind": "guide",
+   "group": "Debugging",
+   "child": true,
+   "docPath": "inspector",
+   "reachable": "sidebar",
+   "status": "✅",
+   "findings": [
+    34,
+    35
+   ],
+   "notes": [
+    "Note: Agent pane says \"No agent selected\" although the agent is connected"
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": null,
+     "clip": "ANTIGRAVITY-react-14-Inspector",
+     "loom": "https://www.loom.com/share/1d5304fce80f4798be95589eafa54996"
+    }
+   ],
+   "recheck": "marked for re-check 2026-11-11 (finding unverifiable from saved evidence)"
+  }
+ ]
+}

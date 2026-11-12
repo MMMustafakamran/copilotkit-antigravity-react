@@ -1,0 +1,250 @@
+/**
+ * One entry per tested doc page of https://docs.copilotkit.ai/google-antigravity, in the order
+ * the clips are numbered. docUrl, demoUrl and the filename are derived from project.config.ts.
+ *
+ * Every demo route is served from the root of the app (demoSuffix is ''), because this harness
+ * puts each doc page on its own route rather than a `/demo-chat` sub-page.
+ *
+ * State Rendering and Sub-Agents publish only frontend fragments, so their routes are harness
+ * pages around the doc's verbatim snippets (see the HARNESS headers in those page files).
+ *
+ * Not registered: premium/Intelligence pages and Threads (owner instruction, 2026-11-04).
+ */
+import { definePages } from '../core/types';
+
+/** Registered but not recorded, with the reason printed on every run. */
+export const SKIP_RECORDING: Record<string, string> = {
+  'tool-rendering-default':
+    'Not a separate doc page: the default catch-all is a section of generative-ui/tool-rendering, whose row links the ToolRendering clip (no assignment.json row for this clip).',
+  'use-interrupt':
+    'N/A: the rendered page says "Not supported on Google Antigravity: Google Antigravity doesn\'t support Human in the Loop: Interrupts" (owner rule 2026-11-11: banner pages get no test and no clip).',
+  'headless-interrupts':
+    'N/A: the rendered page says "Not supported on Google Antigravity: Google Antigravity doesn\'t support Human in the Loop: Headless Interrupts" (owner rule 2026-11-11: banner pages get no test and no clip).',
+};
+
+export const PAGES = definePages([
+  {
+    id: 'quickstart',
+    name: 'Quickstart (use an existing agent)',
+    videoName: 'Quickstart',
+    docPath: 'quickstart',
+    route: '',
+    // Versions first: they're what makes the clip evidence.
+    ideFile: 'frontend/VERSIONS.md',
+    startLine: 6,
+    endLine: 20,
+    extraTabs: [
+      { filePath: 'frontend/package.json', startLine: 11, endLine: 19 },
+      { filePath: 'backend/main.py', startLine: 1, endLine: 21 },
+      { filePath: 'frontend/app/api/copilotkit/route.ts', startLine: 1, endLine: 34 },
+      { filePath: 'frontend/app/layout.tsx', startLine: 1, endLine: 15 },
+      { filePath: 'frontend/app/page.tsx', startLine: 1, endLine: 11 },
+    ],
+    prompt: 'Tell me in one sentence what this app can do.',
+    waitAfterPromptMs: 3000,
+  },
+  {
+    id: 'frontend-tools',
+    name: 'App Control - Frontend Tools',
+    videoName: 'FrontendTools',
+    docPath: 'frontend-tools',
+    route: 'frontend-tools',
+    ideFile: 'frontend/app/frontend-tools/page.tsx',
+    startLine: 3,
+    endLine: 32,
+    extraTabs: [{ filePath: 'frontend/app/frontend-tools/page.tsx', startLine: 34, endLine: 46 }],
+    prompt: 'Make the background a sunset gradient.',
+  },
+  {
+    id: 'human-in-the-loop',
+    name: 'Human in the Loop - useHumanInTheLoop',
+    videoName: 'HumanInTheLoop',
+    docPath: 'human-in-the-loop',
+    route: 'human-in-the-loop',
+    ideFile: 'frontend/app/human-in-the-loop/page.tsx',
+    startLine: 51,
+    endLine: 74,
+    extraTabs: [{ filePath: 'frontend/app/api/copilotkit/route.ts', startLine: 21, endLine: 25 }],
+    prompt: 'Please book an intro call with the sales team to discuss pricing.',
+  },
+  {
+    id: 'use-interrupt',
+    name: 'Human in the Loop - useInterrupt',
+    videoName: 'UseInterrupt',
+    docPath: 'human-in-the-loop/useInterrupt',
+    route: 'human-in-the-loop/use-interrupt',
+    ideFile: 'frontend/app/human-in-the-loop/use-interrupt/page.tsx',
+    startLine: 35,
+    endLine: 69,
+    extraTabs: [{ filePath: 'backend/interrupt_main.py', startLine: 7, endLine: 20 }],
+    prompt: 'Please book an intro call with the sales team to discuss pricing.',
+  },
+  {
+    id: 'headless-interrupts',
+    name: 'Human in the Loop - Headless interrupts',
+    videoName: 'HeadlessInterrupts',
+    docPath: 'human-in-the-loop/headless',
+    route: 'human-in-the-loop/headless',
+    ideFile: 'frontend/app/human-in-the-loop/headless/page.tsx',
+    startLine: 63,
+    endLine: 100,
+    extraTabs: [{ filePath: 'frontend/app/human-in-the-loop/headless/page.tsx', startLine: 141, endLine: 155 }],
+    prompt: 'Please book an intro call with the sales team to discuss pricing.',
+  },
+  {
+    id: 'shared-state',
+    name: 'Shared State - read and write',
+    videoName: 'SharedState',
+    docPath: 'shared-state',
+    route: 'shared-state',
+    ideFile: 'frontend/app/shared-state/page.tsx',
+    startLine: 13,
+    endLine: 38,
+    extraTabs: [{ filePath: 'backend/shared_state_main.py', startLine: 12, endLine: 35 }],
+    prompt: 'Remember that I love hiking. Also, what is my name?',
+  },
+  {
+    id: 'state-rendering',
+    name: 'Generative UI - State Rendering',
+    videoName: 'StateRendering',
+    docPath: 'generative-ui/state-rendering',
+    route: 'generative-ui/state-rendering',
+    ideFile: 'backend/state_rendering_main.py',
+    startLine: 6,
+    endLine: 16,
+    extraTabs: [{ filePath: 'frontend/app/generative-ui/state-rendering/page.tsx', startLine: 20, endLine: 28 }],
+    prompt: 'Plan a weekend trip to Lisbon in 3 steps and work through each one.',
+    waitAfterPromptMs: 4000,
+  },
+  {
+    id: 'tool-rendering',
+    name: 'Generative UI - Tool Rendering (per-tool)',
+    videoName: 'ToolRendering',
+    docPath: 'generative-ui/tool-rendering',
+    route: 'generative-ui/tool-rendering',
+    ideFile: 'frontend/app/generative-ui/tool-rendering/tool-renderers.tsx',
+    startLine: 24,
+    endLine: 69,
+    extraTabs: [
+      { filePath: 'frontend/app/generative-ui/tool-rendering/page.tsx', startLine: 1, endLine: 13 },
+      { filePath: 'backend/tool_rendering_main.py', startLine: 21, endLine: 31 },
+    ],
+    prompt: "What's the weather in Paris? Then find flights from SFO to JFK.",
+  },
+  {
+    id: 'tool-rendering-default',
+    name: 'Generative UI - Tool Rendering (default catch-all)',
+    videoName: 'ToolRenderingDefault',
+    docPath: 'generative-ui/tool-rendering',
+    route: 'generative-ui/tool-rendering/default-catchall',
+    ideFile: 'frontend/app/generative-ui/tool-rendering/default-catchall/page.tsx',
+    startLine: 7,
+    endLine: 13,
+    prompt: "What's the stock price of GOOG? Also roll a d20.",
+  },
+  {
+    id: 'components',
+    name: 'Generative UI - Components and surfaces',
+    videoName: 'Components',
+    docPath: 'generative-ui/components',
+    route: 'generative-ui/components',
+    ideFile: 'frontend/app/generative-ui/components/providers.tsx',
+    startLine: 1,
+    endLine: 16,
+    prompt: 'Compare the Starter, Team, and Enterprise plans in a table',
+    waitAfterPromptMs: 8000,
+    timeouts: { replyStartMs: 180000 },
+  },
+  {
+    id: 'mcp-apps',
+    name: 'Generative UI - MCP Apps',
+    videoName: 'McpApps',
+    docPath: 'generative-ui/mcp-apps',
+    route: 'generative-ui/mcp-apps',
+    ideFile: 'frontend/app/api/copilotkit-mcp-apps/route.ts',
+    startLine: 10,
+    endLine: 33,
+    extraTabs: [{ filePath: 'frontend/app/generative-ui/mcp-apps/page.tsx', startLine: 10, endLine: 23 }],
+    prompt: 'Draw a simple flowchart with three boxes: Idea, Build, Ship.',
+    waitAfterPromptMs: 8000,
+    // The agent calls the Excalidraw tools (read_me, create_view) before any text, which can take
+    // longer than the 30 s default (CI 2026-11-09 gave up at 30 s; probes 2026-11-09: 6 runs, 5 drew
+    // the diagram in 28-40 s on both google-genai 2.34.0 and 3.0.0, 1 model-output error).
+    timeouts: { replyStartMs: 120000, replyStreamMs: 90000 },
+  },
+  {
+    id: 'subagents',
+    name: 'Multi-Agent - Sub-Agents',
+    videoName: 'SubAgents',
+    docPath: 'multi-agent/subagents',
+    route: 'multi-agent/subagents',
+    ideFile: 'backend/agents/subagents.py',
+    startLine: 1,
+    endLine: 40,
+    extraTabs: [{ filePath: 'frontend/app/multi-agent/subagents/delegation-log.tsx', startLine: 49, endLine: 90 }],
+    prompt: 'Write a short blog post about why tide pools matter. Research it, draft it, then critique it.',
+    waitAfterPromptMs: 4000,
+    timeouts: { replyStartMs: 180000 },
+  },
+  {
+    id: 'webmcp',
+    name: 'WebMCP',
+    videoName: 'WebMCP',
+    docPath: 'webmcp',
+    route: 'webmcp',
+    ideFile: 'frontend/app/webmcp/OrderSearch.tsx',
+    startLine: 1,
+    endLine: 35,
+    // The recorder's browser has no WebMCP flag, so the clip shows the same handler serving the
+    // CopilotKit agent. The document.modelContext path was tested separately (FINDINGS.md #33).
+    prompt: 'Search my shipped orders.',
+  },
+  {
+    id: 'inspector',
+    name: 'Inspector',
+    videoName: 'Inspector',
+    docPath: 'inspector',
+    route: 'frontend-tools',
+    ideFile: 'frontend/app/layout.tsx',
+    startLine: 1,
+    endLine: 15,
+    prompt: 'Make the background a forest gradient.',
+  },
+  // R1: prebuilt components
+  { id: 'prebuilt-chat', name: 'CopilotChat', videoName: 'CopilotChat', docPath: 'prebuilt-components/chat', route: 'prebuilt-components/chat', ideFile: 'frontend/app/prebuilt-components/chat/page.tsx', startLine: 1, endLine: 25, prompt: 'Hi! In one sentence, what can you help me with?' },
+  { id: 'prebuilt-sidebar', name: 'CopilotSidebar', videoName: 'CopilotSidebar', docPath: 'prebuilt-components/sidebar', route: 'prebuilt-components/sidebar', ideFile: 'frontend/app/prebuilt-components/sidebar/page.tsx', startLine: 1, endLine: 25, prompt: 'Hi! In one sentence, what can you help me with?' },
+  { id: 'prebuilt-popup', name: 'CopilotPopup', videoName: 'CopilotPopup', docPath: 'prebuilt-components/popup', route: 'prebuilt-components/popup', ideFile: 'frontend/app/prebuilt-components/popup/page.tsx', startLine: 1, endLine: 31, prompt: 'Hi! In one sentence, what can you help me with?' },
+  { id: 'chat-controls', name: 'Open, close, and feedback', videoName: 'ChatControls', docPath: 'prebuilt-components/chat-controls', route: 'prebuilt-components/chat-controls', ideFile: 'frontend/app/prebuilt-components/chat-controls/page.tsx', startLine: 1, endLine: 55, prompt: 'Hi! In one sentence, what can you help me with?' },
+  // R6
+  { id: 'gen-ui-tool-based', name: 'Components as Tools', videoName: 'ComponentsAsTools', docPath: 'generative-ui/tool-based', route: 'generative-ui/tool-based', ideFile: 'frontend/app/generative-ui/tool-based/page.tsx', startLine: 1, endLine: 50, extraTabs: [{ filePath: 'backend/agents/gen_ui_tool_based.py', startLine: 1, endLine: 24 }], prompt: 'Show me a bar chart of monthly sales for January to April.' },
+  { id: 'rendering-in-app', name: 'Render agent state in your app', videoName: 'RenderingInApp', docPath: 'shared-state/rendering-in-app', route: 'shared-state/rendering-in-app', ideFile: 'frontend/app/shared-state/rendering-in-app/components/Canvas.tsx', startLine: 1, endLine: 55, prompt: 'What is the title of my canvas and which items are done?' },
+  { id: 'agent-readonly', name: 'Agent Read-Only Context', videoName: 'AgentReadonlyContext', docPath: 'shared-state/agent-readonly', route: 'shared-state/agent-readonly', ideFile: 'frontend/app/shared-state/agent-readonly/page.tsx', startLine: 1, endLine: 55, extraTabs: [{ filePath: 'backend/agents/app_context.py', startLine: 1, endLine: 17 }], prompt: 'What is my name, my timezone and what did I do recently?' },
+  { id: 'governed-actions', name: 'Governed Action Approval UI', videoName: 'GovernedActions', docPath: 'human-in-the-loop/governed-actions', route: 'human-in-the-loop/governed-actions', ideFile: 'frontend/app/human-in-the-loop/governed-actions/page.tsx', startLine: 1, endLine: 60, prompt: 'Send an email to bob at example dot com saying the launch is on Friday. Get my approval first with approve_governed_action.' },
+  { id: 'multimodal-attachments', name: 'Multimodal Attachments', videoName: 'MultimodalAttachments', docPath: 'multimodal-attachments', route: 'multimodal-attachments', ideFile: 'frontend/app/multimodal-attachments/page.tsx', startLine: 1, endLine: 17, prompt: 'What file types can I attach here?', timeouts: { replyStartMs: 120000 } },
+  { id: 'voice', name: 'Voice', videoName: 'Voice', docPath: 'voice', route: 'voice', ideFile: 'frontend/app/voice/page.tsx', startLine: 1, endLine: 24, extraTabs: [{ filePath: 'frontend/app/api/copilotkit-voice/[[...slug]]/route.ts', startLine: 1, endLine: 40 }], prompt: 'What is the weather in Tokyo?' },
+  { id: 'reasoning', name: 'Reasoning', videoName: 'Reasoning', docPath: 'generative-ui/reasoning', route: 'generative-ui/reasoning', ideFile: 'frontend/app/generative-ui/reasoning/page.tsx', startLine: 1, endLine: 37, extraTabs: [{ filePath: 'frontend/app/generative-ui/reasoning/reasoning-block.tsx', startLine: 1, endLine: 50 }], prompt: 'A train leaves at 3pm going 60 mph and another at 4pm going 80 mph. When does the second catch up? Think step by step.' },
+  { id: 'threads-drawer', name: 'Threads Drawer', videoName: 'ThreadsDrawer', docPath: 'prebuilt-components/copilot-threads-drawer', route: 'prebuilt-components/copilot-threads-drawer', ideFile: 'frontend/app/prebuilt-components/copilot-threads-drawer/page.tsx', startLine: 1, endLine: 26, prompt: 'Hi, remember that my favourite colour is teal.' },
+  { id: 'headless-threads', name: 'Headless Threads', videoName: 'HeadlessThreads', docPath: 'headless-threads', route: 'headless-threads', ideFile: 'frontend/app/headless-threads/page.tsx', startLine: 1, endLine: 59, extraTabs: [{ filePath: 'frontend/app/api/copilotkit-threads/[[...slug]]/route.ts', startLine: 1, endLine: 54 }], prompt: 'Hi, start a new thread about tide pools.' },
+  // R4: components and surfaces children
+  { id: 'gui-surfaces', name: 'Surfaces', videoName: 'Surfaces', docPath: 'generative-ui/components/surfaces', route: 'generative-ui/components/surfaces', ideFile: 'frontend/app/generative-ui/components/surfaces/page.tsx', startLine: 1, endLine: 17, extraTabs: [{ filePath: 'frontend/app/generative-ui/components/surfaces/catalog.tsx', startLine: 1, endLine: 42 }], prompt: 'Show me two cheap running shoes in the featured products row.', waitAfterPromptMs: 8000, timeouts: { replyStartMs: 120000 } },
+  { id: 'gui-catalogs', name: 'Catalogs', videoName: 'Catalogs', docPath: 'generative-ui/components/catalogs', route: 'generative-ui/components/catalogs', ideFile: 'frontend/app/generative-ui/components/catalogs/catalog.tsx', startLine: 1, endLine: 42, prompt: 'Show me two running shoes as product cards in a product grid.', waitAfterPromptMs: 8000, timeouts: { replyStartMs: 120000 } },
+  { id: 'gui-standard-catalog', name: 'Standard catalog', videoName: 'StandardCatalog', docPath: 'generative-ui/components/standard-catalog', route: 'generative-ui/components/standard-catalog', ideFile: 'frontend/app/generative-ui/components/standard-catalog/page.tsx', startLine: 1, endLine: 19, prompt: 'Compare the Starter, Team, and Enterprise plans in a table', waitAfterPromptMs: 8000, timeouts: { replyStartMs: 120000 } },
+  { id: 'gui-state-and-actions', name: 'State and actions', videoName: 'StateAndActions', docPath: 'generative-ui/components/state-and-actions', route: 'generative-ui/components/state-and-actions', ideFile: 'frontend/app/generative-ui/components/state-and-actions/catalog.tsx', startLine: 1, endLine: 51, extraTabs: [{ filePath: 'frontend/app/generative-ui/components/state-and-actions/page.tsx', startLine: 1, endLine: 22 }], prompt: 'Show a product card for the Trail Runner shoe, productId tr-1, with an add to cart button.', waitAfterPromptMs: 8000, timeouts: { replyStartMs: 120000 } },
+  { id: 'gui-theming', name: 'Theming', videoName: 'Theming', docPath: 'generative-ui/components/theming', route: 'generative-ui/components/theming', ideFile: 'frontend/app/generative-ui/components/theming/page.tsx', startLine: 1, endLine: 25, prompt: 'Show a card with a Subscribe button and a short description of the Team plan.', waitAfterPromptMs: 8000, timeouts: { replyStartMs: 120000 } },
+  { id: 'gui-transports', name: 'Transports', videoName: 'Transports', docPath: 'generative-ui/components/transports', route: 'generative-ui/components/transports', ideFile: 'frontend/app/generative-ui/components/transports/page.tsx', startLine: 1, endLine: 15, prompt: 'Compare the Starter, Team, and Enterprise plans in a table', waitAfterPromptMs: 8000, timeouts: { replyStartMs: 120000 } },
+  { id: 'gui-markdown-mode', name: 'Markdown mode', videoName: 'MarkdownMode', docPath: 'generative-ui/components/markdown-mode', route: 'generative-ui/components/markdown-mode', ideFile: 'frontend/app/generative-ui/components/markdown-mode/page.tsx', startLine: 1, endLine: 15, prompt: 'Give me a seat estimator with a slider for seats, 29 dollars per seat.', waitAfterPromptMs: 8000, timeouts: { replyStartMs: 120000 } },
+  { id: 'gui-from-a2ui', name: 'Adopt from A2UI', videoName: 'FromA2UI', docPath: 'generative-ui/components/from-a2ui', route: 'generative-ui/components/from-a2ui', ideFile: 'frontend/app/generative-ui/components/from-a2ui/page.tsx', startLine: 1, endLine: 22, prompt: 'Show my flight from SFO to JFK with Airport components and an Arrow between them.', waitAfterPromptMs: 8000, timeouts: { replyStartMs: 120000 } },
+  { id: 'clf-css', name: 'CSS Customization', videoName: 'CSSCustomization', docPath: 'custom-look-and-feel/css', route: 'custom-look-and-feel/css', ideFile: 'frontend/app/custom-look-and-feel/css/theme.css', startLine: 1, endLine: 40, extraTabs: [{ filePath: 'frontend/app/custom-look-and-feel/css/page.tsx', startLine: 1, endLine: 25 }], prompt: 'Say hello and give me two tips for writing clear docs.' },
+  { id: 'clf-slots', name: 'Slots (Subcomponents)', videoName: 'Slots', docPath: 'custom-look-and-feel/slots', route: 'custom-look-and-feel/slots', ideFile: 'frontend/app/custom-look-and-feel/slots/page.tsx', startLine: 1, endLine: 35, prompt: 'Give me one fun fact about octopuses.' },
+  { id: 'clf-markdown', name: 'Markdown Rendering', videoName: 'MarkdownRendering', docPath: 'custom-look-and-feel/markdown', route: 'custom-look-and-feel/markdown', ideFile: 'frontend/app/custom-look-and-feel/markdown/page.tsx', startLine: 1, endLine: 30, prompt: 'Reply in markdown with a level-2 heading "Links" and one link to example.com.' },
+  { id: 'clf-headless-ui', name: 'Headless UI', videoName: 'HeadlessUI', docPath: 'custom-look-and-feel/headless-ui', route: 'custom-look-and-feel/headless-ui', ideFile: 'frontend/app/custom-look-and-feel/headless-ui/page.tsx', startLine: 1, endLine: 50, extraTabs: [{ filePath: 'frontend/app/custom-look-and-feel/headless-ui/message-assistant.tsx', startLine: 1, endLine: 30 }], prompt: 'Give me a short bulleted list of three healthy snacks.' },
+  { id: 'clf-reasoning-messages', name: 'Reasoning Messages', videoName: 'ReasoningMessages', docPath: 'custom-look-and-feel/reasoning-messages', route: 'custom-look-and-feel/reasoning-messages', ideFile: 'frontend/app/custom-look-and-feel/reasoning-messages/page.tsx', startLine: 1, endLine: 30, prompt: 'Think step by step: what is 17 times 23?', waitAfterPromptMs: 8000 },
+  // R5: A2UI / JSON Render / Hashbrown / Open Generative UI
+  { id: 'a2ui', name: 'A2UI', videoName: 'A2UI', docPath: 'generative-ui/a2ui', route: 'generative-ui/a2ui', ideFile: 'frontend/app/generative-ui/a2ui/page.tsx', startLine: 1, endLine: 17, prompt: 'Show me a quick sales KPI dashboard with revenue, deals and win rate.', waitAfterPromptMs: 8000, timeouts: { replyStartMs: 120000 } },
+  { id: 'a2ui-dynamic-schema', name: 'A2UI - Dynamic Schema', videoName: 'A2UIDynamicSchema', docPath: 'generative-ui/a2ui/dynamic-schema', route: 'generative-ui/a2ui/dynamic-schema', ideFile: 'frontend/app/generative-ui/a2ui/dynamic-schema/a2ui/definitions.ts', startLine: 1, endLine: 60, extraTabs: [{ filePath: 'backend/agents/a2ui_dynamic.py', startLine: 1, endLine: 60 }], prompt: 'Show me a quick sales KPI dashboard with revenue, deals and win rate.', waitAfterPromptMs: 10000, timeouts: { replyStartMs: 120000 } },
+  { id: 'a2ui-fixed-schema', name: 'A2UI - Fixed Schema', videoName: 'A2UIFixedSchema', docPath: 'generative-ui/a2ui/fixed-schema', route: 'generative-ui/a2ui/fixed-schema', ideFile: 'frontend/app/generative-ui/a2ui/fixed-schema/a2ui/definitions.ts', startLine: 1, endLine: 60, extraTabs: [{ filePath: 'backend/agents/a2ui_fixed.py', startLine: 1, endLine: 70 }], prompt: 'Show me a United flight from SFO to JFK for $289.', waitAfterPromptMs: 6000, timeouts: { replyStartMs: 120000 } },
+  { id: 'json-render', name: 'JSON Render', videoName: 'JSONRender', docPath: 'generative-ui/json-render', route: 'generative-ui/json-render', ideFile: 'frontend/app/generative-ui/json-render/json-render-renderer.tsx', startLine: 1, endLine: 50, extraTabs: [{ filePath: 'backend/agents/byoc_json_render.py', startLine: 1, endLine: 60 }], prompt: 'Show me total revenue with a bar chart of revenue by region.', waitAfterPromptMs: 6000 },
+  { id: 'hashbrown', name: 'Hashbrown', videoName: 'Hashbrown', docPath: 'generative-ui/hashbrown', route: 'generative-ui/hashbrown', ideFile: 'frontend/app/generative-ui/hashbrown/hashbrown-renderer.tsx', startLine: 120, endLine: 190, extraTabs: [{ filePath: 'backend/agents/byoc_hashbrown.py', startLine: 1, endLine: 20 }], prompt: 'Show me a Q4 sales dashboard with a revenue pie chart and a monthly bar chart.', waitAfterPromptMs: 6000 },
+  { id: 'open-generative-ui', name: 'Open Generative UI', videoName: 'OpenGenerativeUI', docPath: 'generative-ui/open-generative-ui', route: 'generative-ui/open-generative-ui', ideFile: 'frontend/app/generative-ui/open-generative-ui/page.tsx', startLine: 1, endLine: 46, extraTabs: [{ filePath: 'frontend/app/api/copilotkit-ogui/route.ts', startLine: 1, endLine: 60 }], prompt: 'build me a simple greeting card', waitAfterPromptMs: 15000, timeouts: { replyStartMs: 120000 } },
+  { id: 'open-generative-ui-advanced', name: 'Open Generative UI - Advanced', videoName: 'OpenGenerativeUIAdvanced', docPath: 'generative-ui/open-generative-ui', route: 'generative-ui/open-generative-ui/advanced', ideFile: 'frontend/app/generative-ui/open-generative-ui/advanced/sandbox-functions.ts', startLine: 1, endLine: 60, prompt: 'Build a small calculator that computes 12 * (3 + 4.5) with evaluateExpression.', waitAfterPromptMs: 15000 },
+]);
