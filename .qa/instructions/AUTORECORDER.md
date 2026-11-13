@@ -31,6 +31,7 @@ Order: **demo → back to the doc → highlight each faulty snippet → Notepad 
 
 **Check every evidence text against the rendered page, not the `.md` export.** The two can differ.
 
+
 ### Notepad note
 
 - About **5-8 lines**: what the doc says, what actually happened, the harness fix if any. A viewer who skips the doc and code segments must still know what broke.
