@@ -15,9 +15,9 @@ Stack: `@copilotkit/react-core`/`runtime` 1.88.0 (npm latest, CI 2026-11-16), `@
 - **Error:** `ModuleNotFoundError: No module named 'httpx'` when uvicorn imports the app (CI run of 2026-11-08 on today's versions). `httpx` used to arrive only as a dependency of `google-genai` 2.x; `google-genai` 3.0.0 (pulled in by `google-antigravity` 0.1.23 today) no longer depends on it. Still starts on the 2026-11-04 lockfile (`google-genai` 2.34.0).
 
 ### [Reasoning Messages](https://docs.copilotkit.ai/google-antigravity/custom-look-and-feel/reasoning-messages)
-**#61 No reasoning message renders: the page's backend takes its model from the unpublished `agents._common`.**
-- **Doc:** Code tab `src/agents/reasoning.py`: `from agents._common import REASONING_MODEL, build` … `build(system_instructions=SYSTEM_PROMPT, model=REASONING_MODEL)`. `agents._common` is in no tab, so the reasoning model is never named; the intro names only `gpt-6-luna`. The Code tab's `route.ts` does register `reasoning-default`.
-- **Result:** on the Antigravity quickstart agent (probe 2026-11-10) "Think step by step: what is 17 times 23?" gets "17 times 23 is 391." and no reasoning card.
+**#61 No reasoning message renders: the page names only `gpt-6-luna`, which an Antigravity agent can't run, and never says which Gemini model or thinking setting emits reasoning.**
+- **Doc:** "Some models (like gpt-6-luna) emit reasoning tokens". Code tab `src/agents/reasoning.py`: `from agents._common import REASONING_MODEL, build` … `build(system_instructions=SYSTEM_PROMPT, model=REASONING_MODEL)`. `agents._common` is in no tab, so `REASONING_MODEL` (env `ANTIGRAVITY_REASONING_MODEL`, default the showcase's default model) is never named on the page.
+- **Result (CI 2026-11-16, CopilotKit 1.88.0, on the doc's own `reasoning.py` with the showcase `_common` defaults):** "Think step by step: what is 17 times 23?" gets a step-by-step answer ("Answer: 391") and no Reasoning Message card. The "Show reasoning" button under it is the page's own suggestion chip (it sends a new prompt), not a reasoning card.
 
 ### [Voice](https://docs.copilotkit.ai/google-antigravity/voice)
 **#63 `page.tsx` imports `./voice-chat`, which no tab shows; Next fails with "Module not found" and the build error blanks every route of the app.**
@@ -32,7 +32,7 @@ Stack: `@copilotkit/react-core`/`runtime` 1.88.0 (npm latest, CI 2026-11-16), `@
 ### [Reasoning](https://docs.copilotkit.ai/google-antigravity/generative-ui/reasoning)
 **#64 No reasoning block renders; `useReasoningCustomSuggestions` is never defined and the backend needs the unpublished `agents._common`.**
 - **Doc:** Code tab `page.tsx`: `import { useReasoningCustomSuggestions } from "./suggestions";`. The only `suggestions.ts` on the page (reasoning-default) defines `useReasoningDefaultSuggestions`. `reasoning.py` imports `REASONING_MODEL, build` from `agents._common`, which no tab shows.
-- **Result:** on the Antigravity quickstart agent the chat answers the train problem in plain step-by-step text; no reasoning block renders.
+- **Result (CI 2026-11-16, on the doc's own `reasoning.py`):** the chat answers the train problem in plain step-by-step text; no reasoning block renders (same model gap as #61).
 
 ### [A2UI](https://docs.copilotkit.ai/google-antigravity/generative-ui/a2ui)
 **#71 The page only shows fragments; `myCatalog` is never defined and no agent is named, and with the guessed setup no A2UI surface renders.**

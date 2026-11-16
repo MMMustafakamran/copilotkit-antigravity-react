@@ -22,22 +22,28 @@ export interface DocEvidenceItem {
   clickTab?: string;
 }
 
-const registry = new Map<string, DocEvidenceItem[]>();
+// The repo's map is kept by reference and read when a page records: entries added to it after
+// registerDocEvidence (e.g. later Object.assign blocks in an actions file) still count
+// (LangGraph React lost three pages' evidence that way, review 2026-11-16).
+const sources: { map: Record<string, DocEvidenceItem[] | undefined>; skip: Set<string> }[] = [];
 
 /** Register finding evidence per page id. Ids in `skip` (e.g. KNOWN_ISSUE, level 2) get none. */
 export function registerDocEvidence(
   map: Record<string, DocEvidenceItem[] | undefined>,
   opts: { skip?: Iterable<string> } = {},
 ): void {
-  const skip = new Set(opts.skip ?? []);
-  for (const [id, items] of Object.entries(map)) {
-    if (items?.length && !skip.has(id)) registry.set(id, items);
-    else registry.delete(id);
-  }
+  sources.push({ map, skip: new Set(opts.skip ?? []) });
 }
 
 export function docEvidenceFor(id: string, own?: DocEvidenceItem[]): DocEvidenceItem[] {
-  return own ?? registry.get(id) ?? [];
+  if (own) return own;
+  for (let i = sources.length - 1; i >= 0; i--) {
+    const { map, skip } = sources[i];
+    if (skip.has(id)) return [];
+    const items = map[id];
+    if (items?.length) return items;
+  }
+  return [];
 }
 
 /** Highlight each item on the doc page as it is now (no navigation). Non-fatal. */

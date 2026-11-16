@@ -436,14 +436,14 @@
     61
    ],
    "notes": [
-    "Issue: no reasoning message renders; the page's backend (reasoning.py in the Code tab) takes its model from agents._common, which isn't published, so no reasoning model is named."
+    "Issue: no reasoning message renders, even on the page's own reasoning.py; the page names only gpt-6-luna (not usable with Antigravity) and never says which Gemini model or thinking setting emits reasoning."
    ],
    "block": null,
    "links": [
     {
      "text": "Issue",
      "clip": "ANTIGRAVITY-react-40-ReasoningMessages",
-     "loom": "https://www.loom.com/share/6460f88bd040491d878e8bafe110f84c",
+     "loom": "https://www.loom.com/share/0234ce4c479142c7ae28d40c0d6c14a5",
      "filmed": "2026-11-16"
     }
    ],
@@ -521,7 +521,7 @@
     {
      "text": "Issue",
      "clip": "ANTIGRAVITY-react-25-Reasoning",
-     "loom": "https://www.loom.com/share/823a4acd1d24482e892e635a2715b539",
+     "loom": "https://www.loom.com/share/d8925aea237643c8abcd9809331b393a",
      "filmed": "2026-11-16"
     }
    ],

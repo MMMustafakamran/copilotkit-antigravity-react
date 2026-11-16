@@ -24,7 +24,8 @@ const runtime = new CopilotRuntime({
     subagents: new HttpAgent({ url: "http://localhost:8043" }),
     // HARNESS (R2): "headless-simple" (Headless UI) is in no route on its page. "reasoning-default" (Reasoning Messages): the page's Code tab route.ts registers it as HttpAgent(`${AGENT_URL}/<name>`) on the showcase agent_server (built on the unpublished agents._common). Its reasoning.py needs the unpublished REASONING_MODEL, so both use the quickstart agent.
     "headless-simple": new HttpAgent({ url: process.env.AGENT_URL ?? "http://localhost:8000" }),
-    "reasoning-default": new HttpAgent({ url: process.env.AGENT_URL ?? "http://localhost:8000" }),
+    // HARNESS 2026-11-16: now the doc's own reasoning.py (backend/r6_main.py :8061), with REASONING_MODEL as _common sets it, not the quickstart agent.
+    "reasoning-default": new HttpAgent({ url: "http://localhost:8061/reasoning-default" }),
     // HARNESS (R1): "agentic_chat", "prebuilt-sidebar", "prebuilt-popup": the page's Code tab route.ts registers it as HttpAgent(`${AGENT_URL}/<name>`) on the showcase agent_server (built on the unpublished agents._common). Here backed by the quickstart agent on :8040.
     agentic_chat: new HttpAgent({ url: "http://localhost:8040" }),
     "prebuilt-sidebar": new HttpAgent({ url: "http://localhost:8040" }),
@@ -39,7 +40,7 @@ const runtime = new CopilotRuntime({
     }),
     // HARNESS (R3): multimodal-attachments and headless-threads use the placeholder agentId "my-agent"; "reasoning-custom" and "default" are in the Code tab route.ts (showcase agent_server). Backed by the quickstart agent on :8040.
     "my-agent": new HttpAgent({ url: "http://localhost:8040" }),
-    "reasoning-custom": new HttpAgent({ url: "http://localhost:8040" }),
+    "reasoning-custom": new HttpAgent({ url: "http://localhost:8061/reasoning-custom" }), // HARNESS 2026-11-16: the doc's reasoning.py, not the quickstart agent
     default: new HttpAgent({ url: "http://localhost:8040" }),
     // HARNESS: "frontend_tools" and "chat-customization-css" (Code-tab pages of Frontend Tools and CSS Customization): the page's Code tab route.ts registers it as HttpAgent(`${AGENT_URL}/<name>`) on the showcase agent_server (built on the unpublished agents._common). Here backed by the quickstart agent on :8040.
     frontend_tools: new HttpAgent({ url: "http://localhost:8040" }),
