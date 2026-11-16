@@ -1,6 +1,6 @@
 # Findings — Antigravity-react
 Open doc defects only, for the reachable pages of the Google Antigravity React docs (`.qa/instructions/QA-RULES.md` §5, §9). Numbers are stable IDs (code cites `FINDINGS.md #N`), so gaps are removed findings. Checked against the rendered pages, including their Code tabs, on 2026-11-11.
-Stack: `@copilotkit/react-core`/`runtime` 1.85.0, `@ag-ui/client` 1.0.4, `next` 16.4.5, `react` 19.3.0, `google-antigravity` 0.1.23, `ag-ui-antigravity` 0.2.1, `fastapi` 0.162.0, `uvicorn` 0.54.0, CLI `copilotkit` 4.33.1. Python 3.13.15, Windows 11. Docs: https://docs.copilotkit.ai/google-antigravity (snapshot 2026-11-04, drift-checked 2026-11-11)
+Stack: `@copilotkit/react-core`/`runtime` 1.88.0 (npm latest, CI 2026-11-16), `@ag-ui/client` 1.0.4, `next` 16.4.5, `react` 19.3.0, `google-antigravity` 0.1.23, `ag-ui-antigravity` 0.2.1, `fastapi` 0.162.0, `uvicorn` 0.54.0, CLI `copilotkit` 4.33.1. Python 3.13.15, Windows 11. Docs: https://docs.copilotkit.ai/google-antigravity (snapshot 2026-11-04, drift-checked 2026-11-11)
 
 ## Dev blockers (seen with `npm run dev` and normal use of the page)
 
@@ -55,9 +55,9 @@ Stack: `@copilotkit/react-core`/`runtime` 1.85.0, `@ag-ui/client` 1.0.4, `next` 
 - **Result:** console `[CopilotKit] The agent called the tool "render_ui", and no renderer is registered for it`; the featured row keeps its fallback, the chat shows an empty assistant message. Same on the doc's own runtime shape (re-checked 2026-11-12, see #42).
 
 ### [Catalogs](https://docs.copilotkit.ai/google-antigravity/generative-ui/components/catalogs)
-**#89 The agent calls `render_ui`, but no catalog component renders; the reply stays empty.**
+**#89 No catalog component renders: the agent never reaches a working `render_ui` and the run fails.**
 - **Doc:** `createGenerativeUI({ id: "acme/shop@1", components: { ProductGrid, ProductCard } })` + `<CopilotKitProvider runtimeUrl="/api/copilotkit" generativeUI={{ ui: shopUI }}>`.
-- **Result:** "no renderer is registered" for `render_ui`; no ProductGrid/ProductCard, empty assistant bubble. Same on the doc's own runtime shape (re-checked 2026-11-12).
+- **Result:** the agent calls `generate_image` instead of `render_ui`, then the run fails: `AntigravityExecutionError ... Error 400, Message: Multimodal function responses are not supported for this model., Status: INVALID_ARGUMENT`. No ProductGrid/ProductCard, empty assistant bubble. Seen in two CI takes of 2026-11-16 (CopilotKit 1.88.0); a third take that day failed with "Model produced invalid output" instead, same empty result; before that (2026-11-12) the run reached `render_ui` with "no renderer is registered".
 
 ### [Standard catalog](https://docs.copilotkit.ai/google-antigravity/generative-ui/components/standard-catalog)
 **#90 No standard component renders; the agent answers with a plain Markdown table.**

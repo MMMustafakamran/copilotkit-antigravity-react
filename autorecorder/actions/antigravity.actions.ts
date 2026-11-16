@@ -6,6 +6,7 @@ import { glideClick, glideTo } from './glide-click';
 import { runStandardAction } from '../core/actions';
 import { type DocEvidence, showFinding } from './doc-evidence';
 import { checkpoint, mark, probeText } from '../core/timeline';
+import { registerDocEvidence } from '../core/doc-evidence';
 
 /**
  * Finding clips: back to the doc, drag-select each cited text like a person, then the finding
@@ -13,123 +14,106 @@ import { checkpoint, mark, probeText } from '../core/timeline';
  */
 export const FINDING_NOTES: Record<string, string> = {
   'rendering-in-app': [
-    'render agent state page,canvas + sidebar on the default agent like the page shows',
-    'canvas shows the title and items but thats only the ui initial state',
-    'asked the agent about my canvas title and done items',
-    'agent never sees the canvas state,it asks what canvas or goes looking for files',
-    'page shows no backend at all,never says the agent needs get_shared_state',
+    "page says the agent reads the canvas state on its next turn",
+    "the canvas shows, but asked about my canvas title and done items the agent never knows and asks what canvas or looks for files",
+    "the page shows no backend at all",
+    "it never says the antigravity agent needs get_shared_state turned on",
   ].join('\n'),
   components: [
-    'page says already have copilotkit running,do step 3 only,your runtime needs no change',
-    'so just the provider with standardUI on the antigravity agent',
-    'asked to compare starter team enterprise plans in a table',
-    'no standardUI component renders at all,no table card nothing',
-    'the actual walkthrough on the page is tanstack openai not antigravity',
+    "page says already have copilotkit running, do step 3 only, runtime needs no change",
+    "asked to compare starter team and enterprise plans, no standardui component renders, just text",
+    "the walkthrough on the page is tanstack openai, not antigravity",
+    "and the page never names the antigravity agent, so i had to add the agent id myself",
   ].join('\n'),
   subagents: [
-    'sub-agents - finding #49',
-    '',
-    'install step is only pip install ag-ui-antigravity google-antigravity',
-    'but subagents.py starts with import httpx',
-    'httpx used to come in with google-genai 2.x, google-genai 3.0.0 dropped it',
-    'so on todays versions the server crashes on start',
-    'ModuleNotFoundError: No module named httpx',
-    'the page never tells you to install httpx',
+    "page says the supervisor delegates to sub agents and the log shows it",
+    "server crashes on start,modulenotfound no module named httpx",
+    "install step only says pip install ag-ui-antigravity google-antigravity but subagents.py imports httpx",
+    "httpx used to come thru google genai,new genai doesnt bring it anymore",
   ].join('\n'),
   'clf-reasoning-messages': [
-    'page says models like gpt-6-luna emit reasoning tokens and copilotkit shows them',
-    'code tab backend reasoning.py imports REASONING_MODEL and build from agents._common',
-    'that module isnt published anywhere so u dont know which model to use',
-    'ran it on the quickstart antigravity agent,chat answers fine',
-    'but no reasoning message ever shows up,just the plain reply',
+    "page says reasoning models emit reasoning tokens and copilotkit shows them in the chat",
+    "ran it, chat answers fine but no reasoning message ever shows up, just the plain reply",
+    "backend reasoning.py takes reasoning_model and builds from agents._common",
+    "that module isnt published anywhere so u dont know which model to use",
   ].join('\n'),
   voice: [
-    'page.tsx imports VoiceChat from ./voice-chat',
-    'code tab has page.tsx sample-audio-button transcription-service route.ts but no voice-chat',
-    'next dev fails with module not found cant resolve ./voice-chat',
-    'and that build error blanks every route of the app not just voice',
-    'harness has a stub voice-chat so the other pages load,voice page still dead',
+    "page says u get a voice chat with transcription on top of copilotkit",
+    "next dev fails with module not found, cant resolve ./voice-chat",
+    "and that build error blanks every route of the app, not just voice",
+    "page.tsx imports voicechat from ./voice-chat but no tab shows that file, harness has a stub so other pages load",
   ].join('\n'),
   reasoning: [
-    'reasoning page imports useReasoningCustomSuggestions from ./suggestions',
-    'the only suggestions file shown defines the default hook,custom one is never defined',
-    'backend reasoning.py needs REASONING_MODEL from agents._common,not published',
-    'with the quickstart antigravity agent the chat replies but no reasoning block renders',
+    "reasoning page says the agents thinking shows up as a reasoning block",
+    "with the antigravity agent the chat replies in plain text, no reasoning block renders",
+    "usereasoningcustomsuggestions is imported but never defined, only the default hook is shown",
+    "backend reasoning.py needs reasoning_model from agents._common, not published",
   ].join('\n'),
   a2ui: [
-    'a2ui page passes catalog myCatalog to CopilotKit',
-    'myCatalog is never defined on the page and no agent is named',
-    'took the catalog from the dynamic schema page and the default agent',
-    'sent the prompt for a kpi dashboard',
-    'no a2ui dashboard ever renders,only text or an error',
+    "a2ui page says pass ur catalog and the agent renders a2ui surfaces",
+    "asked for a kpi dashboard, no dashboard ever renders, only text or an error",
+    "the page only has fragments, mycatalog is never defined and no agent is named",
+    "so i had to guess the setup and it still doesnt render",
   ].join('\n'),
   'a2ui-dynamic-schema': [
-    'dynamic schema page says thats all the default path needs',
-    'catalog + agent wired exactly like the page',
-    'asked for a sales kpi dashboard',
-    'no dashboard renders, chat shows a2ui render error',
-    'cannot read properties of undefined reading map',
-    'same thing on langgraph react',
+    "dynamic schema page says thats all the default path needs",
+    "asked for a sales kpi dashboard, no dashboard shows and the chat shows an a2ui render error",
+    "the error says cannot read properties of undefined reading map",
+    "my code is exactly like the page so the doc setup itself breaks",
   ].join('\n'),
   'a2ui-fixed-schema': [
-    'fixed schema page, flight card schema + agent streams the data',
-    'page says bound props get resolved against the data model',
-    'asked for a united flight sfo to jfk for 289',
-    'agent says here is the flight,card shows up',
-    'but its empty, no airline no airports no price,total blank',
-    'only flight details title and the book flight button',
+    "fixed schema page says bound props are resolved against the data model",
+    "asked for a united flight sfo to jfk, the card shows up but its empty",
+    "no airline, no airports, no price, only the flight details title and the book button",
+    "so the data never gets bound to the card",
   ].join('\n'),
   'gui-surfaces': [
-    "surfaces page, the agent is supposed to fill the featured products row",
-    "agent calls render_ui but nothing renders",
-    "not in the page target and not in the chat either",
-    "no renderer is registered for it on antigravity",
-    "same thing as the components and surfaces page",
+    "surfaces page says the agent fills the featured products row",
+    "agent calls render_ui but nothing renders, not in the page target and not in the chat",
+    "console says no renderer is registered for render_ui",
+    "page imports ./catalog shopui but never shows it, i copied it from the catalogs page",
   ].join('\n'),
   'gui-catalogs': [
-    "catalogs page,shopUI catalog passed in like the page shows",
-    "asked for 2 running shoes as product cards",
-    "agent calls render_ui, no catalog component renders",
-    "reply just stays empty,no renderer registered",
+    "catalogs page says pass ur catalog and the agent renders those components",
+    "asked for 2 running shoes as product cards, the reply just stays empty",
+    "agent calls generate_image instead of render_ui and the run dies,gemini 400 multimodal function responses not supported for this model",
+    "page never says which model or tools the agent needs so no catalog component ever renders",
   ].join('\n'),
   'gui-standard-catalog': [
-    "standard catalog page,standardUI passed in",
-    "asked to compare starter team enterprise in a table",
-    "no standard component renders",
-    "agent just answers with a plain markdown table",
-    "same as components and surfaces page",
+    "standard catalog page says standardui gives u ready made components",
+    "asked to compare starter team and enterprise in a table, the agent gave a plain markdown table",
+    "no standard component renders, and the page never names the antigravity agent",
+    "i added the agent id myself to get this far",
   ].join('\n'),
   'gui-state-and-actions': [
-    "state and actions page,product card with add to cart",
-    "asked for the trail runner card",
-    "no product card ever shows up",
-    "only an empty reply or the run fails",
-    "so the cart state and the action cant be tried at all",
+    "state and actions page says u get a product card with cart state and add to cart",
+    "asked for the trail runner card, no card ever shows up, the reply is empty or the run fails",
+    "so the cart and the action cant be tried at all",
+    "the page never shows the catalog parts together or their imports",
   ].join('\n'),
   'gui-theming': [
-    "theming page sets a2ui colors like the accent",
-    "asked for a card with a subscribe button",
-    "nothing renders,render_ui has no renderer",
-    "so u cant see the theme at all",
+    "theming page says these a2ui colors style the generated ui",
+    "asked for a card with a subscribe button, the reply is empty and nothing renders",
+    "render_ui has no renderer so the theme never shows up on anything",
+    "the page never names the antigravity agent either",
   ].join('\n'),
   'gui-transports': [
-    "transports page only shows langgraph setup copilotkitmiddleware",
-    "nothing for an antigravity agent",
-    "used the antigravity agent anyway,asked for the plans table",
-    "no generated ui ever shows up,just a plain text answer or a failed run",
+    "transports page says ur agent must use the tools and context of the run",
+    "asked for the plans table, no generated ui shows up, just plain text or a failed run",
+    "the only setup given is for langgraph with copilotkitmiddleware, nothing for an antigravity agent",
+    "so the antigravity side is missing and no ui gets streamed",
   ].join('\n'),
   'gui-markdown-mode': [
     "markdown mode page says any other agent just needs the context in its system prompt",
-    "doesnt say how to do that for antigravity",
-    "asked for a seat estimator with a slider",
-    "no a2ui block,no ui ever shows up",
-    "reply is empty or just text,sometimes it writes html files instead",
+    "asked for a seat estimator with a slider, no a2ui block shows up, the reply is empty or text, and once it wrote html files",
+    "the page doesnt say how to put the context into an antigravity agent",
+    "so the markdown mode step cant be followed as written",
   ].join('\n'),
   'gui-from-a2ui': [
-    "adopt from a2ui page, airport and arrow components",
-    "asked for my flight sfo to jfk",
-    "no airport or arrow ui ever shows up",
-    "only an empty reply or the run fails",
+    "adopt from a2ui page says the airport and arrow components render in the chat",
+    "asked for my flight sfo to jfk, the reply is empty or the run fails, no airport or arrow ui shows",
+    "the page leaves out the zod import",
+    "and render_ui has no renderer, so nothing can render",
   ].join('\n'),
 };
 
@@ -166,7 +150,7 @@ export const FINDING_EVIDENCE: Record<string, DocEvidence[]> = {
     { text: 'resolved against the data model', caption: 'Card renders but no bound value shows (FINDINGS.md #73)' },
   ],
   'gui-surfaces': [{ text: "fallback={<ProductRow products={products} />}", caption: 'render_ui has no renderer (FINDINGS.md #87)' }],
-  'gui-catalogs': [{ text: "generativeUI={{ ui: shopUI }}", caption: 'render_ui has no renderer (FINDINGS.md #89)' }],
+  'gui-catalogs': [{ text: "generativeUI={{ ui: shopUI }}", caption: 'run fails on Gemini 400 after generate_image (FINDINGS.md #89)' }],
   'gui-standard-catalog': [{ text: "generativeUI={{ ui: standardUI }}", caption: 'render_ui has no renderer (FINDINGS.md #90)' }],
   'gui-state-and-actions': [{ text: "state: { cart: cartSchema },", caption: 'render_ui has no renderer (FINDINGS.md #91)' }],
   'gui-theming': [{ text: "\"--a2ui-color-accent\": \"#d97706\",", caption: 'render_ui has no renderer (FINDINGS.md #94)' }],
@@ -180,6 +164,10 @@ export const FINDING_EVIDENCE: Record<string, DocEvidence[]> = {
  * Short clip: the take ends after the demo (no doc highlight, no Notepad).
  */
 export const KNOWN_ISSUE = new Set<string>([]);
+
+// Doc step highlight (core/doc-evidence): runs before the IDE, not after the demo. Must come after
+// KNOWN_ISSUE (const), hence here.
+registerDocEvidence(FINDING_EVIDENCE, { skip: KNOWN_ISSUE });
 
 /** Type a page's finding into Notepad at the end of its take, after showing it on the doc. */
 export async function writeFinding(page: Page, id: string, config?: PageRecordConfig): Promise<void> {
@@ -537,19 +525,23 @@ export const runVoiceAction: PageActionHandler = async (page, config, root, ctx)
   const repo = existsSync(join(root, 'frontend')) ? root : join(root, '..');
   const stub = join(repo, 'frontend', 'app', 'voice', 'voice-chat.tsx');
   const aside = stub + '.aside';
-  if (existsSync(stub)) {
-    renameSync(stub, aside);
-    try {
+  // The demo shows the verbatim page: the placeholder is moved aside for the whole demo so the real
+  // Next "Module not found" overlay is what the viewer sees (review 2026-11-16: the placeholder's own
+  // text was on camera). Pages record one at a time, so blanking the dev server for these
+  // seconds breaks no other take; the placeholder is always put back in `finally`.
+  const moved = existsSync(stub);
+  if (moved) renameSync(stub, aside);
+  try {
+    if (moved) {
       await sleep(1500);
-      await fetch('http://localhost:3040/voice').catch(() => null);
-      await sleep(2000);
-    } finally {
-      renameSync(aside, stub);
+      await page.reload().catch(() => null);
+      await page.getByText(/Module not found/i).first().waitFor({ state: 'visible', timeout: 45000 }).catch(() => {});
+      mark('error', "Module not found: Can't resolve './voice-chat'");
+      await sleep(5000);
     }
-    await sleep(2000);
-    await page.reload().catch(() => null);
-    await sleep(3000);
+    await runStandardWithFinding(page, config, root, ctx);
+  } finally {
+    if (moved && existsSync(aside)) renameSync(aside, stub);
   }
-  await runStandardWithFinding(page, config, root, ctx);
   ctx.fail("Module not found: Can't resolve './voice-chat' (page.tsx imports a file the doc never shows).");
 };

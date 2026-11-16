@@ -231,7 +231,11 @@ async function dragSelect(page: Page, target: Locator, text: string): Promise<vo
   await page.mouse.up();
 }
 
-/** Doc evidence, then the note typed into Notepad (humanized), with timeline marks. */
+/**
+ * The Notepad note, with timeline marks. The doc highlight no longer runs here: it is registered
+ * with core/doc-evidence (antigravity.actions.ts) and runs in the doc step, before the IDE.
+ * `items` is kept only so the call sites stay unchanged.
+ */
 export async function showFinding(
   page: Page,
   config: PageRecordConfig,
@@ -239,7 +243,6 @@ export async function showFinding(
   note: string | undefined,
   fileName = `finding-${config.id}.txt`,
 ): Promise<void> {
-  await showDocEvidence(page, config, items).catch((e) => console.warn(`   ⚠️ Doc evidence step failed: ${String(e).slice(0, 120)}`));
   if (!note) return;
   mark('notepad');
   await openNotepad(page, fileName);
