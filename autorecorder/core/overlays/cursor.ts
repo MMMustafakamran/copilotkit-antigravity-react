@@ -1,6 +1,7 @@
 import { type Page } from 'playwright';
 import { beat, between, chance, jitter, pause, rand, sleep } from './human';
 import { logAction } from '../timeline';
+import { isFast } from '../fast';
 
 export { beat, sleep };
 
@@ -108,6 +109,11 @@ export async function humanGlide(
   targetY: number,
   customSteps?: number,
 ): Promise<void> {
+  if (isFast()) {
+    await page.mouse.move(targetX, targetY);
+    setGlobalCursorPos(targetX, targetY);
+    return;
+  }
   const currentPos = (await page.evaluate(`
     (function() {
       var c = document.getElementById('playwright-virtual-mouse');
@@ -159,6 +165,11 @@ export async function humanGlide(
  * commits, and not for the same moment every time.
  */
 export async function humanClick(page: Page): Promise<void> {
+  if (isFast()) {
+    await page.mouse.down();
+    await page.mouse.up();
+    return;
+  }
   await sleep(between(40, 160));
 
   await page.evaluate(`
@@ -189,6 +200,7 @@ export async function humanClick(page: Page): Promise<void> {
  * following text as it arrives.
  */
 export async function idleNudge(page: Page, driftY = 0): Promise<void> {
+  if (isFast()) return;
   const { x, y } = getGlobalCursorPos();
   const nx = Math.min(1900, Math.max(20, x + between(-14, 14)));
   const ny = Math.min(1020, Math.max(20, y + between(-8, 8) + driftY));
@@ -214,6 +226,10 @@ export async function humanScrollDown(
   durationMs: number = 3200,
   opts: { toBottom?: boolean } = {},
 ): Promise<void> {
+  if (isFast()) {
+    await page.mouse.wheel(0, totalPixels).catch(() => {});
+    return;
+  }
   // Resolve the scroller once and stash it, so every tick moves the same element.
   const actualTarget = (await page
     .evaluate(({ requestedPixels, toBottom }) => {

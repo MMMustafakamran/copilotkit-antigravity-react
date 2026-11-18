@@ -1,5 +1,6 @@
 import { type Locator, type Page } from 'playwright';
 import { logAction } from '../timeline';
+import { isFast } from '../fast';
 import { getGlobalCursorPos, humanClick, humanGlide, sleep } from './cursor';
 
 /**
@@ -170,6 +171,7 @@ export async function ensureOverlays(
   page: Page,
   activeApp: TaskbarApp = 'chrome',
 ): Promise<void> {
+  if (isFast()) return; // probe: no taskbar
   const chromeInd = activeApp === 'chrome' ? ACTIVE_INDICATOR : 'transparent';
   const vscodeInd = activeApp === 'vscode' ? ACTIVE_INDICATOR : 'transparent';
   const terminalInd = activeApp === 'terminal' ? ACTIVE_INDICATOR : 'transparent';
@@ -358,6 +360,7 @@ export async function clickTaskbarApp(
   page: Page,
   targetApp: TaskbarApp,
 ): Promise<void> {
+  if (isFast()) return; // probe: no taskbar
   const targetId = TASKBAR_APPS[targetApp].tileId;
 
   // Get taskbar icon coordinates

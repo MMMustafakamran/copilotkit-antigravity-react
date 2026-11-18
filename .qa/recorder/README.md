@@ -34,6 +34,19 @@ core change is made **here**, followed by `node scripts/core-manifest.mjs --writ
 replaced files' old hashes to `core-history.txt` (so repos still on that version update cleanly),
 and a sync of every repo. Per-repo behaviour belongs in the repo's `config/` or `actions/`.
 
+## Fast mode (probe)
+
+`new RecordingEngine(root, { fast: true, headed?, actionCapS? })` (`core/fast.ts` `setFast`/`isFast`):
+`probePage(config)` (and `recordPage`) skips the doc page, IDE, dev-server replay, Notepad and failure
+terminal, records no video, and goes straight to the demo step, running the page's action as in a
+take so every `checkpoint()` runs. Human pacing is off (`pause`/`beat`/typing/glide/click/scroll in
+`overlays/`), Notepad, taskbar and doc-evidence highlights are no-ops, and the voice gate is off
+(`setVoiceEnabled(false)`). It stops when the action returns, at the first failed checkpoint, or at
+the cap, and writes `videos/probe/<id>/final.png`, `failure.png` (when anything failed) and
+`result.json` `{id, ok, secs, checks[{label,expect,observed,ok}], reply, errorsOnScreen,
+consoleErrors, failedRequests, error}`. Repo actions that leave the demo (`showDocEvidence`) check
+`isFast()` themselves. Driven by `tools/probe.mts`.
+
 ## Timeline v2 (per-clip evidence)
 
 `core/timeline.ts` writes, beside every `<clip>.webm`: `<clip>.timeline.json` (marks, checkpoints,

@@ -1,7 +1,9 @@
 import { type Page } from 'playwright';
+import { isFast } from '../fast';
 import { humanClick, humanGlide, sleep } from './cursor';
 import { keystrokeDelay, type TypeRhythm } from './human';
 import { keyframe, logAction, logInput } from '../timeline';
+import { loadVoicePlan, notepadVoiceMs } from '../voice';
 
 /**
  * A Windows 11 Notepad window, drawn inside the page.
@@ -22,6 +24,7 @@ export async function openNotepad(
   page: Page,
   fileName = 'Untitled',
 ): Promise<void> {
+  if (isFast()) return; // probe: no Notepad
   openedAt = Date.now(); // the `notepad` mark is set just before this; the hold is timed from here
   const coords = await page.evaluate(() => {
     const el = document.getElementById('win11-taskbar-notepad');
@@ -156,6 +159,7 @@ export async function typeInNotepad(
   text: string,
   opts: TypeOptions = {},
 ): Promise<void> {
+  if (isFast()) return; // probe: no Notepad
   await page.evaluate(
     (ids: { textId: string; caretId: string }) => {
       const el = document.getElementById(ids.textId);
@@ -255,6 +259,7 @@ export async function typeInNotepad(
  * (counted from when the window opened), then closes it.
  */
 export async function closeNotepad(page: Page, dwellMs = 2600): Promise<void> {
+  if (isFast()) return; // probe: no Notepad
   const holdLeft = openedAt ? NOTEPAD_HOLD_MS - (Date.now() - openedAt) : 0;
   await sleep(Math.max(dwellMs, holdLeft));
   openedAt = 0;

@@ -447,3 +447,23 @@ export function saveTimeline(path: string, clipId: string): void {
   frames = [];
   pending = [];
 }
+
+/** Marks emitted so far in this take (read-only view). */
+export function timelineMarks(): readonly { t: number; label: string }[] {
+  return marks;
+}
+
+/** Checkpoints recorded so far in this take (read-only view; settled ones only). */
+export function timelineCheckpoints(): readonly Checkpoint[] {
+  return checkpoints;
+}
+
+/** Seconds since the take started, on the timeline clock; 0 when no timeline is running. */
+export function timelineNow(): number {
+  return t0 ? now() : 0;
+}
+
+/** A free-form event for events.jsonl (e.g. `voice-wait`). Safe to call when no timeline is running. */
+export function logEvent(kind: string, fields: Record<string, unknown> = {}): void {
+  push(kind, fields);
+}

@@ -1,4 +1,5 @@
 import { type Page } from 'playwright';
+import { isFast } from '../fast';
 
 /**
  * The small irregularities that make a take read as a person at a desk.
@@ -76,6 +77,7 @@ export const PACE: number = (() => {
  * variance on it, scaled by `PACE`.
  */
 export function pause(ms: number, spread = 0.25): Promise<void> {
+  if (isFast()) return Promise.resolve();
   return sleep(jitter(ms * PACE, spread));
 }
 
@@ -87,6 +89,7 @@ export function pause(ms: number, spread = 0.25): Promise<void> {
  * choreographed sequence keeps its shape.
  */
 export function beat(ms: number): Promise<void> {
+  if (isFast()) return Promise.resolve();
   return sleep(jitter(ms * PACE, 0.15));
 }
 
@@ -107,6 +110,7 @@ export interface TypeRhythm {
  * punctuation and line breaks, and the occasional mid-sentence pause.
  */
 export function keystrokeDelay(ch: string, opts: TypeRhythm = {}): number {
+  if (isFast()) return 0;
   const { charDelayMs = 62, jitter: spread = 0.55, thinkChance = 0.07 } = opts;
   let delay = charDelayMs * (1 + (next() * 2 - 1) * spread);
   if (ch === ' ' && next() < thinkChance) delay += 240 + next() * 420;
@@ -123,6 +127,7 @@ export function keystrokeDelay(ch: string, opts: TypeRhythm = {}): number {
  * show, and it was in every one.
  */
 export async function humanType(page: Page, text: string, opts: TypeRhythm = {}): Promise<void> {
+  if (isFast()) return page.keyboard.type(text);
   for (const ch of text) {
     await page.keyboard.type(ch);
     await sleep(keystrokeDelay(ch, opts));

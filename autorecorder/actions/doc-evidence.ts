@@ -4,6 +4,8 @@ import { getGlobalCursorPos, humanGlide, idleNudge, sleep } from '../core/overla
 import { closeNotepad, openNotepad, typeInNotepad } from '../core/overlays/notepad';
 import { clickTaskbarApp, ensureOverlays, waitForHydration } from '../core/overlays/taskbar';
 import { checkpoint, mark, probeText } from '../core/timeline';
+import { voiceGate } from '../core/voice';
+import { isFast } from '../core/fast';
 
 import { humanizeNote } from '../core/overlays/note-style';
 /**
@@ -36,7 +38,7 @@ async function findEvidence(page: Page, text: string) {
 
 /** Go back to the doc page and highlight each cited text, one by one. */
 export async function showDocEvidence(page: Page, config: PageRecordConfig, items: DocEvidence[] | undefined): Promise<void> {
-  if (!items?.length) return;
+  if (!items?.length || isFast()) return; // probe: stay on the demo
   console.log(`   🔎 Showing the finding on the doc page (${items.length} spot(s))...`);
   await clickTaskbarApp(page, 'chrome').catch(() => {});
   // docs.copilotkit.ai throws its own hydration error (#418) on some pages; the demo verdict is
@@ -49,6 +51,7 @@ export async function showDocEvidence(page: Page, config: PageRecordConfig, item
   await sleep(1500);
 
   for (const item of items) {
+    await voiceGate('evidence');
     mark('evidence', item.text);
     const target = await findEvidence(page, item.text);
     void checkpoint('evidence', `doc shows "${item.text}"`, () => (target ? probeText(target) : null));
@@ -244,6 +247,7 @@ export async function showFinding(
   fileName = `finding-${config.id}.txt`,
 ): Promise<void> {
   if (!note) return;
+  await voiceGate('notepad');
   mark('notepad');
   await openNotepad(page, fileName);
   await typeInNotepad(page, humanizeNote(note), TYPING);

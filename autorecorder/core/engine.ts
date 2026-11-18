@@ -1,8 +1,8 @@
-import { existsSync, mkdirSync, readFileSync, rmSync, unlinkSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, unlinkSync, writeFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { chromium, type Browser, type BrowserContext, type Page } from 'playwright';
 import { executePageAction } from '../actions';
-import { endTimeline, mark, saveTimeline, setTimelinePage, startTimeline } from './timeline';
+import { endTimeline, mark, saveTimeline, setTimelinePage, startTimeline, timelineCheckpoints } from './timeline';
 import { diagnoseError } from './diagnostics';
 import { PROJECT } from '../config/project.config';
 import { SELECTORS } from '../config/selectors.config';
@@ -22,7 +22,9 @@ import {
 } from './failure-evidence';
 import { pickShell, runFailureTerminal } from './failure-terminal';
 import { generateIdeHtml, type IdeTabConfig } from './ide/generator';
-import { closeNotepad, openNotepad, setNotepadClip, typeInNotepad } from './overlays/notepad';
+import { closeNotepad, openNotepad, typeInNotepad } from './overlays/notepad';
+import { loadVoicePlan, voiceGate, voiceTail } from './voice';
+import { setFast } from './fast';
 import { humanClick, humanGlide, humanScrollDown, restCursorSomewhere, sleep } from './overlays/cursor';
 import { between, jitter, pause, seedTake } from './overlays/human';
 import { clickTaskbarApp, ensureOverlays, waitForHydration } from './overlays/taskbar';
@@ -296,6 +298,43 @@ export interface RecordResult {
   consoleErrors?: string[];
 }
 
+/** One checkpoint as the probe reports it. */
+export interface ProbeCheck {
+  label: string;
+  expect: string;
+  observed: string | null;
+  ok: boolean;
+}
+
+/** What a fast (probe) run of one page found; written to videos/probe/<id>/result.json. */
+export interface ProbeOutcome {
+  id: string;
+  ok: boolean;
+  secs: number;
+  checks: ProbeCheck[];
+  reply: string;
+  errorsOnScreen: string[];
+  consoleErrors: string[];
+  failedRequests: string[];
+  /** Why the run failed: action fail(), a thrown step, an app error or a failed checkpoint. */
+  error?: string;
+  warnings: string[];
+  /** The run stopped at the first failed checkpoint instead of finishing the action. */
+  endedEarly?: boolean;
+}
+
+export interface EngineOptions {
+  /** Probe mode: demo step only, no video, no human pacing (see probePage). */
+  fast?: boolean;
+  /** Fast mode only: show the browser (takes are always headed). */
+  headed?: boolean;
+  /** Fast mode only: cap on the page action in seconds (default 300). */
+  actionCapS?: number;
+}
+
+const PROBE_ERROR_TEXT = /error|failed|unable to|not found|exception|cannot|could not|invalid input/i;
+const PROBE_NOISE = /analytics|posthog|segment|sentry|favicon/i;
+
 /**
  * One line per distinct console error, for the result and the summary.
  *
@@ -415,8 +454,12 @@ export class RecordingEngine {
    */
   private browser?: Browser;
 
-  constructor(rootDir: string) {
+  private readonly opts: EngineOptions;
+
+  constructor(rootDir: string, opts: EngineOptions = {}) {
     this.rootDir = rootDir;
+    this.opts = opts;
+    if (opts.fast) setFast(true);
     this.videosDir = join(rootDir, 'autorecorder', 'videos');
     this.tempVideoDir = join(this.videosDir, '.temp_chunks');
     if (!existsSync(this.videosDir)) {
@@ -962,13 +1005,14 @@ export class RecordingEngine {
 
     const { browser, context, page } = await this.openStage(req.docUrl);
     setTimelinePage(req.id, req.docUrl);
-    setNotepadClip(this.rootDir, req.filename ?? req.id);
+    loadVoicePlan(this.rootDir, req.id, req.filename ?? req.id);
 
     try {
       // ----------------------------------------------------
       // STEP 1: THE DOC PAGE THIS FLOW IS EVIDENCE FOR
       // ----------------------------------------------------
       if (req.docUrl) {
+        await voiceGate('doc');
         mark('doc');
         const note = await this.showDocPage(
           page,
@@ -984,6 +1028,7 @@ export class RecordingEngine {
       // STEP 1b: THE CODE THE FINDING IS ABOUT
       // ----------------------------------------------------
       if (req.ideTabs?.length) {
+        await voiceGate('ide');
         mark('ide');
         console.log(`\n💻 Step 1b: Showing ${req.ideTabs.length} file(s) in VS Code...`);
         await this.showIde(page, req.ideTabs, PROJECT.frontendUrl, {
@@ -1016,6 +1061,7 @@ export class RecordingEngine {
       // ----------------------------------------------------
       if (req.notepad) {
         console.log(`\n📝 Step 3: Writing the finding in Notepad...`);
+        await voiceGate('notepad');
         mark('notepad');
         await openNotepad(page, req.notepad.filename);
         await typeInNotepad(page, req.notepad.body, { charDelayMs: req.notepad.charDelayMs });
@@ -1026,6 +1072,7 @@ export class RecordingEngine {
       recordError = `CLI replay failed: ${diagnoseError(e, 'cli-replay')}`;
       console.error(`❌ ${recordError}`);
     } finally {
+      await voiceTail().catch(() => {});
       finalSavedFilename = await this.closeStage(
         browser,
         context,
@@ -1044,7 +1091,139 @@ export class RecordingEngine {
     };
   }
 
+  /**
+   * Fast mode (probe): no doc page, IDE, terminal replay, Notepad or failure terminal, no video,
+   * no human pacing. Opens the demo like STEP 3 of a take and runs the page's own action, so
+   * every checkpoint() it makes runs. Stops when the action returns, at the first failed
+   * checkpoint, or at the cap. Writes videos/probe/<id>/final.png (+ failure.png) and result.json.
+   */
+  async probePage(config: PageRecordConfig): Promise<ProbeOutcome> {
+    const out = join(this.videosDir, 'probe', config.id);
+    mkdirSync(out, { recursive: true });
+    for (const f of ['failure.png', 'result.json']) rmSync(join(out, f), { force: true });
+    seedTake(config.id);
+    const started = Date.now();
+    const sec = (): number => Math.round((Date.now() - started) / 100) / 10;
+    const timeouts = timeoutsFor(config);
+    const capS = this.opts.actionCapS ?? 300;
+    const warnings: string[] = [];
+    const failures: string[] = [];
+    const ctx: ActionContext = {
+      warn: (m) => warnings.push(m),
+      fail: (m) => failures.push(m),
+      timeouts,
+    };
+    const result: ProbeOutcome = {
+      id: config.id, ok: false, secs: 0, checks: [], reply: '',
+      errorsOnScreen: [], consoleErrors: [], failedRequests: [], warnings,
+    };
+    const finish = (): ProbeOutcome => {
+      result.secs = sec();
+      writeFileSync(join(out, 'result.json'), JSON.stringify(result, null, 1));
+      return result;
+    };
+
+    let service: RunningService | undefined;
+    if (config.devServer) {
+      try {
+        service = await startService(
+          { warmUrl: config.demoUrl, port: Number(new URL(config.devServer.originUrl).port) || undefined, ...config.devServer },
+          { rootDir: this.rootDir, title: config.devServer.title },
+        );
+      } catch (e) {
+        result.error = `Dev server failed to start: ${e instanceof Error ? e.message : String(e)}`;
+        return finish();
+      }
+    }
+
+    if (!this.browser || !this.browser.isConnected()) {
+      this.browser = await chromium.launch({ headless: !this.opts.headed });
+    }
+    const context = await this.browser.newContext({ viewport: { width: 1920, height: 1080 }, colorScheme: 'dark' });
+    const page = await context.newPage();
+    startTimeline(page);
+    setTimelinePage(config.id, config.docUrl);
+    page.on('dialog', (d) => void d.accept().catch(() => {}));
+    page.on('response', (r) => {
+      if (r.status() >= 400) result.failedRequests.push(`${sec()}s ${r.status()} ${r.request().method()} ${r.url().slice(0, 160)}`);
+    });
+    page.on('requestfailed', (r) => {
+      result.failedRequests.push(`${sec()}s FAILED ${r.method()} ${r.url().slice(0, 160)} ${r.failure()?.errorText ?? ''}`);
+    });
+    const console_ = captureConsole(page);
+    let failShot = false;
+    let error: string | undefined;
+    let watch: ReturnType<typeof setInterval> | undefined;
+    try {
+      mark('demo');
+      followDemoColorScheme(page, config.demoUrl);
+      const response = await page.goto(config.demoUrl, { waitUntil: 'domcontentloaded', timeout: timeouts.demoNavMs });
+      const status = response?.status() ?? 0;
+      if (status >= 400 && !config.demoMayError) throw new Error(`Demo route returned HTTP ${status} (${config.demoUrl})`);
+      if (config.demoMayError) {
+        await page.waitForSelector(SELECTORS.chatReady, { state: 'visible', timeout: 15000 }).catch(() => {});
+      } else {
+        await page.waitForSelector(SELECTORS.chatReady, { state: 'visible', timeout: timeouts.chatReadyMs });
+        await dismissNextIssues(page);
+      }
+
+      mark('action');
+      const action = executePageAction(page, config, this.rootDir, ctx).then(() => 'done' as const);
+      action.catch(() => {}); // may still be running when the probe ends early
+      const failedCheck = new Promise<'check'>((res) => {
+        watch = setInterval(() => {
+          if (timelineCheckpoints().some((c) => !c.ok)) res('check');
+        }, 250);
+      });
+      const cap = new Promise<'cap'>((res) => setTimeout(() => res('cap'), capS * 1000).unref());
+      const how = await Promise.race([action, failedCheck, cap]);
+      if (how === 'check') {
+        result.endedEarly = true;
+        failShot = true;
+        await page.screenshot({ path: join(out, 'failure.png') }).catch(() => {});
+      } else if (how === 'cap') {
+        failures.push(`action did not finish within ${capS}s`);
+      }
+      if (failures.length) error = failures.join('; ');
+    } catch (e) {
+      error = `Demo step failed: ${diagnoseError(e, config.demoUrl)}`;
+    } finally {
+      if (watch) clearInterval(watch);
+    }
+
+    const breaking = distinctErrors(breakingErrors(console_.entries));
+    if (!error && breaking.length) error = `The app threw (${breaking.length} distinct error(s)), first: ${breaking[0]}`;
+    result.consoleErrors = distinctErrors(console_.entries).slice(0, 40);
+    console_.stop();
+
+    await page.screenshot({ path: join(out, 'final.png') }).catch(() => {});
+    const replies: string[] = await page
+      .locator(SELECTORS.assistantMessage)
+      .evaluateAll((els) => els.map((e) => ((e as HTMLElement).innerText || '').trim()).filter(Boolean))
+      .catch(() => []);
+    result.reply = (replies[replies.length - 1] ?? '').slice(0, 2000);
+    const body: string = await page.locator('body').innerText().catch(() => '');
+    result.errorsOnScreen = [...new Set(body.split('\n').map((l) => l.trim()).filter((l) => l.length < 300 && PROBE_ERROR_TEXT.test(l)))].slice(0, 20);
+
+    await endTimeline().catch(() => {}); // settles outstanding checkpoints
+    result.checks = timelineCheckpoints().map(({ label, expect, observed, ok }) => ({ label, expect, observed, ok }));
+    const badCheck = result.checks.find((c) => !c.ok);
+    if (!error && badCheck) error = `checkpoint failed: ${badCheck.label} (expected ${badCheck.expect}, saw ${badCheck.observed ?? 'nothing'})`;
+    if (error && !failShot) await page.screenshot({ path: join(out, 'failure.png') }).catch(() => {});
+    result.failedRequests = result.failedRequests.filter((f) => !PROBE_NOISE.test(f)).slice(0, 40);
+    result.error = error?.replace(/\u001b\[[0-9;]*m/g, ''); // no terminal colour codes in json
+    result.ok = !error;
+
+    await context.close().catch(() => {});
+    if (service) await service.stop().catch(() => {});
+    return finish();
+  }
+
   async recordPage(config: PageRecordConfig): Promise<RecordResult> {
+    if (this.opts.fast) {
+      const r = await this.probePage(config);
+      return { success: r.ok, filename: '', error: r.error, warnings: r.warnings, consoleErrors: r.consoleErrors };
+    }
     console.log(`\n======================================================`);
     console.log(`🎬 RECORDING: ${config.name} (${config.id})`);
     console.log(`======================================================`);
@@ -1119,7 +1298,7 @@ export class RecordingEngine {
 
     const { browser, context, page } = await this.openStage(config.docUrl, config.docStorage);
     setTimelinePage(config.id, config.docUrl);
-    setNotepadClip(this.rootDir, config.filename ?? config.id);
+    loadVoicePlan(this.rootDir, config.id, config.filename ?? config.id);
 
     // Console errors, page errors and failed backend requests, kept rather than
     // printed and forgotten. They go on the result so the summary and the
@@ -1146,6 +1325,7 @@ export class RecordingEngine {
       // take is done -- and the taskbar click into VS Code is skipped, since
       // there is no VS Code segment to click into.
       if (config.docOnly) {
+        await voiceGate('doc');
         mark('doc');
         const docNote = await this.showDocPage(page, config.docUrl, 'chrome', timeouts);
         if (docNote) warnings.push(docNote);
@@ -1162,6 +1342,8 @@ export class RecordingEngine {
         throw new DocOnlyDone();
       }
 
+      await voiceGate('doc');
+
       mark('doc');
       const docNote = await this.showDocPage(page, config.docUrl, 'vscode', timeouts, docEvidenceFor(config.id, config.findingEvidence));
       if (docNote) warnings.push(docNote);
@@ -1169,6 +1351,7 @@ export class RecordingEngine {
       // ----------------------------------------------------
       // STEP 2: SHOW PROJECT CODE IN VS CODE IDE WITH SNIPPET SELECTION
       // ----------------------------------------------------
+      await voiceGate('ide');
       mark('ide');
       const hasExtraTabs = Boolean(config.extraTabs && config.extraTabs.length > 0);
       console.log(
@@ -1228,6 +1411,7 @@ export class RecordingEngine {
       // ----------------------------------------------------
       // STEP 3: FRONTEND DEMO PAGE & TAILORED ACTION EXECUTION
       // ----------------------------------------------------
+      await voiceGate('demo');
       mark('demo');
       console.log(`\n🚀 Step 3: Opening Demo (${config.demoUrl})...`);
       console_ = captureConsole(page);
@@ -1344,6 +1528,7 @@ export class RecordingEngine {
       // failure-terminal.ts). The diagnosed error, the browser console and the
       // log slices go to videos/logs/<id>.error.log. Never lets an evidence
       // problem hide the original failure.
+      await voiceTail().catch(() => {}); // the last line (e.g. a level-2 demo ending) plays out
       if (recordError) {
         mark('failure', recordError.slice(0, 160));
         await this.showFailureEvidence(page, config.id, recordError, console_?.entries ?? [], logSources, logsDir);
