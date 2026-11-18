@@ -2,7 +2,7 @@
 
 > Render generated UI in the chat, or in named areas of your page that the chat can change.
 
-## What is this?
+## What is this? [#what-is-this]
 
 The chat is a good place for an answer. It is a bad place for the product grid of your shop. When a user asks "show me cheap running shoes", the shoes belong in the product row of the page, not in a chat bubble.
 
@@ -11,7 +11,7 @@ A **surface** is one piece of generated UI. Each surface renders in a **target**
 - **The chat.** Always there. The agent can use every component of the catalog. On React Native, you draw chat surfaces yourself, with `GenerativeUIActivity`; see [Chat surfaces on React Native](#chat-surfaces-on-react-native). The agent is offered the chat target even when the app shows no chat, so a React Native app that renders only `GenerativeUISurface` targets, or only the prebuilt `CopilotChat` (which does not draw surfaces yet), never shows a surface aimed at the chat.
 - **A page target.** An area of your page that you mark with `GenerativeUISurface`, or `<copilot-generative-ui-surface>` in Angular. The agent sees it only while it is mounted.
 
-## Add a page target
+## Add a page target [#add-a-page-target]
 
 Wrap an area of your page in a target. Give it an id, and tell the agent what the area is for:
 
@@ -121,12 +121,12 @@ What each prop does:
 
 Now "show me cheap running shoes" swaps the row, and "show the featured products again" brings your own row back.
 
-## Chat surfaces on React Native
+## Chat surfaces on React Native [#chat-surfaces-on-react-native]
 
 The prebuilt React Native `CopilotChat` does not draw surfaces yet. Every surface reaches the app as an **activity message** in `agent.messages`, though, and `GenerativeUIActivity` from `@copilotkit/react-native/generative-ui` draws one wherever you put it:
 
 - **In your own message list**, one per activity message. Like the web chat, `GenerativeUIActivity` shows only surfaces whose target is `"chat"`, so a surface aimed at a page target renders in its `GenerativeUISurface` and does not show twice. To show a surface of another target, pass that target id in its `target` prop.
-- **On a screen with no chat.** A home screen can start a run of its own agent and show the chat surfaces that run renders. This part renders them; the [React Native guide](/google-antigravity/react-native#compose-a-screen-with-no-chat) has the whole screen, which starts the run once, shows a spinner while it runs and a retry when it fails, and defines `isChatSurface`:
+- **On a screen with no chat.** A home screen can start a run of its own agent and show the chat surfaces that run renders. This part renders them; the [React Native guide](/react-native#compose-a-screen-with-no-chat) has the whole screen, which starts the run once, shows a spinner while it runs and a retry when it fails, and defines `isChatSurface`:
 
 ```tsx title="src/HomeSurfaces.tsx"
 import { View } from "react-native";
@@ -152,7 +152,7 @@ export function HomeSurfaces() {
 
 `GenerativeUIActivity` reads the surface from the thread of the agent you pass, so it shows that agent's output even when another agent ran last. It must be under `GenerativeUIProvider`: without one, or under a provider without `ui`, it renders nothing, and warns in development.
 
-## Limit the components
+## Limit the components [#limit-the-components]
 
 A product row must hold product cards, not a slider or a chart. `components` names the only components that the agent can use in this target, the root included:
 
@@ -185,7 +185,7 @@ A product row must hold product cards, not a slider or a chart. `components` nam
 
 Leave out `components` (and `ui`) to allow every component of the catalog. Names that are not in the catalog are dropped, with a warning in development. An empty list, or one with only unknown names, allows no component: the target is still offered to the agent, but every operation that places a component in it is rejected.
 
-## Scroll to the surface
+## Scroll to the surface [#scroll-to-the-surface]
 
 When the agent starts to render into a target, the page scrolls to it, unless it is already on screen. Turn this off for one target:
 
@@ -250,7 +250,7 @@ On the web, with a sticky header, give surfaces some room at the top in your CSS
 }
 ```
 
-## One target for each item
+## One target for each item [#one-target-for-each-item]
 
 A target can be specific. A product page can give each product its own target, so its recommendations stay with it when the user moves between products:
 
@@ -319,7 +319,7 @@ A target can be specific. A product page can give each product its own target, s
   </Tab>
 </Tabs>
 
-## When a component fails
+## When a component fails [#when-a-component-fails]
 
 Each component renders inside its own error boundary. One broken component shows a small fallback, and the rest of the surface keeps working. To report errors, or to draw your own fallback:
 
@@ -369,7 +369,7 @@ Each component renders inside its own error boundary. One broken component shows
 
     The default fallback is the `NodeFallback` of the provider's `host`, `NativeNodeFallback` unless you pass your own `host`: the error, in native views, and a Retry button after a render error. A component whose props fail its schema shows it too, with the reason and no Retry button; your own `fallback` is not used for it. When your `fallback` throws, the host fallback with Retry shows in its place; when the host fallback throws, the node renders nothing. Either way the failure stays in its node, and it is reported to `onError`.
 
-    There is no Inspector on React Native. `onError` gets render failures, invalid props, failed events, failed functions that a component called and the operations that the app rejected; a render failure or invalid props that stay the same while the agent sends new content are reported once, and a failed event or function on every call. Operations that the runtime rejected never reach `onError`. They reach the `rejected` and `error` props of the `Wrapper`: the `Wrapper` of `GenerativeUIActivity` for a chat surface, and the `Wrapper` of `GenerativeUISurface` for a surface in a named target. Both default wrappers show a short error line. The exception is a rejected `createSurface`. A named target then keeps its fallback and renders no `Wrapper`; when the app rejected it, `onError` gets it and `<GenerativeUIActivity target="<id>">` shows it. When the runtime rejected it, no activity message is sent for it, so only the model learns of it, in the result of its `render_ui` call, and nothing on the device shows it. The one exception is a `createSurface` with the id of a live surface: the runtime adds that rejection to the live surface, whose `Wrapper` shows it. See [Errors on the device](/google-antigravity/react-native#errors-on-the-device).
+    There is no Inspector on React Native. `onError` gets render failures, invalid props, failed events, failed functions that a component called and the operations that the app rejected; a render failure or invalid props that stay the same while the agent sends new content are reported once, and a failed event or function on every call. Operations that the runtime rejected never reach `onError`. They reach the `rejected` and `error` props of the `Wrapper`: the `Wrapper` of `GenerativeUIActivity` for a chat surface, and the `Wrapper` of `GenerativeUISurface` for a surface in a named target. Both default wrappers show a short error line. The exception is a rejected `createSurface`. A named target then keeps its fallback and renders no `Wrapper`; when the app rejected it, `onError` gets it and `<GenerativeUIActivity target="<id>">` shows it. When the runtime rejected it, no activity message is sent for it, so only the model learns of it, in the result of its `render_ui` call, and nothing on the device shows it. The one exception is a `createSurface` with the id of a live surface: the runtime adds that rejection to the live surface, whose `Wrapper` shows it. See [Errors on the device](/react-native#errors-on-the-device).
   </Tab>
   <Tab value="Vue">
     The fallback is a Vue component. It gets `error`, `retry`, `surfaceId`, and `componentId` as props:
@@ -412,7 +412,7 @@ Each component renders inside its own error boundary. One broken component shows
   </Tab>
 </Tabs>
 
-## What the agent knows about surfaces
+## What the agent knows about surfaces [#what-the-agent-knows-about-surfaces]
 
 On every run, the agent gets:
 

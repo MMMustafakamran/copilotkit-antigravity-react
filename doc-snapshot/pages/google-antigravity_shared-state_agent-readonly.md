@@ -2,20 +2,16 @@
 
 > Publish UI values to the agent as a one-way read-only channel via useAgentContext.
 
-
-
 <!-- interactive demo: readonly-state-agent-context -->
 
-
 <Callout type="info" title="See this in Inspector">
-  Open Inspector on localhost. Go to **Agents**, then **Context**.
+  Open Inspector on localhost. Go to **Inspect**, then **Context**.
   The values you publish with `useAgentContext` appear here.
 
   More detail: [Inspector](/google-antigravity/inspector).
 </Callout>
 
-
-## What is this?
+## What is this? [#what-is-this]
 
 Sometimes you want the agent to *know* something about the current UI, like the logged-in user, the current page, or a recent activity log, but you don't want the agent to be able to modify it. That's what
 `useAgentContext` is for: a one-way **UI → agent** channel for
@@ -26,7 +22,7 @@ the state back to the UI), `useAgentContext` values are pure inputs.
 The agent sees them on every turn via the runtime's context injection,
 but it has no setter and no tool to write them back.
 
-## When should I use this?
+## When should I use this? [#when-should-i-use-this]
 
 Reach for `useAgentContext` instead of full shared state when:
 
@@ -39,7 +35,9 @@ Reach for `useAgentContext` instead of full shared state when:
 
 Think of it as "props for the agent".
 
-## How it works in code
+If the agent must also write the value, use **[shared state](/google-antigravity/shared-state)**. To stream agent-written state to the UI during a run, see [State streaming](/google-antigravity/shared-state/streaming).
+
+## How it works in code [#how-it-works-in-code]
 
 <Steps>
   <Step>
@@ -54,7 +52,6 @@ Think of it as "props for the agent".
     as a list of `{"description", "value"}` objects. Say in the system
     instructions when to call it:
 
-    
 ~~~~python title="app_context.py"
 SYSTEM_PROMPT = (
     "You are a helpful, concise assistant. The app shares read-only context "
@@ -71,7 +68,6 @@ def app_context_agent():
 
 
 ~~~~
-
 
     The tool is silent: it emits no `TOOL_CALL_*` events, so no tool card
     appears in the chat. It is also read-only. The agent has no tool that
@@ -125,11 +121,14 @@ runtime that is:
 
 - Refreshed whenever `value` changes (React re-renders).
 - Automatically removed when the component unmounts.
-- Surfaced to the agent via the backend's `CopilotKitMiddleware`, which
-  threads the entries into the model's message history on every turn.
+- Sent to the agent with every run. The Built-in Agent adds each entry to
+  the system prompt. Python LangGraph agents need `CopilotKitMiddleware`
+  to add the entries, and ADK agents need an instruction provider.
+  Microsoft Agent Framework, CrewAI Flows and Pydantic AI agents drop the
+  entries silently unless you wire them. The setup above shows the code
+  for your framework.
 
-```typescript
-// src/app/demos/readonly-state-agent-context/page.tsx
+```typescript title="src/app/demos/readonly-state-agent-context/page.tsx"
   useAgentContext({
     description: "The currently logged-in user's display name",
     value: userName,
@@ -148,7 +147,26 @@ The `description` is important: it's a short human-readable label the
 agent sees alongside the value, so it knows what to do with it. Treat
 it like a parameter docstring.
 
-## Wire it to your own state
+Call `useAgentContext` in as many components as you like. The agent
+receives every registered entry.
+
+<Callout type="warn" title="Context values arrive as JSON strings">
+  The AG-UI protocol defines a context value as a string. Therefore
+  `useAgentContext` calls `JSON.stringify` on any `value` that is not already a
+  string, and your agent receives the JSON text instead of the object or the
+  array.
+
+  Parse the value before you read a field from it. Use `json.loads(item["value"])`
+  in Python, or `JSON.parse(item.value)` in TypeScript. If you skip the parse
+  step, an index such as `colleagues[0]` returns a single character, and a shape
+  check such as `isinstance(value, list)` can never pass.
+
+  Do not stringify the value again, because that produces double encoding. A
+  `value` that is already a string is sent unchanged, so no parse step is needed
+  for it.
+</Callout>
+
+## Wire it to your own state [#wire-it-to-your-own-state]
 
 `useAgentContext` doesn't care where the value comes from: local
 state, a React Context, Redux, a query cache, anything. The only
@@ -157,8 +175,7 @@ React to avoid a render loop. In the demo we use a handful of
 `useState` hooks; in a real app these would likely come from an auth
 provider, a router hook, and your domain state stores.
 
-```typescript
-// src/app/demos/readonly-state-agent-context/page.tsx
+```typescript title="src/app/demos/readonly-state-agent-context/page.tsx"
 import React, { useState } from "react";
 import {
   CopilotKit,
@@ -194,20 +211,15 @@ function DemoContent() {
   ]);
 ```
 
-## Read-only, by design
+## Treat entries as untrusted input [#treat-entries-as-untrusted-input]
 
-Because the agent never sees a setter or a mutation tool for these
-values, there's no way for a confused LLM to "update" them. That
-makes `useAgentContext` the right tool whenever the value in question
-is an input, not a field: the "context object passed to the agent on
-every turn", rather than "shared workspace you both edit".
+Every entry is a claim your frontend made, and a user can change it. It
+never proves who is making the request. Let entries inform the agent's
+answer, but take facts that grant access, such as the authenticated user,
+the workspace, or the tenant, from your server. If your agent builds its
+prompt from entries, keep them apart from your own instructions, so text in
+an entry can't override them.
 
-When you need both reads *and* writes, you want full
-**[shared state](/google-antigravity/shared-state)** instead.
+## Try it [#try-it]
 
-## Related
-
-- **[Shared State (overview)](/google-antigravity/shared-state)** — bidirectional
-  reads + writes.
-- **[State streaming](/google-antigravity/shared-state/streaming)** — stream
-  agent-written state back to the UI during a run.
+Ask the agent: "What is my name?" It answers with the value of `userName`. Change the name in your UI and ask again: the answer changes.

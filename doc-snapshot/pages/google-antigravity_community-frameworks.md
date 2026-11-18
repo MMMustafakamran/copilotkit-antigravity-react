@@ -4,19 +4,18 @@
 
 CopilotKit maintains official packages for React, React Native, Vue and Angular. Community frameworks add other frontends. People outside the core team build and maintain them.
 
-## What community means
+## What community means [#what-community-means]
 
 - **Tested with one version.** Each package lists the `@copilotkit/core` version it is tested with. Use that version.
 - **Updates are best effort.** A community package can fall behind CopilotKit releases. Report problems on GitHub. We read every report, but we do not promise a response time.
 - **Separate releases.** A community package releases on its own schedule. It does not block CopilotKit releases.
 - **Each package's README is its setup guide.** The CopilotKit documentation does not cover community packages.
 
-## Frameworks
+## Frameworks [#frameworks]
 
-| Framework | Status | Tested with | Details |
-| --------- | ------ | ----------- | ------- |
+No community packages are listed yet. To ask for one or build one, see [Request or contribute a framework](#request-or-contribute-a-framework).
 
-## Request or contribute a framework
+## Request or contribute a framework [#request-or-contribute-a-framework]
 
 To ask for a framework, [open an issue](https://github.com/CopilotKit/CopilotKit/issues/new/choose). Each request tells us which frontends people need.
 

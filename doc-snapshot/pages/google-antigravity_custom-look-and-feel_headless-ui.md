@@ -1,16 +1,14 @@
 # Headless UI
 
-> Build any UI — chat or not — on top of the CopilotKit primitives with zero UI opinions.
-
+> Build any UI (chat or not) on top of the CopilotKit primitives with zero UI opinions.
 
 <!-- interactive demo: headless-complete -->
 
-
-## What is this?
+## What is this? [#what-is-this]
 
 A headless UI gives you **full control** over the chat experience. You bring your own components, layout, and styling while CopilotKit handles agent communication, message management, tool-call rendering, and streaming. No `<CopilotChat>`, no slot overrides, just your components composed on top of the low-level hooks.
 
-## When should I use this?
+## When should I use this? [#when-should-i-use-this]
 
 Use headless UI when:
 
@@ -19,20 +17,19 @@ Use headless UI when:
 - You're building a **non-chat surface** that still talks to an agent (a dashboard, a canvas, an inspector) and want `useRenderToolCall` / `useRenderActivityMessage` on their own.
 - You want to render generative UI primitives outside of a chat entirely.
 
-## The core hooks
+## The core hooks [#the-core-hooks]
 
 Three hooks power it, and they're the same ones `<CopilotChat>` uses internally.
 
-- `useAgent({ agentId })` — exposes the current conversation (`messages`, `isRunning`) and the run-state object.
-- `useCopilotKit()` — returns the runtime handle you call `runAgent({ agent })` on.
-- `useRenderToolCall()` — returns a function that paints any registered tool call inline.
+- `useAgent({ agentId })`: exposes the current conversation (`messages`, `isRunning`) and the run-state object.
+- `useCopilotKit()`: returns the runtime handle you call `runAgent({ agent })` on.
+- `useRenderToolCall()`: returns a function that renders any registered tool call inline.
 
-## Minimal example
+## Minimal example [#minimal-example]
 
 Start with a hand-rolled message list and composer built from `useAgent` + `useCopilotKit`:
 
-```typescript
-// src/app/demos/headless-simple/chat.tsx
+```typescript title="src/app/demos/headless-simple/chat.tsx"
   const { agent } = useAgent({ agentId: "headless-simple" });
   const { copilotkit } = useCopilotKit();
   const [input, setInput] = useState("");
@@ -57,10 +54,9 @@ Start with a hand-rolled message list and composer built from `useAgent` + `useC
   };
 ```
 
-The message list is a plain `.map()` over `agent.messages`: user messages render as right-aligned bubbles, assistant messages render streamed text plus inline tool calls via `renderToolCall({ toolCall })`:
+The message list is a plain `.map()` over the user and assistant text in `agent.messages`:
 
-```typescript
-// src/app/demos/headless-simple/chat.tsx
+```typescript title="src/app/demos/headless-simple/chat.tsx"
                 {visible.map((m) =>
                   m.role === "user" ? (
                     <UserBubble key={m.id} content={m.content} />
@@ -70,18 +66,17 @@ The message list is a plain `.map()` over `agent.messages`: user messages render
                 )}
 ```
 
-No `<CopilotChat />`, no slots. The trade-off: you only get text and tool calls. Reasoning messages, activity messages, and custom before/after slots won't show up unless you wire them in yourself, which is exactly what the complete example covers.
+This example does not use `<CopilotChat />` or slots. The trade-off: you only get text. Tool calls, activity messages, reasoning messages, and custom before/after slots do not show up unless you wire them in yourself. The complete example wires in tool calls and activity messages.
 
-## Complete example
+## Complete example [#complete-example]
 
-The `headless-complete` cell rebuilds the **full** generative-UI composition from the low-level hooks directly, without importing `<CopilotChatMessageView>`: text, tool calls, reasoning cards, A2UI + MCP Apps activity messages, and custom before/after message slots.
+The complete example rebuilds the generative-UI composition from the low-level hooks directly, without importing `<CopilotChatMessageView>`: text, tool calls with their results, and A2UI and MCP Apps activity messages.
 
-### The `useRenderedMessages` hook
+### The `MessageList` component [#the-messagelist-component]
 
-The cell's central piece is a hand-rolled `useRenderedMessages(messages, isRunning)` that returns the same flat list of messages, each augmented with a `renderedContent: ReactNode` field. This hook is a **manual recreation of what `<CopilotChatMessageView>` does**:
+The example's central piece is a `MessageList` component. It is a **manual recreation of what `<CopilotChatMessageView>` does**. `MessageList` calls `useRenderToolCall` and `useRenderActivityMessage`, and indexes tool results by `toolCallId`:
 
-```typescript
-// src/app/demos/headless-complete/chat/message-list.tsx
+```typescript title="src/app/demos/headless-complete/chat/message-list.tsx"
   const renderToolCall = useRenderToolCall();
   const { renderActivityMessage } = useRenderActivityMessage();
 
@@ -100,18 +95,18 @@ The cell's central piece is a hand-rolled `useRenderedMessages(messages, isRunni
   }, [messages]);
 ```
 
-Three low-level hooks feed it:
+Two low-level hooks feed it:
 
-- `useRenderToolCall()` — returns the renderer for any registered tool call (per-tool via `useRenderTool` / `useComponent`, plus the wildcard from `useDefaultRenderTool`).
-- `useRenderActivityMessage()` — renders A2UI + MCP Apps activity messages for the current agent scope.
-- `useRenderCustomMessages()` — invokes `renderCustomMessage` hooks registered against the active `CopilotChatConfigurationProvider`, emitting `"before"` and `"after"` slots around every message.
+- `useRenderToolCall()`: returns the renderer for any registered tool call (per-tool via `useRenderTool` / `useComponent`, plus the wildcard from `useDefaultRenderTool`).
+- `useRenderActivityMessage()`: renders A2UI + MCP Apps activity messages for the current agent scope.
 
-### Per-role dispatch
+To add custom before/after slots, also call `useRenderCustomMessages()`. It invokes the `renderCustomMessage` hooks registered against the active `CopilotChatConfigurationProvider`, and renders `"before"` and `"after"` slots around each message.
 
-The role-switch mirrors `CopilotChatMessageView`'s `renderMessageBlock` exactly: assistant bodies get text and tool calls, user bodies get their text content, reasoning messages go through the `<CopilotChatReasoningMessage>` leaf, and activity messages route through `renderActivityMessage`:
+### Per-role dispatch [#per-role-dispatch]
 
-```typescript
-// src/app/demos/headless-complete/chat/message-list.tsx
+The role-switch mirrors `CopilotChatMessageView`'s `renderMessageBlock`: assistant bodies get text and tool calls, user bodies get their text content, and activity messages route through `renderActivityMessage`:
+
+```typescript title="src/app/demos/headless-complete/chat/message-list.tsx"
       {messages.map((m) => {
         if (m.role === "user") {
           // Cast through the local input shape — UserBubble accepts a
@@ -154,12 +149,11 @@ The role-switch mirrors `CopilotChatMessageView`'s `renderMessageBlock` exactly:
       })}
 ```
 
-### Tool-call composition
+### Tool-call composition [#tool-call-composition]
 
 For each `toolCall` on an assistant message, we look up the sibling `tool`-role message (keyed by `toolCallId`) and hand both to `renderToolCall`:
 
-```typescript
-// src/app/demos/headless-complete/chat/message-list.tsx
+```typescript title="src/app/demos/headless-complete/chat/message-list.tsx"
               {toolCalls.map((tc) => {
                 const toolMessage = toolMessagesByCallId.get(tc.id);
                 const node = renderToolCall({
@@ -170,12 +164,11 @@ For each `toolCall` on an assistant message, we look up the sibling `tool`-role 
               })}
 ```
 
-### Bubble chrome
+### Bubble chrome [#bubble-chrome]
 
-The `UserBubble` and `AssistantBubble` components are **pure chrome**: they receive the pre-rendered node from `useRenderedMessages` and drop it into a styled container. No chat primitives are imported here:
+The `UserBubble` and `AssistantBubble` components are **pure chrome**: they receive content from `MessageList` and drop it into a styled container. No chat primitives are imported here:
 
-```typescript
-// src/app/demos/headless-complete/chat/message-assistant.tsx
+```typescript title="src/app/demos/headless-complete/chat/message-assistant.tsx"
 export function AssistantBubble({
   content,
   children,
@@ -356,7 +349,6 @@ function splitContent(content: string | MultimodalPart[]): {
 }
 ```
 
-## Next steps
+To check it, ask the agent for the weather in Tokyo, so that it calls a tool. Your own bubble shows the reply, and the tool card renders inside it.
 
-- [Slots](/google-antigravity/custom-look-and-feel/slots) — less work than going fully headless, often enough.
-- [CSS customization](/google-antigravity/custom-look-and-feel/css) — when you just need to re-skin the defaults.
+To answer an approval from your own UI, see [Programmatic control](/google-antigravity/programmatic-control). It shows how to resolve a pause from a button on each kind of framework.

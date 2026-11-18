@@ -1,7 +1,7 @@
 "use client"; // HARNESS: needed in the App Router; the doc never shows a page.
 // HARNESS: the doc shows GovernedActionApproval / GovernedActionCard / GovernedActionTool but no page,
 // provider, chat or agent. Mounted here on the quickstart agent (antigravity_agent, :8040).
-// The doc shows no backend that raises an interrupt with metadata.action, so useInterrupt never fires.
+// The doc's only backend for the useInterrupt path is a LangGraph agent.py (interrupt()); no Antigravity backend raises one, so useInterrupt never fires here.
 // --- Doc (verbatim) ---
 type GovernedAction = {
   id: string;
@@ -19,8 +19,9 @@ import { useInterrupt } from "@copilotkit/react-core/v2";
 
 function GovernedActionApproval() {
   useInterrupt({
-    render: ({ interrupt, resolve, cancel }) => {
-      const action = interrupt?.metadata?.action as GovernedAction | undefined;
+    render: ({ event, interrupt, resolve, cancel }) => {
+      const action = (interrupt?.metadata?.action ??
+        parseInterruptValue(event.value)?.action) as GovernedAction | undefined;
 
       if (!action) {
         return null;
@@ -50,6 +51,16 @@ function GovernedActionApproval() {
   });
 
   return null;
+}
+
+// A custom-event interrupt can send its value as a JSON string.
+function parseInterruptValue(value: unknown): { action?: unknown } | undefined {
+  if (typeof value !== "string") return value as { action?: unknown } | undefined;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return undefined;
+  }
 }
 
 function GovernedActionCard({

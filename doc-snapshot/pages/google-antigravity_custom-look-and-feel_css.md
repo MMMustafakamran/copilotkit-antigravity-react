@@ -2,11 +2,9 @@
 
 > Theme CopilotKit components via CSS variables and class overrides.
 
-
 <!-- interactive demo: chat-customization-css -->
 
-
-## What is this?
+## What is this? [#what-is-this]
 
 CopilotKit has a variety of ways to customize the colors and structure of the
 Copilot UI components via plain CSS. You can:
@@ -16,69 +14,64 @@ Copilot UI components via plain CSS. You can:
 - Swap fonts per surface (messages, input, bubbles)
 - Replace icons and labels via component props
 
+This page is for the v2 components from `@copilotkit/react-core/v2`. Parts
+marked v1 apply only to the deprecated v1 package, `@copilotkit/react-ui`.
+
 If you need to change behavior, not just look, see
 [slots](/google-antigravity/custom-look-and-feel/slots) or
 [fully headless UI](/google-antigravity/custom-look-and-feel/headless-ui).
 
-## Scoping the theme
+## Scoping the theme [#scoping-the-theme]
 
 The demo keeps all of its styling in a sibling `theme.css` file and applies it
 only to the wrapper div holding `<CopilotChat>`. Importing the stylesheet from
 the page module is enough; Next.js bundles it with the route:
 
-```typescript
-// src/app/demos/chat-customization-css/page.tsx
+```typescript title="src/app/demos/chat-customization-css/page.tsx"
 import "./theme.css";
 ```
 
 Scoping every selector under a wrapper class keeps the overrides from leaking
 into the rest of the app.
 
-## CSS Variables (Easiest)
+## CSS Variables (Easiest) [#css-variables-easiest]
 
-The easiest way to change the colors used in the Copilot UI components is to
-override CopilotKit CSS variables. The demo sets them on the scope wrapper so
-they cascade into every nested chat component:
+The v2 components that the demo uses read the shadcn tokens listed in
+[v2 design tokens](#v2-design-tokens-shadcn). The demo overrides these tokens
+on the `[data-copilotkit]` element inside its scope wrapper:
 
-```css
-/* src/app/demos/chat-customization-css/theme.css */
-/* HALCYON palette — a private library at golden hour. The whole theme is
- * one warm parchment hue, one warm ink, and a deep copper ember used
- * sparingly so it actually reads as a signal. */
-.chat-css-demo-scope {
-  --halcyon-paper: #f4efe6;
-  --halcyon-paper-soft: #ece6d9;
-  --halcyon-paper-elevated: #fbf8f2;
-  --halcyon-card: #ffffff;
-  --halcyon-rule: #d6cfbe;
-  --halcyon-rule-strong: #aea48a;
-  --halcyon-ink: #1a1714;
-  --halcyon-ink-soft: #3d362e;
-  --halcyon-ink-mute: #7a7468;
-  --halcyon-ember: #c44a1f;
-  --halcyon-ember-bright: #e45f2b;
-  --halcyon-ember-soft: #f3d7c5;
-  --halcyon-champagne: #98794a;
-
-  --halcyon-display:
-    "Instrument Serif", ui-serif, "Iowan Old Style", Georgia, serif;
-  --halcyon-serif:
-    "Fraunces", "Source Serif Pro", ui-serif, Georgia, "Times New Roman", serif;
-  --halcyon-sans:
-    "Inter Tight", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
-  --halcyon-mono:
-    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-
-  --halcyon-shadow-soft:
-    0 1px 0 rgba(26, 23, 20, 0.04), 0 12px 32px -18px rgba(26, 23, 20, 0.18);
-  --halcyon-shadow-ember:
-    0 1px 0 rgba(196, 74, 31, 0.18), 0 14px 36px -16px rgba(196, 74, 31, 0.42);
+```css title="src/app/demos/chat-customization-css/theme.css"
+/* CopilotKit v2 reads these on the [data-copilotkit] root inside the chat.
+ * Re-pointing them under our scope retints every Tailwind utility the
+ * runtime renders (user message bubble, prose, borders, focus rings, …)
+ * without us having to touch any individual class. */
+.chat-css-demo-scope [data-copilotkit] {
+  --background: var(--halcyon-paper);
+  --foreground: var(--halcyon-ink);
+  --card: var(--halcyon-card);
+  --card-foreground: var(--halcyon-ink);
+  --popover: var(--halcyon-paper-elevated);
+  --popover-foreground: var(--halcyon-ink);
+  --primary: var(--halcyon-ember);
+  --primary-foreground: var(--halcyon-paper-elevated);
+  --secondary: var(--halcyon-paper-soft);
+  --secondary-foreground: var(--halcyon-ink);
+  --muted: var(--halcyon-paper-soft);
+  --muted-foreground: var(--halcyon-ink-mute);
+  --accent: var(--halcyon-ember-soft);
+  --accent-foreground: var(--halcyon-ember);
+  --destructive: #b3361b;
+  --destructive-foreground: var(--halcyon-paper-elevated);
+  --border: var(--halcyon-rule);
+  --input: var(--halcyon-rule);
+  --ring: var(--halcyon-ember);
+  --radius: 0px;
 }
 ```
 
-Once you've found the right variable, you can also apply the overrides inline
-via the `CopilotKitCSSProperties` helper:
+The v1 components (`@copilotkit/react-ui`) read the `--copilot-kit-*` variables
+below instead. For v1 only, you can also apply the overrides inline via the
+`CopilotKitCSSProperties` helper:
 
 ```tsx
 import { CopilotKitCSSProperties } from "@copilotkit/react-ui";
@@ -94,7 +87,15 @@ import { CopilotKitCSSProperties } from "@copilotkit/react-ui";
 </div>
 ```
 
-### Reference
+In v2, set the same color with a CSS rule on the `[data-copilotkit]` element:
+
+```css title="globals.css"
+.my-chat [data-copilotkit] {
+  --primary: #222222;
+}
+```
+
+### Reference [#reference]
 
 | CSS Variable | Description |
 |-------------|-------------|
@@ -109,24 +110,25 @@ import { CopilotKitCSSProperties } from "@copilotkit/react-ui";
 
 <Callout type="info" title="Two token systems">
   The `--copilot-kit-*` variables above style the **v1** component CSS
-  (`@copilotkit/react-ui`). The newer **v2** components
+  (`@copilotkit/react-ui`). The **v2** components
   (`@copilotkit/react-core/v2`) are Tailwind + shadcn-based and use a
   separate set of design tokens. See [v2 design
   tokens](#v2-design-tokens-shadcn) below.
 </Callout>
 
-## v2 Design Tokens (shadcn)
+## v2 Design Tokens (shadcn) [#v2-design-tokens-shadcn]
 
 The v2 components (`@copilotkit/react-core/v2`) ship a Tailwind v4 theme built
 on the standard shadcn/ui token set. Instead of the `--copilot-kit-*`
 variables, they read [oklch](https://oklch.com) color tokens that are scoped to
 the `[data-copilotkit]` root and wired into Tailwind utilities through an
 `@theme inline` block. This means you can re-skin the entire v2 UI by
-overriding a handful of CSS custom properties. Every component picks the
-change up automatically.
+overriding a handful of CSS custom properties. Every component uses the new
+values.
 
-Override them on the `[data-copilotkit]` element (or any ancestor) the same way
-you would in a shadcn project:
+Override them with a selector that matches the `[data-copilotkit]` element,
+the same way you would in a shadcn project. A value set only on an ancestor has
+no effect, because CopilotKit declares each token on that element:
 
 ```css title="globals.css"
 [data-copilotkit] {
@@ -147,7 +149,7 @@ you would in a shadcn project:
 }
 ```
 
-### Reference
+### Reference [#reference-1]
 
 These are the most commonly overridden v2 tokens. Each light value has a
 matching dark-mode value under `.dark [data-copilotkit]`. The full set
@@ -173,7 +175,7 @@ matching dark-mode value under `.dark [data-copilotkit]`. The full set
   valid CSS color works.
 </Callout>
 
-## Custom CSS
+## Custom CSS [#custom-css]
 
 The CopilotKit CSS is structured to allow customization via CSS classes. You
 can target specific pieces of the UI from your own stylesheet:
@@ -196,8 +198,7 @@ The demo's `theme.css` wraps every selector under `.chat-css-demo-scope` so
 the overrides don't leak out. Here's the user message bubble block from
 that file:
 
-```css
-/* src/app/demos/chat-customization-css/theme.css */
+```css title="src/app/demos/chat-customization-css/theme.css"
 /* User message — a "transmission" in JetBrains Mono on a paper card. The
  * outer wrapper is the right-aligning flex column; we leave it transparent
  * and style the inner bubble (which uses cpk:bg-muted, hence we also
@@ -239,7 +240,7 @@ that file:
 }
 ```
 
-### Reference
+### Reference [#reference-2]
 
 | CSS Class | Description |
 |-----------|-------------|
@@ -251,30 +252,32 @@ that file:
 | `.copilotKitHeader` | Top bar of chat window containing title and controls |
 | `.copilotKitButton` | Primary chat toggle button |
 | `.copilotKitWindow` | Root container defining overall chat window dimensions |
-| `.copilotKitMarkdown` | Styles for rendered markdown content |
-| `.copilotKitCodeBlock` | Code snippet container with syntax highlighting |
+| `.copilotKitMarkdown` | Styles for rendered markdown content (v1 only) |
+| `.copilotKitCodeBlock` | Code snippet container with syntax highlighting (v1 only) |
 | `.copilotKitSidebar` | Styles for sidebar chat mode |
 | `.copilotKitPopup` | Styles for popup chat mode |
 
-## Custom Fonts
+## Custom Fonts [#custom-fonts]
 
-You can customize the fonts by updating the `fontFamily` property on the
+You can customize the fonts by updating the `font-family` property on the
 relevant CopilotKit classes:
 
 ```css title="globals.css"
 .copilotKitMessages {
-  font-family: "Arial, sans-serif";
+  font-family: Arial, sans-serif;
 }
 
 .copilotKitInput {
-  font-family: "Arial, sans-serif";
+  font-family: Arial, sans-serif;
 }
 ```
 
-## Custom Icons
+## Custom Icons [#custom-icons]
 
-Customize icons by passing the `icons` prop to `CopilotSidebar`, `CopilotPopup`,
-or `CopilotChat`:
+In the v1 components (`@copilotkit/react-ui`), pass the `icons` prop to
+`CopilotSidebar`, `CopilotPopup`, or `CopilotChat`. The v2 components have no
+`icons` prop. To replace their toggle button or header, use
+[slots](/google-antigravity/custom-look-and-feel/slots).
 
 ```tsx
 <CopilotChat
@@ -285,7 +288,7 @@ or `CopilotChat`:
 />
 ```
 
-## Custom Labels
+## Custom Labels [#custom-labels]
 
 Customize all user-facing copy via the `labels` prop:
 

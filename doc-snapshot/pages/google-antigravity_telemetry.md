@@ -1,6 +1,5 @@
 # Open-source Telemetry
 
-
 CopilotKit uses metadata-only product telemetry to learn how to improve the
 open-source packages.
 
@@ -8,13 +7,22 @@ open-source packages.
 - We do not sell or share telemetry data with third parties.
 - We do not use cookies or trackers for open-source telemetry.
 
+## How to opt out of open-source telemetry [#how-to-opt-out-of-open-source-telemetry]
+
+Set `COPILOTKIT_TELEMETRY_DISABLED=true` in your runtime environment. This
+disables telemetry for both the CopilotRuntime and Inspector. We also respect
+[Do Not Track (DNT)](https://consoledonottrack.com/).
+
+## Telemetry identity [#telemetry-identity]
+
 Runtime uses the first nonblank telemetry identity that is valid in an HTTP
 header, in this order: explicit `telemetryId`, `CPK_TELEMETRY_ID`, then the
 identity carried by `COPILOTKIT_LICENSE_TOKEN`.
 
-`CPK_TELEMETRY_ID` is optional and non-secret. The CopilotKit CLI does not
-create or write `CPK_TELEMETRY_ID`, and a value you choose does not automatically
-link Runtime events to a CLI scaffold event. Setting it does not enable
+`CPK_TELEMETRY_ID` is optional and non-secret. When CLI telemetry is on and you
+select a cloud-hosted project, the CopilotKit CLI writes `CPK_TELEMETRY_ID` to
+`.env`. A value that you choose yourself does not link Runtime events to a CLI
+scaffold event. Setting it does not enable
 telemetry, grant product access, or replace the project's Intelligence API key.
 
 Cloud-hosted Intelligence starters use `CPK_INTELLIGENCE_API_KEY` for platform access.
@@ -31,7 +39,7 @@ with feature-use events. CopilotKit signup links can carry that ID so we can
 measure the path from Inspector use to signup. Inspector delivery does not
 depend on `CPK_TELEMETRY_ID`.
 
-## Inspector metadata events
+## Inspector metadata events [#inspector-metadata-events]
 
 The Inspector sends coarse events when trusted project-context modules become
 visible and when a user follows a plan action:
@@ -45,24 +53,22 @@ visible and when a user follows a plan action:
 `renew`, or `enable_intelligence`. `license_bucket` is `valid`, `none`,
 `expired`, or `unknown`.
 
-An **Enable Intelligence** click keeps the existing
-`oss.inspector.threads_intelligence_signup_clicked` event so existing reports
-stay continuous. The same click does not also send
+An **Enable Intelligence** click sends
+`oss.inspector.threads_intelligence_signup_clicked`. It does not send
 `oss.inspector.metadata_action_clicked`.
 
-The feature-specific payload never includes organization, project, account, or
-user names; account, organization, project, user, thread, run, or message IDs;
-action or runtime URLs; usage values, limits, or counts; or conversation and
-tool content. Metadata usage impressions are not sent. The standard anonymous
+The feature-specific payload never includes:
+
+- Organization, project, account, or user names.
+- Account, organization, project, user, thread, run, or message IDs.
+- Action or runtime URLs.
+- Usage values, limits, or counts.
+- Conversation or tool content.
+
+Metadata usage impressions are not sent. The standard anonymous
 telemetry envelope includes package identity, anonymous distinct IDs, and an
 event timestamp.
 
-## How to opt out of open-source telemetry
-
-Set `COPILOTKIT_TELEMETRY_DISABLED=true` in your runtime environment. This
-disables telemetry for both the CopilotRuntime and Inspector. We also respect
-[Do Not Track (DNT)](https://consoledonottrack.com/).
-
-## Get in touch
+## Get in touch [#get-in-touch]
 
 Send telemetry questions to [hello@copilotkit.ai](mailto:hello@copilotkit.ai).

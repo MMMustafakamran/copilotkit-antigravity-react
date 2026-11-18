@@ -2,26 +2,22 @@
 
 > Let your agent interact with and update your application's UI.
 
-
-
 <!-- interactive demo: frontend-tools -->
 
-
 <Callout type="info" title="See this in Inspector">
-  Open Inspector on localhost. Go to **Agents**, then **Frontend Tools**.
+  Open Inspector on localhost. Go to **Inspect**, then **Frontend Tools**.
   Your tool and its schema are listed.
 
   More detail: [Inspector](/google-antigravity/inspector).
 </Callout>
 
+## What is this? [#what-is-this]
 
-## What is this?
+A frontend tool is a function that you register in the browser. Your agent can call it, and the function runs in the user's browser. Because the handler runs in the browser, it has direct access to component state, browser APIs, and any third-party UI library the page already uses. That's how an agent can "reach into" the app: update React state, trigger animations, read `localStorage`, pop a toast, or steer the user's view.
 
-Frontend tools let your agent define and invoke client-side functions that run entirely in the user's browser. Because the handler executes on the frontend, it has direct access to component state, browser APIs, and any third-party UI library the page already uses. That's how an agent can "reach into" the app: update React state, trigger animations, read `localStorage`, pop a toast, or steer the user's view.
+This page covers the "agent drives the UI" shape of frontend tools. To render a component for a tool call, see [Generative UI](/google-antigravity/generative-ui). To ask the user before a tool runs, see [Human-in-the-loop](/google-antigravity/human-in-the-loop).
 
-This page covers the "agent drives the UI" shape of frontend tools. The same primitive also powers Generative UI and Human-in-the-loop; see those pages for interaction patterns.
-
-## When should I use this?
+## When should I use this? [#when-should-i-use-this]
 
 Use frontend tools when your agent needs to:
 
@@ -30,9 +26,8 @@ Use frontend tools when your agent needs to:
 - Trigger UI updates, animations, or transitions
 - Show alerts, toasts, or notifications
 - Interact with third-party frontend libraries
-- Perform anything that requires the user's immediate browser context
 
-## How it works in code
+## How it works in code [#how-it-works-in-code]
 
 <Steps>
   <Step>
@@ -53,7 +48,6 @@ Use frontend tools when your agent needs to:
     model with no instruction about it will answer in prose and never call it.
     Name the tool in the system instructions and say what it is for.
 
-    
 ~~~~python title="gen_ui_tool_based.py"
 from agents._common import build
 
@@ -81,14 +75,12 @@ def gen_ui_tool_based_agent():
 
 ~~~~
 
-
   </Step>
 </Steps>
 
 Register a frontend tool with `useFrontendTool`. Give it a name, a Zod schema for parameters, and a handler. The agent can then call it like any other tool and your frontend runs it in the browser.
 
-```typescript
-// src/app/demos/frontend-tools/page.tsx
+```typescript title="src/app/demos/frontend-tools/page.tsx"
 import React, { useState } from "react";
 import {
   CopilotKit,
@@ -123,15 +115,16 @@ the browser can: update state, call an API, touch the DOM. Its return value
 is sent back to the agent as the tool result so the model can reason about
 what happened.
 
-```typescript
-// src/app/demos/frontend-tools/page.tsx
+```typescript title="src/app/demos/frontend-tools/page.tsx"
     handler: async ({ background }) => {
       setBackground(background);
       return { status: "success" };
     },
 ```
 
-## Registering a list of tools
+Ask the agent to change the background to a blue gradient. The page background changes, and the agent gets `{ status: "success" }` as the tool result.
+
+## Registering a list of tools [#registering-a-list-of-tools]
 
 `useFrontendTool` registers one tool per call, so it cannot be called in a loop
 over a list whose length changes between renders. When the set of tools comes
@@ -151,9 +144,13 @@ useFrontendTools(
 );
 ```
 
-Tools that leave the array are unregistered, tools that join it are registered,
-and a re-render that produces an equal list does not re-register anything. A
-description built from your data stays current on its own. The second argument
+On each render:
+
+- A tool that leaves the array is unregistered.
+- A tool that joins the array is registered.
+- A re-render that produces an equal list does not re-register anything.
+
+A description built from your data stays current on its own. The second argument
 is for values a handler closes over, such as `navigate` above.
 
 <IntegrationGrid path="frontend-tools" />

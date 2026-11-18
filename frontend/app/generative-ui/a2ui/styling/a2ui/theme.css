@@ -1,0 +1,30 @@
+/* Doc: https://docs.copilotkit.ai/google-antigravity/generative-ui/a2ui/styling -- "Full example", src/a2ui/theme.css (verbatim) */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+.a2ui-surface {
+  /* Colors */
+  --a2ui-color-surface: #ffffff;
+  --a2ui-color-border: #e0e0e0;
+  --a2ui-color-muted: #737373;
+  --a2ui-color-error: #dc2626;
+  --a2ui-primary-color: #111111;
+
+  /* Typography */
+  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif !important;
+  letter-spacing: -0.01em;
+}
+
+/* Image constraints */
+.a2ui-surface img {
+  max-width: 28px;
+  max-height: 28px;
+  border-radius: 4px;
+}
+
+/* Dark mode */
+.dark .a2ui-surface {
+  --a2ui-color-surface: #1a1a1a;
+  --a2ui-color-border: #333333;
+  --a2ui-color-muted: #a3a3a3;
+  --a2ui-primary-color: #3b82f6;
+}

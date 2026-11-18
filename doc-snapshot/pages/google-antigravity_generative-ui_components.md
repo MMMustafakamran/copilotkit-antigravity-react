@@ -2,12 +2,11 @@
 
 > Let your agent render your own components, in the chat and in areas of your page.
 
-
 <Callout type="warn" title="Experimental">
-  Components and surfaces implements [A2UI 1.0](https://a2ui.org) as of spec revision [`cbaa5ee`](https://github.com/a2ui-project/a2ui/tree/cbaa5ee62c737b50d0695c1e5794d0f648b61dca/specification/v1_0) (October 2026). Upstream still calls 1.0 a candidate, and the API of this feature can change. What the [support matrix](/google-antigravity/generative-ui/components/from-a2ui#support-matrix) lists is the supported scope; anything it does not list is not supported, rather than partly supported.
+  Components and surfaces implements [A2UI 1.0](https://a2ui.org) as of spec revision [`cbaa5ee`](https://github.com/a2ui-project/a2ui/tree/cbaa5ee62c737b50d0695c1e5794d0f648b61dca/specification/v1_0) (October 2026). Upstream still calls 1.0 a candidate, and the API of this feature can change. The [support matrix](/google-antigravity/generative-ui/components/from-a2ui#support-matrix) lists what is supported. Anything that it does not list is not supported.
 </Callout>
 
-## What is this?
+## What is this? [#what-is-this]
 
 A text answer is often the wrong answer. "Compare these three plans" wants a table. "Show me cheap running shoes" wants product cards, and maybe in the product row of your page, not in the chat.
 
@@ -18,7 +17,7 @@ With components and surfaces, the agent renders real React, Angular, React Nativ
 
 You decide what the agent can render. The agent decides what to show and fills in the values. Users can type into the UI, press its buttons, and ask follow-up questions about it.
 
-## Try it
+## Try it [#try-it]
 
 These steps add generative UI to a Next.js, Angular, React Native or Vue app, with an OpenAI model through TanStack AI.
 
@@ -26,7 +25,7 @@ Already have CopilotKit running? Do step 3 only. Your runtime needs no change: w
 
 <Steps>
   <Step>
-  ### Install the packages
+  ### Install the packages [#install-the-packages]
 
   <Tabs groupId="frontend_framework" items={["React", "Angular", "React Native", "Vue"]} persist>
     <Tab value="React">
@@ -53,7 +52,7 @@ Already have CopilotKit running? Do step 3 only. Your runtime needs no change: w
     ```
     </Tab>
     <Tab value="React Native">
-    Start from a React Native app with the entry point and Metro set up as in the [React Native quickstart](/google-antigravity/react-native#getting-started): the polyfill imports at the top of `index.js` are required. Then add the packages:
+    Start from a React Native app with the entry point and Metro set up as in the [React Native quickstart](/react-native#getting-started): the polyfill imports at the top of `index.js` are required. Then add the packages:
 
     ```bash
     npm install @copilotkit/react-native @copilotkit/runtime @tanstack/ai @tanstack/ai-openai "zod@^3.25"
@@ -83,7 +82,7 @@ Already have CopilotKit running? Do step 3 only. Your runtime needs no change: w
   </Tabs>
   </Step>
   <Step>
-  ### Add the runtime and an agent
+  ### Add the runtime and an agent [#add-the-runtime-and-an-agent]
 
   The agent is a built-in agent in factory mode: you call the model yourself with [TanStack AI](https://tanstack.com/ai).
 
@@ -270,7 +269,7 @@ Already have CopilotKit running? Do step 3 only. Your runtime needs no change: w
   Add your own tools and prompts next to them. Do not replace them.
   </Step>
   <Step>
-  ### Turn on generative UI
+  ### Turn on generative UI [#turn-on-generative-ui]
 
   Give the provider the standard catalog. It has 69 ready-made components: layout, text, inputs, tables, charts, maps, and more. On React Native, you give it a catalog of your own native components.
 
@@ -291,7 +290,7 @@ Already have CopilotKit running? Do step 3 only. Your runtime needs no change: w
     }
     ```
 
-    The catalog holds React components, so the provider must be created in a client component. Wrap your layout in it, so every page shares one provider, and put a chat on a page:
+    The catalog holds React components, so the provider must be created in a client component. Wrap your layout in it, so every page shares one provider. Then put a chat on a page:
 
     ```tsx title="app/layout.tsx"
     import { Providers } from "./providers";
@@ -677,7 +676,7 @@ Already have CopilotKit running? Do step 3 only. Your runtime needs no change: w
 
     Like the web chat, `GenerativeUIActivity` shows only surfaces aimed at the chat, so a surface that the agent aims at a [named area](/google-antigravity/generative-ui/components/surfaces) renders there and not in the list. The chat target is always offered to the agent, so an app that shows surfaces only through `GenerativeUISurface`, or only in the prebuilt `CopilotChat`, never shows a surface aimed at the chat. `GenerativeUIActivity` renders nothing without a `GenerativeUIProvider` above it, or under a provider without `ui`, and warns in development, once for each distinct cause; it also renders nothing for a deleted surface, which `isChatSurface` leaves out of the list.
 
-    The [React Native guide](/google-antigravity/react-native#generative-ui-with-your-own-components) adds a screen with no chat, named areas, and error handling.
+    The [React Native guide](/react-native#generative-ui-with-your-own-components) adds a screen with no chat, named areas, and error handling.
     </Tab>
     <Tab value="Vue">
     Import the stylesheet once, in your app entry:
@@ -735,7 +734,7 @@ Already have CopilotKit running? Do step 3 only. Your runtime needs no change: w
   </Tabs>
   </Step>
   <Step>
-  ### Ask for something visual
+  ### Ask for something visual [#ask-for-something-visual]
 
   Run `npm run dev` (for Angular, `ng serve` and `npx tsx server.ts`; for Vue, also `npx tsx server.ts`; for React Native, `npx tsx server.ts` and `npx react-native run-ios` or `run-android`), open the page (on React Native, the app), and send:
 
@@ -758,8 +757,7 @@ More detail: [Inspector](/google-antigravity/inspector).
 
 </Callout>
 
-
-## When something does not render
+## When something does not render [#when-something-does-not-render]
 
 The agent answered, but the UI did not show, or it shows the wrong thing. Open Inspector, go to **Generative UI**, and open the tab for what you see:
 
@@ -771,9 +769,9 @@ The agent answered, but the UI did not show, or it shows the wrong thing. Open I
 | The agent never uses a component or a function | **Catalog** | Search for its name. A component that is not in the list is not sent to the model. A function with no mounted handler gets a warning. |
 | You want to see what the model got | **Prompt** | The envelope and the `render_ui` guide of the last run, and of the next run. |
 
-Inspector runs in the browser, so it has no React Native version. On React Native, pass `errorBoundary={{ onError }}` to `GenerativeUIProvider`: it reports render failures, invalid props, failed events, failed functions that a component called and operations that the app rejected, with the surface. Operations that the runtime rejected never reach `onError`. They reach the `rejected` and `error` props of the `Wrapper` (with the ones that the app rejected): the `Wrapper` of `GenerativeUIActivity` for a chat surface, and the `Wrapper` of `GenerativeUISurface` for a surface in a named area. Both default wrappers show a short error line. The exception is a rejected `createSurface`. A named area then keeps its fallback and renders no `Wrapper`; when the app rejected it, `onError` gets it and `<GenerativeUIActivity target="<id>">` shows it. When the runtime rejected it, no activity message is sent for it, so only the model learns of it, in the result of its `render_ui` call, and nothing on the device shows it. The one exception is a `createSurface` with the id of a live surface: the runtime adds that rejection to the live surface, whose `Wrapper` shows it. See [Errors on the device](/google-antigravity/react-native#errors-on-the-device).
+Inspector runs in the browser, so it has no React Native version. On React Native, pass `errorBoundary={{ onError }}` to `GenerativeUIProvider`: it reports render failures, invalid props, failed events, failed functions that a component called and operations that the app rejected, with the surface. Operations that the runtime rejected never reach `onError`. They reach the `rejected` and `error` props of the `Wrapper` (with the ones that the app rejected): the `Wrapper` of `GenerativeUIActivity` for a chat surface, and the `Wrapper` of `GenerativeUISurface` for a surface in a named area. Both default wrappers show a short error line. The exception is a rejected `createSurface`. A named area then keeps its fallback and renders no `Wrapper`; when the app rejected it, `onError` gets it and `<GenerativeUIActivity target="<id>">` shows it. When the runtime rejected it, no activity message is sent for it, so only the model learns of it, in the result of its `render_ui` call, and nothing on the device shows it. The one exception is a `createSurface` with the id of a live surface: the runtime adds that rejection to the live surface, whose `Wrapper` shows it. See [Errors on the device](/react-native#errors-on-the-device).
 
-## Learn the ideas
+## Learn the ideas [#learn-the-ideas]
 
 Three ideas carry the whole feature:
 
@@ -781,14 +779,14 @@ Three ideas carry the whole feature:
 - **[Catalogs](/google-antigravity/generative-ui/components/catalogs)**: the components that the agent can use, with their props. Use the standard one, or add your own.
 - **[Transports](/google-antigravity/generative-ui/components/transports)**: how the UI reaches the app. The agent calls a tool, or it writes the UI in its markdown reply.
 
-## Build with it
+## Build with it [#build-with-it]
 
-- [Use the standard catalog](/generative-ui/components/standard-catalog): what is in it, and how to drop or replace components.
+- [Use the standard catalog](/google-antigravity/generative-ui/components/standard-catalog): what is in it, and how to drop or replace components.
 - [Connect app state and actions](/google-antigravity/generative-ui/components/state-and-actions): show live app data, run your code on a click, and keep what users type.
 - [Theme the components](/google-antigravity/generative-ui/components/theming): your colors and fonts, and dark mode.
 - [Markdown mode](/google-antigravity/generative-ui/components/markdown-mode): the agent writes the UI inside its reply, with no tool call.
 - [Adopt from A2UI](/google-antigravity/generative-ui/components/from-a2ui): move from the `a2ui` renderer, with the v0.9 to 1.0 mapping and a support matrix.
 
-## See it in an app
+## See it in an app [#see-it-in-an-app]
 
 [`examples/v2/generative-ui-shop`](https://github.com/CopilotKit/CopilotKit/tree/main/examples/v2/generative-ui-shop) is a shop where the chat changes the page. Ask for "top rated" products, and the featured row on the home page swaps to what the agent picked.

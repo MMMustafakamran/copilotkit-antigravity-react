@@ -2,19 +2,18 @@
 
 > Run a Google Antigravity agent behind CopilotKit.
 
-
-## Start with your coding agent
+## Start with your coding agent [#start-with-your-coding-agent]
 
 Use this prompt to connect your Google Antigravity agent to CopilotKit and verify a working conversation. Your coding agent will follow this guide in your project, or you can work through the manual steps below.
 
-Ask your coding agent to follow the setup steps on this page for your selected framework and frontend.
+<PageAgentPrompt />
 
 This quickstart gives you two working paths:
 
 - **Start from scratch** to scaffold the full Google Antigravity showcase.
 - **Use an existing agent** to expose your own Google Antigravity agent over AG-UI and connect it to a React app.
 
-## Prerequisites
+## Prerequisites [#prerequisites]
 
 Before you begin, you'll need the following:
 
@@ -32,11 +31,11 @@ Before you begin, you'll need the following:
   (`GeminiAPIEndpoint(base_url=...)`); the harness wants the key there too.
 </Callout>
 
-## Getting started
+## Getting started [#getting-started]
 
 <Steps>
   <Step>
-    ### Choose your starting point
+    ### Choose your starting point [#choose-your-starting-point]
 
     <TailoredContent className="step" id="agent">
       <TailoredContentOption
@@ -45,7 +44,7 @@ Before you begin, you'll need the following:
         description="Scaffold the canonical Google Antigravity starter."
       >
         <Step>
-          ### Run the CLI
+          ### Run the CLI [#run-the-cli]
 
           ```bash
           npx copilotkit@latest init --framework antigravity
@@ -66,7 +65,7 @@ Before you begin, you'll need the following:
         </Step>
 
         <Step>
-          ### Configure your environment
+          ### Configure your environment [#configure-your-environment]
 
           Create a `.env` file in the generated project root:
 
@@ -78,7 +77,7 @@ Before you begin, you'll need the following:
         </Step>
 
         <Step>
-          ### Install dependencies
+          ### Install dependencies [#install-dependencies]
 
           <Tabs groupId="package-manager" items={['npm', 'pnpm', 'yarn', 'bun']}>
             <Tab value="npm">
@@ -110,7 +109,7 @@ Before you begin, you'll need the following:
         </Step>
 
         <Step>
-          ### Start the development server
+          ### Start the development server [#start-the-development-server]
 
           <Tabs groupId="package-manager" items={['npm', 'pnpm', 'yarn', 'bun']}>
             <Tab value="npm">
@@ -145,7 +144,7 @@ Before you begin, you'll need the following:
         description="I already have a Google Antigravity agent and want to add CopilotKit."
       >
         <Step>
-          ### Install the required Python packages
+          ### Install the required Python packages [#install-the-required-python-packages]
 
           From your agent project, install the Google Antigravity SDK, its AG-UI
           adapter and FastAPI:
@@ -156,7 +155,7 @@ Before you begin, you'll need the following:
         </Step>
 
         <Step>
-          ### Configure your agent environment
+          ### Configure your agent environment [#configure-your-agent-environment]
 
           Create a `.env` file for the process that runs your Antigravity agent. This example uses Antigravity's native Gemini path, so it needs `GEMINI_API_KEY`:
 
@@ -166,7 +165,7 @@ Before you begin, you'll need the following:
         </Step>
 
         <Step>
-          ### Expose Google Antigravity over AG-UI
+          ### Expose Google Antigravity over AG-UI [#expose-google-antigravity-over-ag-ui]
 
           CopilotKit talks to agents over AG-UI. The adapter's `create_antigravity_app` builds a FastAPI app that streams AG-UI events straight from the harness — you don't hand-roll the event loop yourself.
 
@@ -218,7 +217,7 @@ Before you begin, you'll need the following:
         </Step>
 
         <Step>
-          ### Create your frontend
+          ### Create your frontend [#create-your-frontend]
 
           CopilotKit works with any React app. This example uses Next.js App Router:
 
@@ -230,7 +229,7 @@ Before you begin, you'll need the following:
         </Step>
 
         <Step>
-          ### Add the CopilotKit runtime route
+          ### Add the CopilotKit runtime route [#add-the-copilotkit-runtime-route]
 
           Create `app/api/copilotkit/route.ts` in your Next.js app. It registers your Antigravity agent as an AG-UI `HttpAgent`.
 
@@ -261,7 +260,7 @@ Before you begin, you'll need the following:
         </Step>
 
         <Step>
-          ### Mount CopilotKit in React
+          ### Mount CopilotKit in React [#mount-copilotkit-in-react]
 
           Wrap your app with `CopilotKit` and target the agent name you registered in the runtime route.
 
@@ -309,7 +308,7 @@ Before you begin, you'll need the following:
         </Step>
 
         <Step>
-          ### Start the UI
+          ### Start the UI [#start-the-ui]
 
           Keep the FastAPI agent server running, then start the frontend in a second terminal:
 
@@ -322,7 +321,7 @@ Before you begin, you'll need the following:
   </Step>
 
   <Step>
-    ### Verify the integration
+    ### Verify the integration [#verify-the-integration]
 
     Open `http://localhost:3000` and ask:
 
@@ -343,16 +342,15 @@ Before you begin, you'll need the following:
   </Step>
 
     <Step>
-        ### Open Inspector and confirm setup
+        ### Open Inspector and confirm setup [#open-inspector-and-confirm-setup]
 
-On localhost, click the Inspector button in the corner of the app.
+        On localhost, click the Inspector button in the corner of the app.
 
-1. Open **Agents**, then **Agent**. Your agent is listed.
-2. Send a chat message. Open **Agents**, then **AG-UI Events**. Events are moving.
-3. Open **Rich Threads**. The list is unlocked (Intelligence is on), or locked with Enable Intelligence (Intelligence is off).
+        1. Open **Inspect**, then **Agent**. Your agent is listed.
+        2. Send a chat message. Open **Inspect**, then **AG-UI Events**. Events are moving.
+        3. Open **Rich Threads**. The list is unlocked (Intelligence is on), or locked with **Copy setup prompt** (Intelligence is off).
 
-More detail: [Inspector](/google-antigravity/inspector).
-
+        More detail: [Inspector](/google-antigravity/inspector).
     </Step>
 
 </Steps>

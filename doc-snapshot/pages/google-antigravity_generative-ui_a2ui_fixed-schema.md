@@ -2,15 +2,13 @@
 
 > Pre-defined A2UI schema with dynamic data. The fastest approach, with no LLM schema generation needed.
 
-
 <!-- interactive demo: a2ui-fixed-schema -->
 
-
-In the fixed-schema approach, you design the UI schema once (by hand,
-or using the [A2UI Composer](https://a2ui-composer.ag-ui.com/)) and
-keep it on the agent side. The agent tool only provides the *data*;
-the surface appears instantly when the tool returns because nothing
-has to be generated at runtime.
+Use a fixed schema when your agent always shows the same kind of card,
+such as a flight or an order. You design the layout once (by hand, or
+with the [A2UI Composer](https://a2ui-composer.ag-ui.com/)) and keep it
+on the agent side. The agent tool supplies only the *data*, so the card
+appears as soon as the tool returns.
 
 How the schema is *delivered* to the runtime is the only thing that
 varies between integrations:
@@ -25,21 +23,10 @@ varies between integrations:
   LLM call to produce the operations container per-request. The catalog
   is still fixed; the schema is generated on demand.
 
-Ask about a flight and the agent renders a fully structured card from a pre-defined schema:
+The examples on this page use a flight card. Use your own components
+and tool.
 
-<Callout type="info" title="The flight card is an illustrative domain">
-  Everything below uses flight booking so the wiring has something concrete to
-  render — `display_flight`, `flight-fixed-catalog`, and the airport/airline
-  components are this page's example, not part of the API.
-
-  What transfers is the **shape**: a fixed catalog, a tool that returns data
-  against it, and an operations container with `createSurface` +
-  `updateComponents` + `updateDataModel`. Keep your own application's
-  domain and substitute your own components and tool — a page teaching
-  the pattern is not a brief to build a flight booker.
-</Callout>
-
-## How it works
+## How it works [#how-it-works]
 
 1. The schema is made available to the agent, either loaded from a
    JSON file at startup, declared inline, or generated per-request,
@@ -52,7 +39,7 @@ Ask about a flight and the agent renders a fully structured card from a pre-defi
    renders the surface using the matching 5-component client catalog
    (Title, Airport, Arrow, AirlineBadge, PriceTag, plus the built-ins).
 
-## Compositional schemas
+## Compositional schemas [#compositional-schemas]
 
 The example below ships a flight card assembled compositionally from
 small sub-components rather than one monolithic `FlightCard`:
@@ -71,14 +58,11 @@ a per-request LLM output, depending on the integration. Components
 without data bindings (like `Title` or `Arrow`) carry their value
 inline; components bound to the LLM's data (like `Airport`) reference
 fields via JSON Pointer paths such as `{ "path": "/origin" }`. The
-A2UI binder resolves those paths *before* the React renderer runs, so
-your renderer receives the resolved value and never sees the path — but
-the *definition* still has to declare that prop as a literal-or-binding
-union, because that union is the only signal the binder has that the
-prop is bindable. See [Declare the component
-definitions](#declare-the-component-definitions).
+binder resolves each path before your renderer runs. Your renderer gets
+the value, not the path. To declare a bound prop, see [Declare the
+component definitions](#declare-the-component-definitions).
 
-## The 5-component custom catalog
+## The 5-component custom catalog [#the-5-component-custom-catalog]
 
 The frontend catalog declares just the domain-specific primitives
 (Title, Airport, Arrow, AirlineBadge, PriceTag) and merges in
@@ -87,7 +71,7 @@ CopilotKit's basic catalog (Card, Column, Row, Text, Button, …) via
 
 <Steps>
 <Step>
-### Install the renderer package
+### Install the renderer package [#install-the-renderer-package]
 
 The catalog, definitions and renderers below all import from
 `@copilotkit/a2ui-renderer`. It ships separately from
@@ -99,21 +83,11 @@ npm install @copilotkit/a2ui-renderer zod
 </Step>
 
 <Step>
-### Declare the component definitions
+### Declare the component definitions [#declare-the-component-definitions]
 
-Each component declares its props as a Zod schema. Any prop the schema
-binds to the data model — anything that can arrive as
-`{ "path": "/origin" }` rather than a literal — **must** be declared as a
-union of the literal type and the binding object. That is what the
-`DynString` helper below is for, and why `Airport`'s `code` uses it
-rather than a plain `z.string()`.
-
-The binder decides whether to resolve a prop by *inspecting its Zod
-type*: a union with a `{ path }` member is treated as dynamic and
-resolved against the data model, while a plain literal type is treated
-as static and passed through untouched. So declaring a bound prop as
-`z.string()` does not merely lose type precision — it tells the binder
-not to resolve it, and the raw `{ path: "/origin" }` object reaches your
+Declare every prop that the schema binds to data as `DynString` (a
+string or a `{ path }` object). With a plain `z.string()`, the binder
+does not resolve the prop, and the raw `{ path }` object reaches your
 renderer.
 
 <Callout type="warn" title="Plain `z.string()` on a bound prop crashes the render">
@@ -129,19 +103,15 @@ renderer.
   plain types. This applies only to props the schema binds.
 </Callout>
 
-Once the union is declared, the binder resolves the path before your
-renderer runs, so the renderer still receives a plain string — the union
-describes what the *schema* may send, not what the renderer must handle.
-`@copilotkit/a2ui-renderer` re-exports A2UI's canonical
-`DynamicStringSchema` (plus `DynamicNumberSchema`, `DynamicBooleanSchema`
-and the matching types) if you would rather not hand-roll the union:
+`@copilotkit/a2ui-renderer` also exports `DynamicStringSchema`,
+`DynamicNumberSchema`, and `DynamicBooleanSchema`. Use them in place of
+a hand-written union:
 
 ```ts
 import { DynamicStringSchema } from "@copilotkit/a2ui-renderer";
 ```
 
-```typescript
-// src/app/demos/a2ui-fixed-schema/a2ui/definitions.ts
+```typescript title="src/app/demos/a2ui-fixed-schema/a2ui/definitions.ts"
 import { z } from "zod";
 import type { CatalogDefinitions } from "@copilotkit/a2ui-renderer";
 
@@ -229,13 +199,16 @@ export const definitions = {
 </Step>
 
 <Step>
-### Implement the React renderers
+### Implement the React renderers [#implement-the-react-renderers]
 
 TypeScript enforces that the renderer map's keys and prop shapes
-match the definitions exactly, so refactors stay safe:
+match the definitions exactly, so refactors stay safe. The demo
+renderers use the demo's own `Card`, `Badge`, `Button`, and `Separator`
+components. They also call an `s()` helper,
+`(v) => (typeof v === "string" ? v : "")`, that narrows a value to a
+string. Use your own components in their place:
 
-```typescript
-// src/app/demos/a2ui-fixed-schema/a2ui/renderers.tsx
+```typescript title="src/app/demos/a2ui-fixed-schema/a2ui/renderers.tsx"
 export const renderers: CatalogRenderers<Definitions> = {
   /**
    * Card override: ShadCN-style outer container. The basic catalog's Card
@@ -322,14 +295,13 @@ export const renderers: CatalogRenderers<Definitions> = {
 </Step>
 
 <Step>
-### Wire the catalog
+### Wire the catalog [#wire-the-catalog]
 
 `createCatalog(..., { includeBasicCatalog: true })` merges the custom
 renderers with CopilotKit's built-ins so the schema can reference
 `Card`, `Column`, `Row`, `Button` alongside the domain primitives:
 
-```typescript
-// src/app/demos/a2ui-fixed-schema/a2ui/catalog.ts
+```typescript title="src/app/demos/a2ui-fixed-schema/a2ui/catalog.ts"
 import { createCatalog } from "@copilotkit/a2ui-renderer";
 
 import { definitions } from "./definitions";
@@ -344,16 +316,48 @@ export const catalog = createCatalog(definitions, renderers, {
 ```
 </Step>
 
+<Step>
+### Pass the catalog to the provider [#pass-the-catalog-to-the-provider]
 
+Passing a catalog on the provider is enough to enable A2UI:
 
+```tsx title="app/page.tsx"
+import { catalog } from "./a2ui/catalog";
 
+<CopilotKit runtimeUrl="/api/copilotkit" a2ui={{ catalog }}>
+  {children}
+</CopilotKit>
+```
+</Step>
 
+<Step>
+### Turn off tool injection on the runtime [#turn-off-tool-injection-on-the-runtime]
 
+Your agent owns the tool in the fixed-schema approach. A catalog
+auto-injects the A2UI tool by default, so set `injectA2UITool: false`
+on the runtime. Then your agent's own tool is the only one in play. The
+middleware still finds the operations that the tool returns and renders
+the surface, with no subagent involved:
 
+```typescript title="app/api/copilotkit/route.ts"
+const runtime = new CopilotRuntime({
+  agents: { "a2ui-fixed-schema": agent },
+  a2ui: { injectA2UITool: false, agents: ["a2ui-fixed-schema"] },
+});
+```
 
+</Step>
+
+<Step>
+### Ask about a flight [#ask-about-a-flight]
+
+Send `Find me a flight from SFO to JFK on United for $289` in the chat.
+The flight card renders in the chat with the two airports, the airline,
+and the price.
+</Step>
 </Steps>
 
-## Why compositional beats monolithic
+## Why compositional beats monolithic [#why-compositional-beats-monolithic]
 
 A single big `FlightCard` component would be faster to write but would
 lock the design in place. Assembling the card from Card / Column /
@@ -366,67 +370,36 @@ Row / Title / Airport / Arrow / AirlineBadge / PriceTag gives you:
 - **A2UI Composer compatibility** hand-written and Composer-built
   schemas share the same primitive vocabulary.
 
-## Registering the runtime
+## Action handlers (reference) [#action-handlers-reference]
 
-Your agent owns the tool in the fixed-schema approach, so you do not
-want the runtime to inject its own. Enable A2UI but turn injection off.
-
-Passing a catalog on the provider is enough to enable A2UI:
-
-```tsx title="app/page.tsx"
-<CopilotKit runtimeUrl="/api/copilotkit" a2ui={{ catalog: myCatalog }}>
-  {children}
-</CopilotKit>
-```
-
-Because a catalog auto-injects the A2UI tool by default, set
-`injectA2UITool: false` on the runtime so your agent's own tool is the
-only one in play. The middleware still auto-detects the operations the
-tool returns and renders the surface, with no subagent involved:
-
-```typescript title="app/api/copilotkit/route.ts"
-const runtime = new CopilotRuntime({
-  agents: { "a2ui-fixed-schema": agent },
-  a2ui: { injectA2UITool: false, agents: ["a2ui-fixed-schema"] },
-});
-```
-
-<!-- setup skipped: a2ui-fixed-schema-setup is not bundled for google-antigravity -->
-
-## Action handlers (reference)
-
-The canonical reference pairs fixed schemas with
-`action_handlers={...}` to declare optimistic UI swaps (e.g. replacing
-the flight schema with `BOOKED_SCHEMA` when the user clicks "Book").
-The Python SDK's `a2ui.render` does not yet accept `action_handlers`,
-so the cell omits them; the `booked_schema.json` sibling is retained
-so the swap can be wired up the moment the SDK exposes the handler
-kwarg.
-
-When available, a button declares its action like this:
+The flight card's **Book flight** button declares its action in the schema:
 
 ```json
 {
-  "Button": {
-    "label": "Book",
-    "action": {
+  "id": "bookButton",
+  "component": "Button",
+  "variant": "primary",
+  "child": "bookButtonLabel",
+  "action": {
+    "event": {
       "name": "book_flight",
-      "context": [
-        { "key": "flightNumber", "value": { "path": "/flightNumber" } },
-        { "key": "price", "value": { "path": "/price" } }
-      ]
+      "context": {
+        "origin": { "path": "/origin" },
+        "destination": { "path": "/destination" },
+        "airline": { "path": "/airline" },
+        "price": { "path": "/price" }
+      }
     }
   }
 }
 ```
 
-And the Python tool matches it with a handler keyed by the action
-name (plus a `"*"` catch-all). Until the SDK lands, handle the click on the
-frontend instead — see
-[Advanced — Action Handlers](/integrations/langgraph/generative-ui/a2ui/advanced#action-handlers) for the
-`createA2UIMessageRenderer` / `onAction` pattern.
+When the user clicks the button, CopilotKit sends the action to the agent
+in a new run. To handle the click in the browser instead, pass `onAction`
+to `createA2UIMessageRenderer`. See
+[Action Handlers](/google-antigravity/generative-ui/a2ui/advanced#action-handlers).
 
-## When should I use fixed schemas?
+## When should I use fixed schemas? [#when-should-i-use-fixed-schemas]
 
 - The surface is well-known: flight cards, product tiles, order
   summaries, dashboards.

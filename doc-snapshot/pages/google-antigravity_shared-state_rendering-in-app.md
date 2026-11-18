@@ -2,14 +2,14 @@
 
 > Read agent.state with useAgent and render it in your main view or canvas.
 
-[Shared state](/google-antigravity/shared-state) is most powerful when the agent's state shows up in
-your application UI, such as a dashboard, document canvas, map, or table. Because
+[Shared state](/google-antigravity/shared-state) is most useful when the agent's state shows up in
+your main view, such as a dashboard, document canvas, map, or table. Because
 `agent.state` is plain React data, you can subscribe to it from any component in
 your tree and render it however you like.
 
-## The pattern
+## The pattern [#the-pattern]
 
-`useAgent` works in any component under `<CopilotKit>`. It doesn't have to be
+[`useAgent`](/reference/v2/hooks/useAgent) works in any component under `<CopilotKit>`. It doesn't have to be
 near the chat. Call it in your main-view component, read `agent.state`, and render:
 
 ```tsx title="components/Canvas.tsx"
@@ -77,11 +77,11 @@ transition, or [streamed update](/google-antigravity/shared-state/streaming), `u
 with the new values. The chat can be in a sidebar, a popup, or absent entirely;
 your canvas updates the same way.
 
-## Put it anywhere in your layout
+## Put it anywhere in your layout [#put-it-anywhere-in-your-layout]
 
 The agent lives on the `<CopilotKit>` provider, so the chat surface and your
 main-view components are just two consumers of the same agent. A typical layout
-renders the canvas as the primary content and the chat as a docked sidebar:
+renders the canvas as the main view and the chat as a docked sidebar:
 
 ```tsx title="app/page.tsx"
 import { CopilotKit, CopilotSidebar } from "@copilotkit/react-core/v2";
@@ -107,7 +107,7 @@ so they share one agent instance and one state object. There's nothing chat-spec
 about reading `agent.state`. The sidebar is not special.
 </Callout>
 
-## Writing back from the main view
+## Writing back from the main view [#writing-back-from-the-main-view]
 
 The same `agent` exposes `setState`, so your canvas can be interactive, not just a
 read-only mirror. A click handler in the main view can push a new value that the
@@ -125,10 +125,12 @@ function toggleItem(id: string) {
 ```
 
 This is the same two-way channel described in [Shared State](/google-antigravity/shared-state). The
-only difference here is that the reads and writes happen in your application's main
-surface rather than in the chat.
+only difference here is that the reads and writes happen in your main view.
 
-## Tips
+If the agent must only read a UI value, and never write it, use
+[agent read-only context](/google-antigravity/shared-state/agent-readonly).
+
+## Tips [#tips]
 
 - **Target a specific agent** with `useAgent({ agentId: "research-agent" })` when
   you have more than one. The default is the agent named `"default"`.
@@ -137,9 +139,8 @@ surface rather than in the chat.
 - **Treat `agent.state` as possibly partial** while a run is in progress. Guard
   with defaults (as above) so half-streamed state doesn't crash your render.
 
-## Related
+## Try it [#try-it]
 
-- [Shared State](/google-antigravity/shared-state): the full read/write model and the underlying `useAgent` subscription.
-- [State streaming](/google-antigravity/shared-state/streaming): stream a tool argument into a state key so the canvas fills in token-by-token.
-- [Agent read-only context](/google-antigravity/shared-state/agent-readonly): push UI values *to* the agent without letting it write back.
-- [`useAgent` reference](/reference/v2/hooks/useAgent): full hook signature and options.
+Ask the agent to add a task called "Write the launch post". A new item appears in
+the canvas list. Then mark an item done with `toggleItem`, and ask the agent which
+tasks are done. The agent names the item that you marked.

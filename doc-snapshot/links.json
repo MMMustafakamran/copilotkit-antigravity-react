@@ -1,11 +1,12 @@
 {
  "root": "google-antigravity",
- "savedAt": "2026-11-12",
+ "savedAt": "2026-11-18",
  "pages": {
   "/google-antigravity/prebuilt-components/sidebar": [
    "/google-antigravity/custom-look-and-feel/slots",
    "/google-antigravity/migrate/v2",
    "/google-antigravity/prebuilt-components/chat",
+   "/google-antigravity/prebuilt-components/chat-controls",
    "/google-antigravity/prebuilt-components/copilot-threads-drawer",
    "/google-antigravity/prebuilt-components/popup"
   ],
@@ -27,17 +28,14 @@
    "/google-antigravity/custom-look-and-feel/slots",
    "/google-antigravity/migrate/v2",
    "/google-antigravity/prebuilt-components/chat",
+   "/google-antigravity/prebuilt-components/chat-controls",
    "/google-antigravity/prebuilt-components/sidebar"
   ],
   "/google-antigravity": [
    "/google-antigravity/inspector"
   ],
   "/google-antigravity/prebuilt-components/chat-controls": [
-   "/google-antigravity/custom-look-and-feel/slots",
-   "/google-antigravity/intelligence/capture-interactions",
-   "/google-antigravity/prebuilt-components/popup",
-   "/google-antigravity/prebuilt-components/sidebar",
-   "/google-antigravity/programmatic-control"
+   "/google-antigravity/intelligence/capture-interactions"
   ],
   "/google-antigravity/custom-look-and-feel/css": [
    "/google-antigravity/custom-look-and-feel/headless-ui",
@@ -48,8 +46,8 @@
    "/google-antigravity/generative-ui/tool-rendering"
   ],
   "/google-antigravity/custom-look-and-feel/headless-ui": [
-   "/google-antigravity/custom-look-and-feel/css",
-   "/google-antigravity/custom-look-and-feel/slots"
+   "/google-antigravity/custom-look-and-feel/slots",
+   "/google-antigravity/programmatic-control"
   ],
   "/google-antigravity/custom-look-and-feel/reasoning-messages": [],
   "/google-antigravity/custom-look-and-feel/markdown": [
@@ -60,11 +58,12 @@
   "/google-antigravity/voice": [
    "/google-antigravity/multimodal-attachments"
   ],
-  "/google-antigravity/generative-ui/reasoning": [],
+  "/google-antigravity/generative-ui/reasoning": [
+   "/google-antigravity/custom-look-and-feel/reasoning-messages"
+  ],
   "/google-antigravity/prebuilt-components/copilot-threads-drawer": [
    "/google-antigravity/AG-UI-Streams",
    "/google-antigravity/headless-threads",
-   "/google-antigravity/migrate/v2",
    "/google-antigravity/prebuilt-components/chat",
    "/google-antigravity/threads-lifecycle"
   ],
@@ -77,6 +76,8 @@
    "/google-antigravity/threads-lifecycle"
   ],
   "/google-antigravity/frontend-tools": [
+   "/google-antigravity/generative-ui",
+   "/google-antigravity/human-in-the-loop",
    "/google-antigravity/inspector"
   ],
   "/google-antigravity/generative-ui/tool-based": [
@@ -90,35 +91,92 @@
    "/google-antigravity/generative-ui/components/catalogs",
    "/google-antigravity/generative-ui/components/from-a2ui",
    "/google-antigravity/generative-ui/components/markdown-mode",
+   "/google-antigravity/generative-ui/components/standard-catalog",
    "/google-antigravity/generative-ui/components/state-and-actions",
    "/google-antigravity/generative-ui/components/surfaces",
    "/google-antigravity/generative-ui/components/theming",
    "/google-antigravity/generative-ui/components/transports",
-   "/google-antigravity/inspector",
-   "/google-antigravity/react-native"
+   "/google-antigravity/inspector"
   ],
   "/google-antigravity/generative-ui/components/surfaces": [
    "/google-antigravity/generative-ui/components",
-   "/google-antigravity/generative-ui/components/catalogs",
-   "/google-antigravity/react-native"
+   "/google-antigravity/generative-ui/components/catalogs"
   ],
   "/google-antigravity/generative-ui/components/catalogs": [
    "/google-antigravity/generative-ui/components",
+   "/google-antigravity/generative-ui/components/standard-catalog",
    "/google-antigravity/generative-ui/components/state-and-actions"
   ],
   "/google-antigravity/generative-ui/components/standard-catalog": [
    "/google-antigravity/generative-ui/components/catalogs",
-   "/google-antigravity/generative-ui/components/theming",
-   "/google-antigravity/react-native"
+   "/google-antigravity/generative-ui/components/standard-catalog/audio-player",
+   "/google-antigravity/generative-ui/components/standard-catalog/badge",
+   "/google-antigravity/generative-ui/components/standard-catalog/blockquote",
+   "/google-antigravity/generative-ui/components/standard-catalog/bold",
+   "/google-antigravity/generative-ui/components/standard-catalog/box",
+   "/google-antigravity/generative-ui/components/standard-catalog/button",
+   "/google-antigravity/generative-ui/components/standard-catalog/caption",
+   "/google-antigravity/generative-ui/components/standard-catalog/card",
+   "/google-antigravity/generative-ui/components/standard-catalog/carousel",
+   "/google-antigravity/generative-ui/components/standard-catalog/chart",
+   "/google-antigravity/generative-ui/components/standard-catalog/check-box",
+   "/google-antigravity/generative-ui/components/standard-catalog/choice-picker",
+   "/google-antigravity/generative-ui/components/standard-catalog/citation",
+   "/google-antigravity/generative-ui/components/standard-catalog/code",
+   "/google-antigravity/generative-ui/components/standard-catalog/column",
+   "/google-antigravity/generative-ui/components/standard-catalog/date-time-input",
+   "/google-antigravity/generative-ui/components/standard-catalog/divider",
+   "/google-antigravity/generative-ui/components/standard-catalog/entity-card",
+   "/google-antigravity/generative-ui/components/standard-catalog/favicon",
+   "/google-antigravity/generative-ui/components/standard-catalog/flashcard-flip",
+   "/google-antigravity/generative-ui/components/standard-catalog/flow",
+   "/google-antigravity/generative-ui/components/standard-catalog/follow-up",
+   "/google-antigravity/generative-ui/components/standard-catalog/form",
+   "/google-antigravity/generative-ui/components/standard-catalog/grid",
+   "/google-antigravity/generative-ui/components/standard-catalog/html-view",
+   "/google-antigravity/generative-ui/components/standard-catalog/icon",
+   "/google-antigravity/generative-ui/components/standard-catalog/image",
+   "/google-antigravity/generative-ui/components/standard-catalog/image-grid",
+   "/google-antigravity/generative-ui/components/standard-catalog/italic",
+   "/google-antigravity/generative-ui/components/standard-catalog/label",
+   "/google-antigravity/generative-ui/components/standard-catalog/link",
+   "/google-antigravity/generative-ui/components/standard-catalog/link-card",
+   "/google-antigravity/generative-ui/components/standard-catalog/list",
+   "/google-antigravity/generative-ui/components/standard-catalog/map",
+   "/google-antigravity/generative-ui/components/standard-catalog/markdown",
+   "/google-antigravity/generative-ui/components/standard-catalog/math",
+   "/google-antigravity/generative-ui/components/standard-catalog/modal",
+   "/google-antigravity/generative-ui/components/standard-catalog/popover",
+   "/google-antigravity/generative-ui/components/standard-catalog/pressable",
+   "/google-antigravity/generative-ui/components/standard-catalog/pulse-indicator",
+   "/google-antigravity/generative-ui/components/standard-catalog/radio",
+   "/google-antigravity/generative-ui/components/standard-catalog/radio-group",
+   "/google-antigravity/generative-ui/components/standard-catalog/row",
+   "/google-antigravity/generative-ui/components/standard-catalog/segmented-control",
+   "/google-antigravity/generative-ui/components/standard-catalog/select",
+   "/google-antigravity/generative-ui/components/standard-catalog/shimmer-text",
+   "/google-antigravity/generative-ui/components/standard-catalog/slider",
+   "/google-antigravity/generative-ui/components/standard-catalog/spacer",
+   "/google-antigravity/generative-ui/components/standard-catalog/strikethrough",
+   "/google-antigravity/generative-ui/components/standard-catalog/svg",
+   "/google-antigravity/generative-ui/components/standard-catalog/table",
+   "/google-antigravity/generative-ui/components/standard-catalog/tabs",
+   "/google-antigravity/generative-ui/components/standard-catalog/text",
+   "/google-antigravity/generative-ui/components/standard-catalog/text-area",
+   "/google-antigravity/generative-ui/components/standard-catalog/text-field",
+   "/google-antigravity/generative-ui/components/standard-catalog/title",
+   "/google-antigravity/generative-ui/components/standard-catalog/tooltip",
+   "/google-antigravity/generative-ui/components/standard-catalog/underline",
+   "/google-antigravity/generative-ui/components/standard-catalog/video",
+   "/google-antigravity/generative-ui/components/theming"
   ],
   "/google-antigravity/generative-ui/components/state-and-actions": [
-   "/google-antigravity/react-native"
+   "/google-antigravity/generative-ui/components/catalogs"
   ],
-  "/google-antigravity/generative-ui/components/theming": [
-   "/google-antigravity/react-native"
-  ],
+  "/google-antigravity/generative-ui/components/theming": [],
   "/google-antigravity/generative-ui/components/transports": [
-   "/google-antigravity/generative-ui/components/markdown-mode"
+   "/google-antigravity/generative-ui/components/markdown-mode",
+   "/google-antigravity/generative-ui/components/standard-catalog"
   ],
   "/google-antigravity/generative-ui/components/markdown-mode": [
    "/google-antigravity/generative-ui/components/state-and-actions",
@@ -128,11 +186,13 @@
   "/google-antigravity/generative-ui/a2ui": [
    "/google-antigravity/generative-ui/a2ui/dynamic-schema",
    "/google-antigravity/generative-ui/a2ui/fixed-schema",
+   "/google-antigravity/generative-ui/a2ui/styling",
    "/google-antigravity/generative-ui/components"
   ],
   "/google-antigravity/generative-ui/components/from-a2ui": [
    "/google-antigravity/generative-ui/components/catalogs",
    "/google-antigravity/generative-ui/components/markdown-mode",
+   "/google-antigravity/generative-ui/components/standard-catalog",
    "/google-antigravity/generative-ui/components/state-and-actions",
    "/google-antigravity/generative-ui/components/surfaces"
   ],
@@ -146,6 +206,7 @@
    "/google-antigravity/generative-ui/json-render"
   ],
   "/google-antigravity/generative-ui/a2ui/fixed-schema": [
+   "/google-antigravity/generative-ui/a2ui/advanced",
    "/google-antigravity/generative-ui/a2ui/dynamic-schema"
   ],
   "/google-antigravity/generative-ui/mcp-apps": [
@@ -156,6 +217,7 @@
   ],
   "/google-antigravity/shared-state": [
    "/google-antigravity/inspector",
+   "/google-antigravity/programmatic-control",
    "/google-antigravity/shared-state/agent-readonly",
    "/google-antigravity/shared-state/rendering-in-app",
    "/google-antigravity/shared-state/streaming"
@@ -180,8 +242,7 @@
    "/google-antigravity/inspector"
   ],
   "/google-antigravity/human-in-the-loop/useInterrupt": [
-   "/google-antigravity/human-in-the-loop",
-   "/google-antigravity/human-in-the-loop/headless"
+   "/google-antigravity/human-in-the-loop"
   ],
   "/google-antigravity/human-in-the-loop/headless": [
    "/google-antigravity/human-in-the-loop",
@@ -257,7 +318,6 @@
   "/google-antigravity/inspector": [
    "/google-antigravity/AG-UI-Streams",
    "/google-antigravity/agent-config",
-   "/google-antigravity/agentic-protocols/ag-ui",
    "/google-antigravity/backend/copilot-runtime",
    "/google-antigravity/backend/runtime-endpoints",
    "/google-antigravity/frontend-tools",
@@ -267,7 +327,6 @@
    "/google-antigravity/intelligence/quickstart",
    "/google-antigravity/learning",
    "/google-antigravity/quickstart",
-   "/google-antigravity/react-native",
    "/google-antigravity/shared-state",
    "/google-antigravity/shared-state/agent-readonly",
    "/google-antigravity/troubleshooting/debug-mode",

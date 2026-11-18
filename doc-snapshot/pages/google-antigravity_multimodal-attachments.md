@@ -2,9 +2,9 @@
 
 > Let users send images, audio, video, and documents to the AI alongside their messages.
 
-You have a working CopilotChat and want users to attach files — images, PDFs, audio, video — that the AI can see and respond to. By the end of this guide, your chat will support drag-and-drop file attachments with previews, lightbox viewing, and multimodal AI responses.
+You have a working CopilotChat and want users to attach files (images, PDFs, audio, video) that the AI can see and respond to. By the end of this guide, your chat will support drag-and-drop file attachments with previews, lightbox viewing, and multimodal AI responses.
 
-## Quick start
+## Quick start [#quick-start]
 
 Add `attachments` to your `CopilotChat` component:
 
@@ -19,7 +19,7 @@ import { CopilotChat } from "@copilotkit/react-core/v2";
 
 That's it. Users can now click the attachment button or drag-and-drop files into the chat. The files are sent as part of the message content to your agent.
 
-## Configuration
+## Configuration [#configuration]
 
 The `attachments` prop accepts an `AttachmentsConfig` object:
 
@@ -37,14 +37,14 @@ The `attachments` prop accepts an `AttachmentsConfig` object:
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `enabled` | `boolean` | — | Enable file attachments in the chat input. |
+| `enabled` | `boolean` | none | Enable file attachments in the chat input. |
 | `accept` | `string` | `"*/*"` | MIME type filter. Supports patterns like `"image/*"`, `".pdf,.docx"`, or comma-separated lists. |
 | `maxSize` | `number` | `20 * 1024 * 1024` | Maximum file size in bytes. |
 | `maxConcurrentUploads` | `number` | `1` | How many files upload at the same time. See [Upload concurrency](#upload-concurrency). |
-| `onUpload` | `(file: File) => AttachmentUploadResult \| Promise<...>` | — | Custom upload handler. See [Custom upload handler](#custom-upload-handler). |
-| `onUploadFailed` | `(error: AttachmentUploadError) => void` | — | Called when a file fails validation or upload. See [Handling upload errors](#handling-upload-errors). |
+| `onUpload` | `(file: File) => AttachmentUploadResult \| Promise<...>` | none | Custom upload handler. See [Custom upload handler](#custom-upload-handler). |
+| `onUploadFailed` | `(error: AttachmentUploadError) => void` | none | Called when a file fails validation or upload. See [Handling upload errors](#handling-upload-errors). |
 
-## Supported file types
+## Supported file types [#supported-file-types]
 
 Attachments are categorized by modality based on their MIME type:
 
@@ -53,17 +53,17 @@ Attachments are categorized by modality based on their MIME type:
 | **Image** | `image/*` | Thumbnail with lightbox | Supported by most vision-capable models (GPT-4o, Claude, etc.) |
 | **Audio** | `audio/*` | Audio player | Model-dependent |
 | **Video** | `video/*` | Thumbnail with play button + lightbox | Model-dependent |
-| **Document** | Everything else | File icon + name; PDF and text get lightbox preview | Sent as file content — model support varies |
+| **Document** | Everything else | File icon + name; PDF and text get lightbox preview | Sent as file content. Model support varies |
 
 <Callout type="info">
-  Not all models support all modalities. For example, OpenAI's GPT-4o supports images but not audio file parts. If the model doesn't support a file type, you'll get a `RUN_ERROR` event. Use the `onError` callback to handle this gracefully.
+  Not all models support all modalities. Model support for each file type depends on the model provider. For the details, see your provider's docs. If the agent run fails, the `onError` callback on `CopilotChat` receives the error.
 </Callout>
 
-## Custom upload handler
+## Custom upload handler [#custom-upload-handler]
 
 By default, files are read as base64 and sent inline. For large files or production apps, you'll want to upload to your own storage and pass a URL instead.
 
-`onUpload` returns an `AttachmentUploadResult` — a discriminated union with two variants:
+`onUpload` returns an `AttachmentUploadResult`, a discriminated union with two variants:
 
 <Tabs items={["Base64 (inline)", "URL (hosted)"]}>
   <Tab value="Base64 (inline)">
@@ -72,8 +72,13 @@ By default, files are read as base64 and sent inline. For large files or product
       attachments={{
         enabled: true,
         onUpload: async (file) => {
-          const buffer = await file.arrayBuffer();
-          const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
+          const dataUrl = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = () => reject(reader.error);
+            reader.readAsDataURL(file);
+          });
+          const base64 = dataUrl.split(",")[1];
           return {
             type: "data",
             value: base64,
@@ -106,7 +111,7 @@ By default, files are read as base64 and sent inline. For large files or product
   </Tab>
 </Tabs>
 
-### Adding metadata
+### Adding metadata [#adding-metadata]
 
 You can attach custom metadata to any upload. It's included in the `InputContent` part sent to the agent and accessible via `metadata` on the content part.
 
@@ -125,20 +130,20 @@ onUpload: async (file) => {
 },
 ```
 
-The filename is always included in metadata automatically — you don't need to add it yourself.
+The filename is always included in metadata automatically. You don't need to add it yourself.
 
-## Upload concurrency
+## Upload concurrency [#upload-concurrency]
 
 When a user attaches several files at once, they upload one at a time by default. Every picked file shows in the attachment queue immediately, whether or not its upload has started.
 
-Set `maxConcurrentUploads` to upload several together — worth raising when your upload endpoint handles parallel requests:
+Set `maxConcurrentUploads` to upload several together. Raise it when your upload endpoint handles parallel requests:
 
 ```tsx
 <CopilotChat
   attachments={{
     enabled: true,
     maxConcurrentUploads: 3, // three files at a time
-    onUpload: async (file) => uploadToStorage(file),
+    onUpload: async (file) => ({ type: "url", value: await uploadToStorage(file), mimeType: file.type }),
   }}
 />
 ```
@@ -147,9 +152,9 @@ The limit covers every upload in flight, not each batch: if a paste lands while 
 
 Above `1`, your `onUpload` handler may be called concurrently, so it must not rely on the previous file having finished.
 
-## Handling upload errors
+## Handling upload errors [#handling-upload-errors]
 
-Use `onUploadFailed` to react when a file is rejected or an upload fails — for example, to show a toast:
+Use `onUploadFailed` to react when a file is rejected or an upload fails, for example to show a toast:
 
 ```tsx
 <CopilotChat
@@ -184,12 +189,12 @@ For errors that happen _after_ the message is sent (e.g., the model doesn't supp
 />
 ```
 
-## How it works
+## How it works [#how-it-works]
 
 When a user attaches files and sends a message, CopilotKit:
 
 1. Reads each file (via the default base64 reader or your `onUpload` handler)
-2. Builds an array of `InputContent` parts — text + one part per attachment
+2. Builds an array of `InputContent` parts: text, plus one part per attachment
 3. Adds the message to the agent with `content: [{ type: "text", ... }, { type: "image", source: ... }, ...]`
 4. The agent receives the multimodal content via the AG-UI protocol and forwards it to the model
 

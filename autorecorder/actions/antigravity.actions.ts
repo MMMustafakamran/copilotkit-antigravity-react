@@ -13,6 +13,12 @@ import { registerDocEvidence } from '../core/doc-evidence';
  * typed into Notepad in casual words (REPOS.md Rule 6). No boxes or labels drawn on the page.
  */
 export const FINDING_NOTES: Record<string, string> = {
+  'threads-drawer': [
+    "page says select new conversation then select the first thread and the chat shows its history again",
+    "drawer lists the new thread and new conversation clears the chat,but clicking the thread back the chat just stays empty",
+    "no history replays,the headless threads page replays the same thread on the same runtime fine",
+    "page shows no runtime code at all,only a signup link,so i used the headless page server.ts with intelligence",
+  ].join('\n'),
   'rendering-in-app': [
     "page says the agent reads the canvas state on its next turn",
     "the canvas shows, but asked about my canvas title and done items the agent never knows and asks what canvas or looks for files",
@@ -118,6 +124,9 @@ export const FINDING_NOTES: Record<string, string> = {
 };
 
 export const FINDING_EVIDENCE: Record<string, DocEvidence[]> = {
+  'threads-drawer': [
+    { text: 'Select "New Conversation", then select the first thread. The chat', caption: 'Reopening the thread replays nothing (FINDINGS.md #103)' },
+  ],
   'rendering-in-app': [
     { text: 'A click handler in the main view can push a new value that the', caption: 'No backend shown; the default agent never sees agent.state (FINDINGS.md #80)' },
   ],
@@ -450,8 +459,8 @@ export const runThreadsDrawerAction: PageActionHandler = async (page, config, ro
 /** Headless Threads: chat once, the useThreads sidebar lists it, selecting another row switches the chat, and back. */
 export const runHeadlessThreadsAction: PageActionHandler = async (page, config, root, ctx) => {
   await runStandardAction(page, config, root, ctx);
-  // The doc's ThreadSidebar: <div><span>{name}</span><button>Rename</button><button>Archive</button></div>
-  const rows = page.locator('div:has(> button:text-is("Rename")) > span');
+  // The doc's ThreadSidebar (2026-11-18): <div><button>{name}</button><button>Rename</button><button>Archive</button></div>
+  const rows = page.locator('div:has(> button:text-is("Rename")) > button:first-child');
   const listed = await rows.first().waitFor({ state: 'visible', timeout: 45000 }).then(() => true).catch(() => false);
   void checkpoint('thread', 'the useThreads sidebar lists the thread (Rename / Archive row)', async () => `${await rows.count()} row(s)`, {
     ok: () => listed,

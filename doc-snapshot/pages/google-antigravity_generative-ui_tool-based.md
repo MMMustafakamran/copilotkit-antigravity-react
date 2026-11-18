@@ -2,11 +2,9 @@
 
 > Let your agent render rich React components directly in the chat by calling them as tools.
 
-
 <!-- interactive demo: gen-ui-tool-based -->
 
-
-## What is this?
+## What is this? [#what-is-this]
 
 Tool-based Generative UI is the simplest form of Generative UI: you register
 a React component with `useComponent`, and CopilotKit exposes it to the
@@ -17,9 +15,9 @@ as typed props.
 Unlike [tool rendering](/google-antigravity/generative-ui/tool-rendering), which wraps a
 real backend tool in a custom UI, tool-based GenUI is the component. There
 is no handler, no user interaction, no server-side execution. The agent
-decides when to show it, populates the data, and CopilotKit paints it.
+decides when to show it, populates the data, and CopilotKit renders it.
 
-## When should I use this?
+## When should I use this? [#when-should-i-use-this]
 
 Use `useComponent` when you want to:
 
@@ -32,7 +30,7 @@ For components that need user interaction, see
 [Human-in-the-loop](/google-antigravity/human-in-the-loop). For operational transparency
 around a real backend tool, see [Tool rendering](/google-antigravity/generative-ui/tool-rendering).
 
-## How it works in code
+## How it works in code [#how-it-works-in-code]
 
 <Steps>
   <Step>
@@ -53,7 +51,6 @@ around a real backend tool, see [Tool rendering](/google-antigravity/generative-
     model with no instruction about it will answer in prose and never call it.
     Name the tool in the system instructions and say what it is for.
 
-    
 ~~~~python title="gen_ui_tool_based.py"
 from agents._common import build
 
@@ -81,12 +78,11 @@ def gen_ui_tool_based_agent():
 
 ~~~~
 
-
   </Step>
 </Steps>
 
-Import the React hook and Zod in the component that registers the tool. This also
-applies to the built-in agent, which needs no backend tool-registration step.
+The built-in agent needs no backend step. Import the hook and Zod in the
+component that registers the tool:
 
 ```tsx
 import { useComponent } from "@copilotkit/react-core/v2";
@@ -94,9 +90,9 @@ import { z } from "zod";
 ```
 
 `useComponent` takes a name, a Zod schema for its props, and the component
-to render. The runtime registers it as a frontend tool so the agent can
-discover it, and the schema becomes that tool's parameter definition — it is
-what tells the model which arguments to send.
+to render. The hook registers it as a frontend tool, so the agent can call
+it. The schema becomes the tool's parameters, which tell the model which
+arguments to send.
 
 <Callout type="warn">
   `parameters` is optional, but leaving it out advertises the tool with an
@@ -106,8 +102,26 @@ what tells the model which arguments to send.
   data.
 </Callout>
 
-```typescript
-// src/app/demos/gen-ui-tool-based/page.tsx
+Define the props of your component as a Zod schema:
+
+```tsx title="bar-chart.tsx"
+import { z } from "zod";
+
+export const barChartPropsSchema = z.object({
+  title: z.string().describe("Chart title"),
+  description: z.string().describe("Brief description or subtitle"),
+  data: z.array(
+    z.object({
+      label: z.string(),
+      value: z.number(),
+    }),
+  ),
+});
+```
+
+Pass the schema and your component to `useComponent`:
+
+```typescript title="src/app/demos/gen-ui-tool-based/page.tsx"
   useComponent({
     name: "render_bar_chart",
     description: "Display a bar chart with labeled numeric values.",
@@ -116,10 +130,9 @@ what tells the model which arguments to send.
   });
 ```
 
-The component itself is ordinary React: it reads only its props and can
-stream in as the agent fills the payload. The example above uses
-[Recharts](https://recharts.org) for the bar chart; it doesn't know
-anything about CopilotKit.
+`BarChart` is your own React component. It reads only its props and can
+stream in as the agent fills the payload. The demo builds it with
+[Recharts](https://recharts.org). It does not know anything about CopilotKit.
 
 <Callout type="info">
   The `name` you pass to `useComponent` is what the agent sees as the tool
@@ -127,11 +140,14 @@ anything about CopilotKit.
   reliably picks it when the user asks for that visualization.
 </Callout>
 
-## Rendering in a headless chat
+To check it, ask the agent for a bar chart of quarterly sales. The bar chart
+renders inline in the chat with the data from the agent.
 
-CopilotKit's built-in chat components paint registered components for you. A
-headless or custom chat renders the message list itself, so nothing paints a
-tool call unless you render it — the component is registered and the agent
+## Rendering in a headless chat [#rendering-in-a-headless-chat]
+
+CopilotKit's built-in chat components render registered components for you. A
+headless or custom chat renders the message list itself, so no tool call
+renders unless you render it. The component is registered and the agent
 calls it, but the chat stays empty.
 
 Render the tool calls on each assistant message with
@@ -145,7 +161,7 @@ import { CopilotChatToolCallsView } from "@copilotkit/react-core/v2";
 
 It looks up the sibling `tool`-role message for each tool call and hands both
 to the registered renderer. For finer placement, call `useRenderToolCall()` and
-paint each tool call yourself — see
+render each tool call yourself. See
 [Headless UI](/google-antigravity/custom-look-and-feel/headless-ui).
 
 <IntegrationGrid path="generative-ui/tool-based" />

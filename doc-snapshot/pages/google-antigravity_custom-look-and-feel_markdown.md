@@ -2,12 +2,14 @@
 
 > Restyle the markdown in assistant messages, or replace the markdown renderer entirely, via the markdownRenderer slot.
 
-Assistant replies arrive as markdown. CopilotKit renders them through the
-`markdownRenderer` slot on `CopilotChatAssistantMessage`, whose default is a thin
-wrapper around [Streamdown](https://streamdown.ai) — a markdown renderer built for
-text that is still streaming in.
+To make links, headings, and code in assistant replies match your app,
+override the `markdownRenderer` slot on
+[`CopilotChatAssistantMessage`](/reference/components/CopilotChatAssistantMessage).
+By default, this slot wraps [Streamdown](https://streamdown.ai), a markdown
+renderer for text that is still streaming.
 
-You reach the slot by drilling down from the chat component:
+Set the [slot](/google-antigravity/custom-look-and-feel/slots) through the `messageView` prop of
+the chat component:
 
 ```tsx title="page.tsx"
 <CopilotChat
@@ -25,9 +27,9 @@ Everything on this page works the same way on `CopilotSidebar` and
 `CopilotPopup`, and on `CopilotChatMessageView` (where the path starts one level
 in, at `assistantMessage`).
 
-## Restyle individual HTML tags
+## Restyle individual HTML tags [#restyle-individual-html-tags]
 
-This is the route to reach for first. The slot forwards its props to Streamdown,
+Try this route first. The slot forwards its props to Streamdown,
 so a props override can set Streamdown's `components` map, which swaps the React
 component used for one HTML tag:
 
@@ -68,19 +70,22 @@ writes a literal `node="[object Object]"` into the HTML. Destructure it out, as
 above, and it disappears.
 
 **Spread the rest.** The remaining props come from the sanitized document, not
-from the raw model output. An `a` is handed `href`, `target` and `rel`, with
-`target="_blank" rel="noopener noreferrer"` already applied by the renderer's
-link hardening; an `img` is handed `src` and `alt`. Spreading them keeps that
-work. Rebuilding the element by hand throws it away.
+from the raw model output:
+
+- `a`: `href`, `target`, and `rel`, with `target="_blank" rel="noopener noreferrer"`
+  already set by the link hardening of the renderer.
+- `img`: `src` and `alt`.
+
+Spreading them keeps that work. Rebuilding the element by hand throws it away.
 
 **You are replacing, not extending.** The default component for a tag carries
-Streamdown's own classes and a `data-streamdown` attribute — a default link
+Streamdown's own classes and a `data-streamdown` attribute. For example, a default link
 renders as `<a class="wrap-anywhere font-medium text-primary underline"
 data-streamdown="link" …>`. Your component supplies neither unless you write
 them, so any CSS you have targeting `[data-streamdown="link"]` stops matching
 that tag.
 
-## Restyle the whole markdown block
+## Restyle the whole markdown block [#restyle-the-whole-markdown-block]
 
 To change the block as a whole rather than one tag, pass a class string. It is
 merged onto the markdown container:
@@ -93,11 +98,11 @@ merged onto the markdown container:
 />
 ```
 
-## Replace the renderer
+## Replace the renderer [#replace-the-renderer]
 
 Passing a component instead of an object replaces the renderer outright. It
-receives exactly one prop, `content`, holding the assistant message's raw
-markdown:
+receives two props: `content`, the assistant message's raw markdown, and
+`messageId`, the id of the message:
 
 ```tsx title="page.tsx"
 const PlainText = ({ content }: { content: string }) => (
@@ -109,13 +114,17 @@ const PlainText = ({ content }: { content: string }) => (
 />;
 ```
 
-Reach for this only when you want a different markdown engine. Streamdown is
-doing real work that you take over with it: parsing markdown that is still
-half-written without flashing broken output, math and syntax highlighting, and
-sanitizing model-generated HTML. That last one matters — `content` is raw model
-output, so anything you render it with has to be safe against it.
+CAUTION: `content` is raw model output. Sanitize it before you render it as
+HTML.
 
-## Custom tags are not supported
+Replace the renderer only when you want a different markdown engine. You then
+take over the work that Streamdown does:
+
+- It parses markdown that is still half-written without flashing broken output.
+- It renders math and syntax highlighting.
+- It sanitizes model-generated HTML.
+
+## Custom tags are not supported [#custom-tags-are-not-supported]
 
 You cannot teach the renderer a tag of your own, such as `<reference-chip>`.
 This is deliberate, and it is enforced twice.
@@ -133,7 +142,7 @@ stripped, its text kept: `Hi <reference-chip id="42">Doc 42</reference-chip>.`
 renders as `<p>Hi Doc 42.</p>`, and a component registered for it is never
 called.
 
-Tags that are on the allowlist do survive, and are overridable like any other —
+Tags that are on the allowlist do survive, and are overridable like any other. For example,
 `<kbd>` and `<sup>` written directly in a reply render as real elements.
 
 If you need a richer, non-textual surface in the conversation, that is what
@@ -141,7 +150,7 @@ If you need a richer, non-textual surface in the conversation, that is what
 you render a React component for that tool call. Do not turn off sanitization to
 get a custom tag through.
 
-## Other frontends
+## Other frontends [#other-frontends]
 
 This page describes the React API. The other frontends expose the same idea
 under different names, and the Streamdown `components` map is React-only:
@@ -151,8 +160,3 @@ under different names, and the Streamdown `components` map is React-only:
 - **Angular** uses a `#markdownRenderer` `ng-template` (or `markdownRendererComponent`)
   over `marked`, so there is no `components` prop. See the
   [Angular `CopilotChatAssistantMessage` reference](/reference/angular/components/CopilotChatAssistantMessage).
-
-## Reference
-
-- [`CopilotChatAssistantMessage`](/reference/components/CopilotChatAssistantMessage) — every slot on the assistant message.
-- [Slots](/google-antigravity/custom-look-and-feel/slots) — how slot overrides work in general.

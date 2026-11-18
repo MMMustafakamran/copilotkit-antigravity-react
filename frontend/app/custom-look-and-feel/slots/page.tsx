@@ -13,7 +13,7 @@ export function Chat() {
   );
 }
 
-// "Three levels deep" + "Labels" snippets (verbatim props; HARNESS: combined on one CopilotChat)
+// "One toolbar button" + "Labels" snippets (verbatim props; HARNESS: combined on one CopilotChat)
 export function NestedChat() {
   return (
     <CopilotChat

@@ -2,16 +2,14 @@
 
 > Customize how reasoning (thinking) tokens from models like `gpt-6-luna` are displayed.
 
-
 <!-- interactive demo: reasoning-default -->
-
 
 Some models (like `gpt-6-luna`) emit **reasoning tokens**: internal
 "thinking" traces that show the model's chain-of-thought before it produces a final
 answer. CopilotKit surfaces these tokens automatically with a collapsible
 **Reasoning Message** card.
 
-## Default Behavior
+## Default Behavior [#default-behavior]
 
 When reasoning events arrive from the agent, CopilotKit renders them inside a
 built-in card that:
@@ -25,13 +23,9 @@ built-in card that:
 - Includes a chevron toggle so users can re-expand and review the reasoning
   at any time.
 
-No extra configuration is needed; if your model emits reasoning tokens,
-the card appears automatically.
+Connect your agent to CopilotKit. You do not need extra props or configuration:
 
-The only requirement is connecting your agent to CopilotKit; no extra props or configuration needed:
-
-```typescript
-// src/app/demos/reasoning-default/page.tsx
+```typescript title="src/app/demos/reasoning-default/page.tsx"
 const AGENT_ID = "reasoning-default";
 
 export default function ReasoningDefaultDemo() {
@@ -52,14 +46,18 @@ function Chat() {
 }
 ```
 
-## Customizing the Reasoning Message
+If no card appears, your agent does not stream reasoning. For OpenAI models,
+ask for a reasoning summary in the model options, for example
+`reasoning: { effort: "high", summary: "auto" }`.
 
-The reasoning message is composed of three sub-components that can each be
-replaced independently via **slot props**:
+## Customizing the Reasoning Message [#customizing-the-reasoning-message]
+
+The reasoning message has three parts. You can replace each part with a
+**slot prop**:
 
 | Sub-component | Slot prop | Description |
 | --- | --- | --- |
-| `Header` | `header` | The clickable bar with the brain icon, label, and chevron |
+| `Header` | `header` | The clickable bar with the label and the chevron |
 | `Content` | `contentView` | The reasoning text area (Markdown) |
 | `Toggle` | `toggle` | The expand/collapse animation wrapper |
 
@@ -77,7 +75,7 @@ You pass custom sub-components through the `messageView` prop on
 />
 ```
 
-### Custom Header
+### Custom Header [#custom-header]
 
 Replace the header to change the icon, label text, or styling. The header
 receives these props:
@@ -128,7 +126,11 @@ function CustomHeader({
 />
 ```
 
-### Custom Content
+To check it, ask the agent a question that needs reasoning. While the model
+thinks, the header shows 🧠 and "Thinking…". When it finishes, the header shows
+💡 and "Thought for N seconds".
+
+### Custom Content [#custom-content]
 
 Replace the content area to change how reasoning text is displayed:
 
@@ -165,7 +167,7 @@ function CustomContent({
 />
 ```
 
-## Fully Custom Reasoning Message
+## Fully Custom Reasoning Message [#fully-custom-reasoning-message]
 
 For complete control over the entire reasoning card, pass a **component** instead of
 slot props. Your component receives the same top-level props as the built-in one:
@@ -176,17 +178,12 @@ slot props. Your component receives the same top-level props as the built-in one
 | `messages` | `Message[]` | All messages in the conversation |
 | `isRunning` | `boolean` | Whether the agent is currently running |
 
-
 <!-- interactive demo: reasoning-custom -->
 
+`ReasoningBlock` shows the reasoning text in a tagged banner. Replace it with
+your own component:
 
-The `ReasoningBlock` used above renders the reasoning as an amber-tagged
-inline banner, intentionally louder than the default card so the thinking
-chain is the focal UI of the demo. Swap in your own component to match
-your product's tone:
-
-```typescript
-// src/app/demos/reasoning-custom/page.tsx
+```typescript title="src/app/demos/reasoning-custom/page.tsx"
 const AGENT_ID = "reasoning-custom";
 
 export default function ReasoningCustomDemo() {
@@ -216,7 +213,58 @@ function Chat() {
 }
 ```
 
-## Render-Prop Children
+`ReasoningBlock` reads the `message`, `messages`, and `isRunning` props:
+
+```typescript title="src/app/demos/reasoning-custom/reasoning-block.tsx"
+"use client";
+
+// Custom `reasoningMessage` slot renderer.
+//
+// Receives the `ReasoningMessage` plus (optionally) the full message list and
+// the running state from the slot system. Renders the content inline with a
+// visibly tagged amber banner so the user can always see the agent's thinking
+// chain — this is the focal UI of the demo.
+
+import React from "react";
+import type { ReasoningMessage, Message } from "@ag-ui/core";
+
+export function ReasoningBlock({
+  message,
+  messages,
+  isRunning,
+}: {
+  message: ReasoningMessage;
+  messages?: Message[];
+  isRunning?: boolean;
+}) {
+  const isLatest = messages?.[messages.length - 1]?.id === message.id;
+  const isStreaming = !!(isRunning && isLatest);
+  const hasContent = !!(message.content && message.content.length > 0);
+
+  return (
+    <div
+      data-testid="reasoning-block"
+      className="my-2 rounded-xl border border-[#DBDBE5] bg-[#BEC2FF1A] px-3.5 py-2.5 text-sm dark:border-border"
+    >
+      <div className="flex items-center gap-2 font-medium text-[#010507] dark:text-foreground">
+        <span className="inline-block rounded-full border border-[#BEC2FF] bg-white px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-[#57575B] dark:bg-card dark:text-muted-foreground">
+          Reasoning
+        </span>
+        <span className="text-[#57575B] dark:text-muted-foreground">
+          {isStreaming ? "Thinking…" : hasContent ? "Agent reasoning" : "…"}
+        </span>
+      </div>
+      {hasContent && (
+        <div className="mt-1.5 whitespace-pre-wrap italic text-[#57575B] dark:text-muted-foreground">
+          {message.content}
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+## Render-Prop Children [#render-prop-children]
 
 The built-in `CopilotChatReasoningMessage` also supports a **render-prop**
 pattern for cases where you want to rearrange the built-in sub-components
@@ -244,7 +292,7 @@ function MyReasoningLayout(props: React.ComponentProps<typeof CopilotChatReasoni
 
 <CopilotChat
   messageView={{
-    reasoningMessage: MyReasoningLayout,
+    reasoningMessage: MyReasoningLayout as typeof CopilotChatReasoningMessage,
   }}
 />
 ```

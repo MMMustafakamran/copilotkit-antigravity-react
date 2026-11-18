@@ -1,11 +1,12 @@
 # Build with agents
 
 > Give your AI coding agent up-to-date knowledge of CopilotKit's APIs, patterns, and best practices.
+
 AI coding agents may not have up-to-date knowledge of CopilotKit's APIs, patterns, and best practices. The resources on this page give them accurate, current knowledge directly in their context.
 
-## CopilotKit Skills
+## CopilotKit Skills [#copilotkit-skills]
 
-Skills are folders of instructions that coding agents discover and use automatically. The CopilotKit skills are deliberately thin: rather than restating the API, they teach your agent to look the current answer up — in these docs, in the source, and in the CLI. A copy of an API goes stale; a search does not.
+Skills are folders of instructions that coding agents discover and use automatically. The CopilotKit skills are short. They do not copy the API. They tell your agent where to find the current answer: these docs, the source, and the CLI. A copy of an API goes stale. A search does not.
 
 <Callout type="info">
   Skills are the recommended way to give your agent CopilotKit knowledge. They work natively in Claude Code, Cursor, Codex, Gemini CLI, and any tool supporting the [agentskills.io](https://agentskills.io) standard.
@@ -16,13 +17,13 @@ There are two:
 | Skill | Use it to |
 | --- | --- |
 | `copilotkit` | Answer any CopilotKit question from current docs and source. It fetches the docs as Markdown, and uses the `copilotkit-docs` MCP server when the plugin provides it |
-| `copilotkit-cli` | Drive the CLI — scaffold a project, connect Intelligence, and prove a project's wiring with `copilotkit verify` before debugging by hand |
+| `copilotkit-cli` | Drive the CLI: scaffold a project, connect Intelligence, and prove a project's wiring with `copilotkit verify` before debugging by hand |
 
-You don't need to pick between them — your agent loads whichever fits the task. The [skills directory](https://github.com/CopilotKit/CopilotKit/tree/main/skills) also holds a few procedure skills, such as setting up a Slack Channel, which walk through steps that span several systems.
+You don't need to pick between them. Your agent loads whichever fits the task. The [skills directory](https://github.com/CopilotKit/CopilotKit/tree/main/skills) also holds a few procedure skills, such as setting up a Slack Channel, which walk through steps that span several systems.
 
 <Steps>
   <Step>
-    ### Install the skills
+    ### Install the skills [#install-the-skills]
 
     Run this from the root of the project you're building in:
 
@@ -33,24 +34,20 @@ You don't need to pick between them — your agent loads whichever fits the task
     This installs the skills into your project, where any coding agent working there (Claude Code, Codex, Cursor, or Gemini CLI) discovers them automatically. There's no per-agent configuration to do.
 
     <Callout type="info">
-      Want to choose what gets installed? Run `npx skills add CopilotKit/CopilotKit/skills` without `-y` to pick specific skills, target agents, and scope interactively — or add `-g` to install globally for every project.
+      Want to choose what gets installed? Run `npx skills add CopilotKit/CopilotKit/skills` without `-y` to pick specific skills, target agents, and scope interactively. To install globally for every project, add `-g`.
     </Callout>
 
   </Step>
   <Step>
-    ### Start building
+    ### Start building [#start-building]
 
-    Open a new agent session and use a starter prompt to put the skills to work:
-
-    ```
-    Help me add CopilotKit to this app. Look up the current setup in the CopilotKit docs first.
-    ```
+    Open a new agent session and use a starter prompt to put the skills to work: `Help me add CopilotKit to this app. Look up the current setup in the CopilotKit docs first.`
 
     Your agent searches the documentation rather than working from memory, and reaches for `copilotkit verify` when something doesn't work.
   </Step>
 </Steps>
 
-## MCP Docs Server
+## MCP Docs Server [#mcp-docs-server]
 
 The CopilotKit MCP server equips AI coding agents with deep knowledge about CopilotKit's APIs, patterns, and best practices. When connected to your
 development environment, it enables AI assistants to:
@@ -60,13 +57,17 @@ development environment, it enables AI assistants to:
 - Give your AI agents a user interface
 - Help you implement CopilotKit features correctly
 
-### Cursor
+Pick your coding tool, then follow its steps:
 
-[Cursor](https://cursor.sh/) is an AI-powered code editor built for productivity. It features built-in AI assistance and supports MCP for extending AI capabilities with external tools.
+<Tabs groupId="coding-agent" items={['Cursor', 'Claude Web', 'Claude Desktop', 'Claude Code', 'Windsurf', 'Cline', 'GitHub Copilot', 'Codex', 'Other']} default="Cursor" persist>
+
+<Tab value="Cursor">
+
+[Cursor](https://cursor.sh/) reads MCP servers from an `mcp.json` file.
 
 <Steps>
   <Step>
-    ### Open MCP Settings in Cursor
+    ### Open MCP Settings in Cursor [#open-mcp-settings-in-cursor]
     1. Press `Shift+Command+J` (Mac) or `Shift+Ctrl+J` (Windows/Linux) to open Cursor's settings.
     2. Look for "MCP Tools" in the left sidebar categories.
     3. Click "Add Custom MCP".
@@ -77,7 +78,7 @@ development environment, it enables AI assistants to:
     the project root instead and put the same configuration there.
   </Step>
   <Step>
-    ### Add MCP Server to Cursor
+    ### Add MCP Server to Cursor [#add-mcp-server-to-cursor]
     Copy CopilotKit MCP's configuration and paste it under the mcpServers key in the mcp.json file.
 
     <Tabs groupId="transport" items={['HTTP', 'SSE']} default="HTTP">
@@ -86,12 +87,7 @@ development environment, it enables AI assistants to:
         {
           "mcpServers": {
             "CopilotKit MCP": {
-              "command": "npx",
-              "args": [
-                "-y",
-                "mcp-remote",
-                "https://mcp.copilotkit.ai/mcp"
-              ]
+              "url": "https://mcp.copilotkit.ai/mcp"
             }
           }
         }
@@ -111,31 +107,45 @@ development environment, it enables AI assistants to:
     </Tabs>
 
   </Step>
+  <Step>
+    ### Test the connection [#test-the-connection]
+    Ask your agent: `Use CopilotKit's search-docs tool to find documentation for useFrontendTool.`
+
+    A successful tool call returns documentation results.
+  </Step>
 </Steps>
 
-### Claude Web
+</Tab>
 
-[Claude](https://claude.ai/) is Anthropic's AI assistant accessible through a web interface. It supports MCP integrations, called Connectors, to connect with external tools and services.
+<Tab value="Claude Web">
+
+[Claude](https://claude.ai/) calls MCP servers Connectors.
 
 <Steps>
   <Step>
-    Navigate to the [Connectors](https://claude.ai/settings/connectors) settings
-    page in Claude. 1. Click on your user in the bottom left of the chat box and
-    then select "Settings" from the menu options that appear. 2. In the menu
-    along the left side of the Settings page, select "Connectors"
+    Open the [Connectors](https://claude.ai/settings/connectors) settings page in Claude:
+
+    1. Click your user in the bottom left of the chat box, then select "Settings".
+    2. In the left menu of the Settings page, select "Connectors".
   </Step>
   <Step>Click "Add custom connector"</Step>
   <Step>
-    1. In the Name field, enter a memorable name for the CopilotKit connector,
-    like `CopilotKit` 2. In the URL field, enter the following: ```
-    https://mcp.copilotkit.ai/sse ```
+    Fill in the connector:
+
+    1. In the Name field, enter `CopilotKit`.
+    2. In the URL field, enter `https://mcp.copilotkit.ai/sse`.
   </Step>
   <Step>Click "Add"</Step>
+  <Step>
+    Ask Claude: `Use CopilotKit's search-docs tool to find documentation for useFrontendTool.` A successful tool call returns documentation results.
+  </Step>
 </Steps>
 
-### Claude Desktop
+</Tab>
 
-[Claude Desktop](https://claude.ai/download) is the desktop application version of Claude, offering the same AI capabilities with local system integration and MCP support.
+<Tab value="Claude Desktop">
+
+[Claude Desktop](https://claude.ai/download) calls MCP servers Connectors.
 
 <div className="-mt-2 text-sm text-muted-foreground">
   These steps are the same as those for Claude Web, above. The only difference
@@ -145,27 +155,33 @@ development environment, it enables AI assistants to:
 
 <Steps>
   <Step>
-    Navigate to the [Connectors](claude://claude.ai/settings/connectors)
-    settings page in Claude. 1. Click on your user in the bottom left of the
-    chat box and then select "Settings" from the menu options that appear. 2. In
-    the menu along the left side of the Settings page, select "Connectors"
+    Open the [Connectors](claude://claude.ai/settings/connectors) settings page in Claude:
+
+    1. Click your user in the bottom left of the chat box, then select "Settings".
+    2. In the left menu of the Settings page, select "Connectors".
   </Step>
   <Step>Click "Add custom connector"</Step>
   <Step>
-    1. In the Name field, enter a memorable name for the CopilotKit connector,
-    like `CopilotKit` 2. In the URL field, enter the following: ```
-    https://mcp.copilotkit.ai/sse ```
+    Fill in the connector:
+
+    1. In the Name field, enter `CopilotKit`.
+    2. In the URL field, enter `https://mcp.copilotkit.ai/sse`.
   </Step>
   <Step>Click "Add"</Step>
+  <Step>
+    Ask Claude: `Use CopilotKit's search-docs tool to find documentation for useFrontendTool.` A successful tool call returns documentation results.
+  </Step>
 </Steps>
 
-### Claude Code
+</Tab>
 
-[Claude Code](https://docs.claude.com/en/docs/claude-code) is Anthropic's official CLI for Claude. It supports MCP integrations to connect with external tools and services, enhancing AI capabilities with specialized knowledge.
+<Tab value="Claude Code">
+
+[Claude Code](https://docs.claude.com/en/docs/claude-code) adds MCP servers from its CLI.
 
 <Steps>
   <Step>
-    ### Add MCP Server to Claude Code
+    ### Add MCP Server to Claude Code [#add-mcp-server-to-claude-code]
     Use the Claude Code CLI to add the CopilotKit MCP server:
 
     ```bash
@@ -179,14 +195,14 @@ development environment, it enables AI assistants to:
     ```
 
     `--scope project` writes `.mcp.json` at the root of your project, so the server is
-    registered for everyone who checks the repository out. Without the flag the command
-    falls back to `local` scope, which writes `~/.claude.json` in your home directory: that
-    keeps the registration private to you, and it puts the change outside the project, which
-    a coding agent running unattended is generally not permitted to do.
+    registered for everyone who checks the repository out. Without the flag, the command
+    uses `local` scope. That scope writes `~/.claude.json` in your home directory, and only
+    you get the server. A coding agent that runs unattended usually cannot change files
+    outside the project.
 
   </Step>
   <Step>
-    ### Verify Connection
+    ### Verify Connection [#verify-connection]
     Check that the server is properly connected:
 
     ```bash
@@ -201,7 +217,7 @@ development environment, it enables AI assistants to:
     ```
 
     <div className="mt-4 p-4 rounded-lg bg-muted">
-      <div className="font-medium text-sm mb-2">💡 Server Name Requirements</div>
+      <div className="font-medium text-sm mb-2">Server Name Requirements</div>
       <div className="text-sm text-muted-foreground">
         Server names can only contain letters, numbers, hyphens, and underscores. Avoid spaces in server names.
       </div>
@@ -209,14 +225,8 @@ development environment, it enables AI assistants to:
 
   </Step>
   <Step>
-    ### Using MCP Tools in Claude Code
-    Once configured, the CopilotKit MCP server tools are automatically available when you interact with Claude Code for CopilotKit-related development tasks. The AI will intelligently use these tools when relevant to your queries.
-
-    **What the MCP Server Provides:**
-    - Expert guidance for CopilotKit development
-    - Accurate code generation for CopilotKit features
-    - Best practices and implementation patterns
-    - Deep understanding of CopilotKit APIs
+    ### Using MCP Tools in Claude Code [#using-mcp-tools-in-claude-code]
+    Once configured, the CopilotKit MCP server tools are automatically available when you interact with Claude Code for CopilotKit-related development tasks.
 
     **Management Commands:**
     ```bash
@@ -230,20 +240,22 @@ development environment, it enables AI assistants to:
   </Step>
 </Steps>
 
-### Windsurf
+</Tab>
 
-[Windsurf](https://codeium.com/windsurf) is Codeium's agentic IDE that combines AI-powered coding assistance with traditional development tools. It features the Cascade AI assistant with MCP integration.
+<Tab value="Windsurf">
+
+[Windsurf](https://codeium.com/windsurf) uses MCP servers in its Cascade assistant.
 
 <Steps>
   <Step>
-    ### Access Windsurf MCP Settings
+    ### Access Windsurf MCP Settings [#access-windsurf-mcp-settings]
     1. Open Windsurf Settings (click the settings button in the bottom right)
     2. Navigate to the "Cascade" section
     3. Look for "Model Context Protocol" or "MCP" settings
     4. Enable MCP support if not already enabled
   </Step>
   <Step>
-    ### Add MCP Server to Windsurf
+    ### Add MCP Server to Windsurf [#add-mcp-server-to-windsurf]
     You can add CopilotKit MCP in several ways:
 
     <Tabs groupId="windsurf-setup" items={['Using the Built-in Server Browser', 'Manual Configuration']} default="Using the Built-in Server Browser">
@@ -302,7 +314,7 @@ development environment, it enables AI assistants to:
 
   </Step>
   <Step>
-    ### Configuration File Location
+    ### Configuration File Location [#configuration-file-location]
     The MCP configuration is typically stored at:
 
     <Tabs groupId="windsurf-os" items={['macOS', 'Windows', 'Linux']} default="macOS">
@@ -325,34 +337,29 @@ development environment, it enables AI assistants to:
 
   </Step>
   <Step>
-    ### Using MCP Tools in Windsurf
+    ### Using MCP Tools in Windsurf [#using-mcp-tools-in-windsurf]
     Once configured, CopilotKit MCP tools will be available in Windsurf's Cascade AI assistant:
 
     - Open the Cascade panel (AI chat interface)
     - The MCP tools are automatically available to the AI
     - You can reference specific tools using `@CopilotKit MCP` in your conversations
-    - Windsurf will intelligently choose which tools to use based on your requests
 
-    ### Managing Your MCP Servers
-    In the Windsurf MCP settings, you can:
-    - Enable/Disable individual servers
-    - View server status and connection health
-    - Configure tool permissions and auto-approval settings
-    - Monitor server logs for debugging
-    - Restart servers if they become unresponsive
+    Ask your agent: `Use CopilotKit's search-docs tool to find documentation for useFrontendTool.`
 
-    The AI will seamlessly integrate CopilotKit MCP functionality into your development workflow!
+    A successful tool call returns documentation results.
 
   </Step>
 </Steps>
 
-### Cline
+</Tab>
 
-[Cline](https://github.com/cline/cline) is a VS Code extension that provides autonomous AI coding assistance. It can perform complex tasks using MCP tools to interact with external systems.
+<Tab value="Cline">
+
+[Cline](https://github.com/cline/cline) is a VS Code extension that uses MCP servers.
 
 <Steps>
   <Step>
-    ### Open Cline MCP Settings
+    ### Open Cline MCP Settings [#open-cline-mcp-settings]
     1. Open the Cline extension panel in VS Code
     2. Click the menu (⋮) in the top right corner of the Cline panel
     3. Select "MCP Servers" from the dropdown menu
@@ -360,8 +367,8 @@ development environment, it enables AI assistants to:
     This will open the MCP Servers interface where you can manage your server connections.
   </Step>
   <Step>
-    ### Add MCP Server to Cline
-    In the MCP Servers interface, you have three main options:
+    ### Add MCP Server to Cline [#add-mcp-server-to-cline]
+    In the MCP Servers interface, use one of these two options:
 
     <Tabs groupId="cline-setup" items={['Remote Server Setup', 'Configuration File Setup']} default="Remote Server Setup">
       <Tab value="Remote Server Setup">
@@ -393,32 +400,31 @@ development environment, it enables AI assistants to:
 
   </Step>
   <Step>
-    ### Using MCP Tools in Cline
-    Once connected, Cline can automatically use the tools provided by CopilotKit MCP when you interact with the AI assistant. The MCP tools will be available without requiring manual selection - Cline's AI will intelligently choose which tools to use based on your requests.
+    ### Using MCP Tools in Cline [#using-mcp-tools-in-cline]
+    Once connected, Cline can automatically use the tools provided by CopilotKit MCP when you interact with the AI assistant. The MCP tools will be available without requiring manual selection.
 
-    **Server Status Indicators:**
-    - Green dot: Connected and ready to use
-    - Yellow dot: Connecting in progress
-    - Red dot: Connection error
+    Ask your agent: `Use CopilotKit's search-docs tool to find documentation for useFrontendTool.`
 
-    You can manage server settings, restart connections, or disable servers from the "Installed" tab in the MCP Servers interface.
+    A successful tool call returns documentation results.
 
   </Step>
 </Steps>
 
-### GitHub Copilot
+</Tab>
 
-[GitHub Copilot](https://github.com/features/copilot) is Microsoft's AI pair programmer integrated into VS Code and other editors. It supports MCP to extend its capabilities with external tools and services.
+<Tab value="GitHub Copilot">
+
+[GitHub Copilot](https://github.com/features/copilot) uses MCP servers in VS Code agent mode.
 
 <Steps>
   <Step>
-    ### Enable MCP Support in VS Code
+    ### Enable MCP Support in VS Code [#enable-mcp-support-in-vs-code]
     1. Open VS Code Settings (`Cmd+,` on Mac or `Ctrl+,` on Windows/Linux)
     2. Search for "MCP" in the settings search bar
     3. Enable the `chat.mcp.enabled` setting
   </Step>
   <Step>
-    ### Add MCP Server to GitHub Copilot
+    ### Add MCP Server to GitHub Copilot [#add-mcp-server-to-github-copilot]
     You can configure MCP servers for GitHub Copilot in several ways:
 
     <Tabs groupId="copilot-config" items={['Workspace Configuration (Recommended)', 'User Settings Configuration', 'Command Palette']} default="Workspace Configuration (Recommended)">
@@ -459,33 +465,30 @@ development environment, it enables AI assistants to:
 
   </Step>
   <Step>
-    ### Using MCP Tools with GitHub Copilot
+    ### Using MCP Tools with GitHub Copilot [#using-mcp-tools-with-github-copilot]
     1. Open Copilot Chat in VS Code (click the Copilot icon in the activity bar)
     2. Switch to Agent mode from the chat dropdown menu
     3. Click the Tools (🔧) button to view available MCP tools
     4. Your CopilotKit MCP tools will be listed and can be used automatically
 
-    GitHub Copilot will intelligently use the MCP tools when relevant to your queries. You can also reference tools directly using `#` followed by the tool name.
+    You can also reference tools directly using `#` followed by the tool name.
 
-  </Step>
-  <Step>
-    ### Managing MCP Servers
-    Use the "MCP: List Servers" command to view and manage your configured servers:
+    Ask your agent: `Use CopilotKit's search-docs tool to find documentation for useFrontendTool.`
 
-    - Start/Stop/Restart servers
-    - View server logs for debugging
-    - Browse available tools and resources
+    A successful tool call returns documentation results.
 
   </Step>
 </Steps>
 
-### Codex
+</Tab>
+
+<Tab value="Codex">
 
 [Codex](https://developers.openai.com/codex/mcp) supports Streamable HTTP MCP servers directly.
 
 <Steps>
   <Step>
-    ### Add MCP Server to Codex
+    ### Add MCP Server to Codex [#add-mcp-server-to-codex]
     Run this command:
 
     ```bash
@@ -503,7 +506,7 @@ development environment, it enables AI assistants to:
     Use `/mcp` for Streamable HTTP. The root URL (`https://mcp.copilotkit.ai`) returns 404.
   </Step>
   <Step>
-    ### Verify Connection
+    ### Verify Connection [#verify-connection-1]
     List the configured MCP servers:
 
     ```bash
@@ -512,21 +515,19 @@ development environment, it enables AI assistants to:
 
     This command verifies registration only. Start a new Codex session and run `/mcp` to check the connection and available tools.
 
-    Ask Codex to test a documentation search:
-
-    ```text
-    Use CopilotKit's search-docs tool to find documentation for useFrontendTool.
-    ```
+    Ask Codex to test a documentation search: `Use CopilotKit's search-docs tool to find documentation for useFrontendTool.`
 
     A successful tool call returns documentation results. If the server fails to connect, verify that its URL ends with `/mcp`.
   </Step>
 </Steps>
 
-### Other
+</Tab>
+
+<Tab value="Other">
 
 For MCP-compatible applications not listed above, use these universal integration patterns. MCP (Model Context Protocol) is an open standard that allows AI applications to connect with external tools and data sources.
 
-#### Connection Methods
+#### Connection Methods [#connection-methods]
 
 Most MCP-compatible applications support one or both of these connection methods:
 
@@ -548,13 +549,13 @@ Most MCP-compatible applications support one or both of these connection methods
   </Tab>
 </Tabs>
 
-#### Integration Steps
+#### Integration Steps [#integration-steps]
 
 1. **Find MCP Settings** - Look for "MCP," "Model Context Protocol," or "Tools" in your application settings
 2. **Add Server** - Use the SSE URL: `https://mcp.copilotkit.ai/sse`
 3. **Test Connection** - Restart your application and verify the server appears in available tools
 
-#### Common Configuration Patterns
+#### Common Configuration Patterns [#common-configuration-patterns]
 
 <Tabs groupId="config-patterns" items={['JSON Configuration File', 'Application Settings']} default="JSON Configuration File">
   <Tab value="JSON Configuration File">
@@ -584,4 +585,8 @@ Most MCP-compatible applications support one or both of these connection methods
     }
     ```
   </Tab>
+</Tabs>
+
+</Tab>
+
 </Tabs>

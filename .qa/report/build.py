@@ -77,30 +77,13 @@ def status_cell(a, p):
 
 
 def cell(a, p):
-    if a.get('quickstartBlocked') and p.get('kind', 'guide') == 'guide' and p.get('notTested'):
-        # QA-RULES 8b: a page never built because the quickstart blocks the framework
-        return '<br>'.join(['❌', esc('Blocked: ' + a['quickstartBlocked']), esc('Not tested: nothing to build on until the quickstart works.')])
-    c = (team_cell if a['report']['style'] == 'team' else status_cell)(a, p)
-    # Owner rule (2026-11-12, QA-RULES 8b): when the framework's quickstart is a complete block (level 1, no
-    # usable setup), every other page is blocked for a reader: the row is ❌ "Blocked", and what the page did
-    # on a hand-built setup follows as secondary info. assignment.json top level: "quickstartBlocked": "<reason>".
-    qb = a.get('quickstartBlocked')
-    if qb and FRESH_ONLY and p.get('kind', 'guide') == 'guide' and p['status'] in ('✅', '⚠️', '❌'):
-        # --fresh-only (owner, 2026-11-16): a blocked page not filmed on the report date shows no old clip and no
-        # old "tested anyway" result, only that it is blocked and was not retested.
-        if not any(isinstance(l, dict) and l.get('filmed') == FRESH_ONLY for l in p.get('links', [])):
-            return '<br>'.join(['❌', esc('Blocked: ' + qb)])
-    if qb and p.get('kind', 'guide') == 'guide' and p['status'] in ('✅', '⚠️', '❌') and c:
-        tested = {'✅': 'works', '⚠️': 'works with a minor issue', '❌': 'also fails on its own'}[p['status']]
-        if c.startswith(p['status'] + '<br>'):
-            c = c[len(p['status']) + 4:]  # the row's emoji is ❌ now; the link and notes stay
-        elif c.split('<br>')[0] == esc(p['status'] + (' ' + STATUS_WORDS[p['status']] if p['status'] in STATUS_WORDS else '')):
-            c = '<br>'.join(c.split('<br>')[1:])  # status style, no clip: drop the bare 'emoji word' label
-        elif c == p['status']:
-            c = ''  # no clip and no note: only the (replaced) emoji was left
-        c = '<br>'.join(['❌', esc('Blocked: ' + qb),
-                         esc(f'Tested anyway on a setup built by hand: the page {tested}.')] + ([c] if c else []))
-    return c
+    # Owner, 2026-11-18: guide rows are no longer marked "❌ Blocked" when the quickstart is blocked
+    # (old QA-RULES 8b). Each page shows its own result; the quickstart problem is reported once, on the
+    # quickstart row. A page never built (notTested) just says so.
+    if p.get('kind', 'guide') == 'guide' and p.get('notTested'):
+        return '<br>'.join(['–', esc('Not tested: the quickstart gives no setup to build on.')])
+    return (team_cell if a['report']['style'] == 'team' else status_cell)(a, p)
+
 
 
 def label_cell(a, p):

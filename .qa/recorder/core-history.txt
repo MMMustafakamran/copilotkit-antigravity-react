@@ -52,3 +52,7 @@ a90e6c15a2bb65d0  timeline.ts
 # 2026-11-09 intermediate (named helpers in evaluate)
 375c28297f0e5fad  actions.ts
 5f3e3efbb3117daf  timeline.ts
+# 2026-11-17 evidence mark after scroll, clear stale selection
+068eccc8224fc093  doc-evidence.ts
+# 2026-11-17 no generic doc-code drag on evidence clips
+51d6e0658a5b2dfa  engine.ts

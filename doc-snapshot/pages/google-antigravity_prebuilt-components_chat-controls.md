@@ -2,16 +2,17 @@
 
 > Open and close the prebuilt chat from your UI, and capture assistant message feedback.
 
-Two common controls for the prebuilt chat are opening it from your own UI and
-capturing thumbs-up / thumbs-down feedback on assistant messages.
+This page covers two tasks for the prebuilt chat:
 
-## Control the open state from your own UI
+- [Open and close the chat from your own UI](#control-the-open-state-from-your-own-ui), for example from a button in your nav bar.
+- [Capture thumbs-up and thumbs-down feedback](#capture-message-feedback-thumbs-up--down) on assistant replies.
+
+## Control the open state from your own UI [#control-the-open-state-from-your-own-ui]
 
 Pass `open` and `onOpenChange` to `<CopilotSidebar>` or `<CopilotPopup>` to own
-the open state yourself. This is the controlled pattern: the surface renders
-whatever `open` says, and every request to open or close (the toggle button,
-click-outside on the popup) arrives on `onOpenChange` instead of moving the
-surface directly.
+the open state yourself. This is the controlled pattern. The surface shows
+whatever `open` says. The toggle button and click-outside on the popup send
+their request to `onOpenChange`, and the surface does not move by itself.
 
 ```tsx
 import { useState } from "react";
@@ -45,7 +46,7 @@ to gate opening the chat, for example behind a sign-in check. You can also pass
 you are notified each time it opens or closes.
 </Callout>
 
-## Programmatically open or close the chat
+## Programmatically open or close the chat [#programmatically-open-or-close-the-chat]
 
 If you would rather not lift the state into your own component, the open state
 for `<CopilotPopup>` and `<CopilotSidebar>` also lives in the **chat
@@ -80,9 +81,11 @@ To toggle, read `config.isModalOpen` and flip it:
 
 <Callout type="info">
 `setModalOpen` / `isModalOpen` are only defined when a provider in the tree owns
-modal state. The prebuilt `<CopilotPopup>` and `<CopilotSidebar>` create it
-automatically. If you compose chat yourself, wrap the relevant subtree in
-`<CopilotChatConfigurationProvider isModalDefaultOpen={false}>` so the modal state
+modal state. The prebuilt `<CopilotPopup>` and `<CopilotSidebar>` create this
+state inside the chat only. To open the chat from a button outside it, use
+`open` and `onOpenChange`, or wrap the button and the chat in one
+`<CopilotChatConfigurationProvider isModalDefaultOpen={false}>`. If you compose
+chat yourself, wrap the relevant subtree in the same provider so the modal state
 exists. See the
 [`useCopilotChatConfiguration` reference](/reference/hooks/useCopilotChatConfiguration#modal-state-management).
 </Callout>
@@ -98,10 +101,10 @@ surface manage itself. The prebuilt surfaces accept a `defaultOpen` prop:
 `defaultOpen` for a starting point, and `open` when your own state decides. When
 both are passed, `open` wins.
 
-## Capture message feedback (thumbs up / down)
+## Capture message feedback (thumbs up / down) [#capture-message-feedback-thumbs-up--down]
 
-The assistant-message toolbar can show thumbs-up and thumbs-down buttons. In v2
-you opt in by passing `onThumbsUp` / `onThumbsDown` to the **assistant message
+The assistant-message toolbar can show thumbs-up and thumbs-down buttons. To
+show the buttons, pass `onThumbsUp` and `onThumbsDown` to the **assistant message
 slot**. Without Automatic Learning capture, the buttons only render when a
 handler or a custom thumb slot is provided:
 
@@ -126,23 +129,22 @@ Each handler receives the assistant `message`, so you can record the feedback
 against the specific response (`message.id`). The same `messageView` slot works on
 `<CopilotPopup>` and `<CopilotSidebar>` since they wrap `<CopilotChat>`.
 
-When the slot is rendered through `CopilotChatMessageView`, a live assistant
-message created by a direct AG-UI `TEXT_MESSAGE_START` can also include that
-event's opaque `rawEvent` value. The join happens when the thumbs callback runs;
-canonical messages and future run input stay unchanged. Chunk, snapshot,
-persisted, legacy, and direct `CopilotChatAssistantMessage` paths don't provide
-this callback metadata.
+For raw AG-UI event data on the message, see [`CopilotChatAssistantMessage`](/reference/components/CopilotChatAssistantMessage).
 
 The button labels come from the chat labels (`assistantMessageToolbarThumbsUpLabel`
 defaults to `"Good response"`, `assistantMessageToolbarThumbsDownLabel` to
 `"Bad response"`); override them via
 [chat labels](/reference/hooks/useCopilotChatConfiguration#copilotchatlabels).
 
-With [Automatic Learning capture](/google-antigravity/intelligence/capture-interactions#collect-reply-ratings)
-on and a Trajectory started, the buttons appear without handlers in every chat
-that renders messages with `CopilotChatMessageView` inside a
-`CopilotChatConfigurationProvider`, as `CopilotChat`, `CopilotPopup`, and
-`CopilotSidebar` do. A rating then also goes to the active
+The buttons appear without handlers when all of these are true:
+
+- [Automatic Learning capture](/google-antigravity/intelligence/capture-interactions#collect-reply-ratings) is on.
+- A Trajectory is started.
+- The chat renders messages with `CopilotChatMessageView` inside a
+  `CopilotChatConfigurationProvider`. `CopilotChat`, `CopilotPopup`, and
+  `CopilotSidebar` do.
+
+A rating then also goes to the active
 Trajectory, the user can add a comment, and clicking the chosen thumb again
 removes the rating. Your handlers run when a rating is given, not when it is
 removed.
@@ -153,10 +155,3 @@ underlying [`CopilotChatAssistantMessage`](/reference/components/CopilotChatAssi
 exposes the same `onThumbsUp` / `onThumbsDown` props directly, but callback
 metadata enrichment is owned by `CopilotChatMessageView`.
 </Callout>
-
-## Related
-
-- [CopilotPopup](/google-antigravity/prebuilt-components/popup) and [CopilotSidebar](/google-antigravity/prebuilt-components/sidebar): the prebuilt surfaces that own modal state.
-- [`useCopilotChatConfiguration` reference](/reference/hooks/useCopilotChatConfiguration): full context shape, modal state, and labels.
-- [Slots](/google-antigravity/custom-look-and-feel/slots): the `messageView` / `assistantMessage` slot system used above.
-- [Programmatic Control](/google-antigravity/programmatic-control): driving agent runs from code without a chat UI.

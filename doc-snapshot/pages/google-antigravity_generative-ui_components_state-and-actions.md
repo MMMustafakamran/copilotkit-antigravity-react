@@ -2,7 +2,7 @@
 
 > Show live app data in generated UI, run your code when users click, and keep what they type.
 
-## What is this?
+## What is this? [#what-is-this]
 
 You want a product card that the agent rendered to act like the rest of your app. It must show how many of the product are in the cart, add to the cart when the user clicks, and keep what the user types into a form.
 
@@ -12,7 +12,7 @@ Three tools connect generated UI to your app:
 - **Functions** run your code when a component calls an event.
 - **Writable props** keep what the user types.
 
-## Show live app state
+## Show live app state [#show-live-app-state]
 
 The agent does not know how many items are in the cart, and it must not guess. Declare the state in the catalog, and the library fills the prop:
 
@@ -177,7 +177,7 @@ How props get their values:
 
 The agent does not see the state either. To let it answer "what is in my cart?", also give it the data with [`useAgentContext`](/reference/hooks/useAgentContext), or `connectAgentContext` in Angular. On React Native, `useAgentContext` comes from `@copilotkit/react-native/headless`.
 
-## Run your code on a click
+## Run your code on a click [#run-your-code-on-a-click]
 
 "Add to cart" must add to the cart, with no message to the agent. Declare a function, give the component an event with a matching name, and mount a handler:
 
@@ -447,23 +447,11 @@ In the component, the event is a typed prop, or a typed function input in Angula
 
 An event matches the function with its name, or the name without `on`: `onAddToCart` calls `addToCart`.
 
-### Who may call a function
+### Who may call a function [#who-may-call-a-function]
 
-A declaration can carry the A2UI 1.0 interface fields. `allowedCallers` is `"rendererOnly"` (event bindings and prop values), `"agentOnly"` (`callRendererFunction`) or `"rendererOrAgent"`. `requiresUserActivation: true` limits a function to a user gesture, like `openUrl`, which makes it `rendererOnly`. `returnType` names what the handler gives back, with the A2UI names (`"string"`, `"number"`, `"boolean"`, `"array"`, `"object"`, `"validationResult"`, `"any"`, `"void"`).
+Only your UI can call a function. In this version, the agent cannot call it. To declare `allowedCallers` and `returnType` for the catalog export, see [Who may call a function](/google-antigravity/generative-ui/components/catalogs#who-may-call-a-function).
 
-```ts
-functions: {
-  addToCart: { parameters: z.object({ productId: z.string() }), allowedCallers: "rendererOrAgent", returnType: "object" },
-  track: { parameters: z.object({ event: z.string() }), returnType: "void" },
-  reload: { parameters: z.object({}), allowedCallers: "agentOnly" },
-},
-```
-
-Left out, only the UI may call the function, as in A2UI 1.0. The manifest and the exported catalog always write the value out, so a 1.0 reader sees the same thing. An event cannot match an `"agentOnly"` function, and the built-in functions are value functions of the UI.
-
-In this version the agent cannot call renderer functions at all, whatever `allowedCallers` says: a `callRendererFunction` operation is rejected and never mentioned to the model, because its result would travel back as a developer message, and not every backend keeps that message where the model reads it in order. The declaration fields are kept for the catalog export and for when the path is on.
-
-## Send a click to the agent
+## Send a click to the agent [#send-a-click-to-the-agent]
 
 Some clicks need the agent. For example, "Show me the Team plan" needs a new answer. An event that matches no function does that. Give it `parameters`:
 
@@ -478,19 +466,41 @@ events: {
 
 When the user clicks, the click becomes a visible user message, and the agent answers it. The agent can also choose the text of that message (its `userMessage`), for example "Show me the Team plan".
 
-The result of such an event says whether the click was sent, not whether the agent's run worked. It is `ok: false` when it was not sent, for example with the code `agent_busy` while the agent is already running. Otherwise it is `ok: true` once the run that the click started has ended, also when that run failed: a failed run does not throw, and its error goes to the `onError` subscribers of the CopilotKit core, such as the `onError` of `CopilotKitProvider`. Its user message stays in the chat. To show that error next to your chat, subscribe to the core with `copilotkit.subscribe({ onError })` and match `context.agentId`, as the `runTurn` helper of the [React Native guide](/google-antigravity/react-native#render-surfaces-in-your-message-list) does.
+The result of such an event says whether the click was sent, not whether the agent's run worked. It is `ok: false` when it was not sent, for example with the code `agent_busy` while the agent is already running. Otherwise it is `ok: true` once the run that the click started has ended, also when that run failed: a failed run does not throw, and its error goes to the `onError` subscribers of the CopilotKit core, such as the `onError` of `CopilotKitProvider`. Its user message stays in the chat. To show that error next to your chat, subscribe to the core with `copilotkit.subscribe({ onError })` and match `context.agentId`, as the `runTurn` helper of the [React Native guide](/react-native#render-surfaces-in-your-message-list) does.
 
 The run that the click starts also carries the structured A2UI 1.0 action message, in `forwardedProps.copilotkit.ui.metadata.extensions.copilotkit_action`: `{ "version": "1.0", "action": { "name": "choose", "surfaceId": "plans", "sourceComponentId": "team-button", "timestamp": "2026-10-20T10:00:00.000Z", "userMessage": "Show me the Team plan", "context": { "plan": "team" } } }`. An agent that wants the structured event reads it from there instead of parsing the message; `envelopeToManifest` from `@copilotkit/shared` gives it back as `action`.
 
-## Compute values in the browser
+## Compute values in the browser [#compute-values-in-the-browser]
 
-A prop can be a function value as well as a literal or a binding, at any depth: `{ "@call": "formatCurrency", "args": { "value": { "@path": "/total" }, "currency": "EUR" } }`. It recomputes when the data it reads changes, with no round trip to the agent. The functions of the A2UI 1.0 basic catalog are built in: `formatString` (with `${/path}` and `${fn(arg: value)}` interpolation), `formatNumber`, `formatCurrency`, `formatDate`, `pluralize`, `and`, `or`, `not`, the validators `required`, `regex`, `length`, `numeric` and `email`, `@index` in a template, and `openUrl`, which runs only as the `functionCall` of an event and opens only `http` and `https` URLs, in a new tab.
+A prop can be a function value as well as a literal or a binding, at any depth: `{ "@call": "formatCurrency", "args": { "value": { "@path": "/total" }, "currency": "EUR" } }`. It recomputes when the data it reads changes, with no round trip to the agent. The functions of the A2UI 1.0 basic catalog are built in:
+
+| Group | Functions |
+| --- | --- |
+| Format | `formatString` (with `${/path}` and `${fn(arg: value)}` interpolation), `formatNumber`, `formatCurrency`, `formatDate`, `pluralize` |
+| Logic | `and`, `or`, `not` |
+| Validate | `required`, `regex`, `length`, `numeric`, `email` |
+| Other | `@index` in a template, and `openUrl`, which runs only as the `functionCall` of an event and opens only `http` and `https` URLs, in a new tab |
 
 On React Native, these run in the app, the same way, with two differences. `openUrl` fails with "openUrl is not available on this platform", reported like any failed function, because there is no `window.open`; to open a link there, declare a catalog function of your own whose handler calls `Linking.openURL`. And Hermes has no `Intl.PluralRules`, so `pluralize` picks its form with the English rule: `one` for 1 and -1, `other` for any other number (`zero` still applies to 0).
 
-A2UI 1.0 has no arithmetic, so CopilotKit adds two catalog functions. `calc` evaluates an expression over named args: `{ "@call": "calc", "args": { "expression": "seats * 29 * (annual ? 0.8 : 1)", "seats": { "@path": "/seats" }, "annual": { "@path": "/annual" } } }`, with `+ - * / %`, `x ^ y` (power), comparisons, `&& || !`, `?:`, `min`, `max`, `round`, `floor`, `ceil`, `abs`, `pow`, `sqrt`, `exp`, `ln`, `log10`, the constants `pi` and `e`, and text concatenation. `series` builds a list of `count` items from an item template with `${...}` expressions over a loop variable, for chart data. Both appear to the model as regular catalog functions; a renderer without them rejects the call. The built-ins run only in the browser (on React Native, in the app): the agent cannot call them with `callRendererFunction`.
+A2UI 1.0 has no arithmetic, so CopilotKit adds two catalog functions. `calc` evaluates an expression over named args:
 
-## Keep what the user types
+```json
+{
+  "@call": "calc",
+  "args": {
+    "expression": "seats * 29 * (annual ? 0.8 : 1)",
+    "seats": { "@path": "/seats" },
+    "annual": { "@path": "/annual" }
+  }
+}
+```
+
+`calc` supports `+ - * / %`, `x ^ y` (power), comparisons, `&& || !`, `?:`, `min`, `max`, `round`, `floor`, `ceil`, `abs`, `pow`, `sqrt`, `exp`, `ln`, `log10`, the constants `pi` and `e`, and text concatenation.
+
+`series` builds a list of `count` items from an item template with `${...}` expressions over a loop variable, for chart data. Both appear to the model as regular catalog functions. Another A2UI client that does not have them rejects the call. The built-ins run only in the browser (on React Native, in the app): the agent cannot call them with `callRendererFunction`.
+
+## Keep what the user types [#keep-what-the-user-types]
 
 A checkout form that the agent filled in must keep the user's edits. List the props that the component can change in `writable`. Each one gets a setter, a two-way `model()` input in Angular, or a `v-model` in Vue:
 

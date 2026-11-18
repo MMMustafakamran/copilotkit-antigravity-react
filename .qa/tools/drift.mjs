@@ -38,7 +38,7 @@ const OUT_OF_SCOPE = /^(intelligence|backend|deploy)(\/|-|$)/; // QA-RULES secti
 
 const assignment = JSON.parse(fs.readFileSync("assignment.json", "utf8"));
 const ROOT = new URL(assignment.docBase).pathname.replace(/^\/|\/$/g, ""); // e.g. vue/langgraph-typescript
-const norm = (s) => s.replace(/^﻿/, "").replace(/\r\n?/g, "\n").split("\n").map((l) => l.trimEnd()).join("\n").trim();
+const norm = (s) => s.replace(/^﻿/, "").replace(/\r\n?/g, "\n").split("\n").map((l) => l.trimEnd().replace(/^(\s*#{1,6}\s.*?)\s+\[#[^\]\s]+\]$/, "$1")).join("\n").trim(); // 2026-11-18: the .md export added heading anchors "## X [#x]", not a doc change
 const baseDoc = (p) => (p || "").split("?")[0].replace(/^\/|\/$/g, "");
 // A docPath may be a full URL (a page outside ROOT that a reachable page links to, e.g. AG2 Angular -> /ag2/...).
 const abs = (doc) => /^https?:\/\//.test(doc || "");
@@ -49,10 +49,10 @@ const fileOf = (doc) => abs(doc) ? `${urlOf(doc).slice(1).replace(/\//g, "_")}.m
 const readJson = (f, d) => { try { return JSON.parse(fs.readFileSync(f, "utf8")); } catch { return d; } };
 
 // ---------- fetching ----------
-async function get(url) {
+async function get(url, accept = "text/markdown, text/html") {
   for (let i = 0; i < 3; i++) {
     try {
-      const r = await fetch(url, { headers: { accept: "text/markdown, text/html" }, signal: AbortSignal.timeout(30000) });
+      const r = await fetch(url, { headers: { accept }, signal: AbortSignal.timeout(30000) });
       return { status: r.status, text: r.ok ? await r.text() : "", final: new URL(r.url).pathname.replace(/\.md$/, "") };
     } catch (e) {
       if (i === 2) return { status: 0, text: "", error: String(e.message || e) };
@@ -83,10 +83,31 @@ const label = (n) => {
   (function w(x) { if (typeof x === "string") s.push(x); else if (Array.isArray(x)) x.forEach(w); else if (x && typeof x === "object" && "children" in x) w(x.children); })(n);
   return s.filter((x) => !x.startsWith("$") && x.trim()).pop() ?? "";
 };
+// 2026-11-18: the docs site stopped shipping the page tree in the RSC payload; the sidebar is now
+// server-rendered HTML (<aside id="nd-sidebar">). Fallback: <p> = separator, <button> = folder, <a href> = page.
+// Folder ends are not marked in this HTML, so a page right after a folder may get that folder's group.
+function htmlSidebar(html) {
+  const i = html.indexOf('id="nd-sidebar"');
+  if (i < 0) return { error: "nav tree not found in the page payload or HTML (docs site markup changed?)" };
+  const s = html.slice(i, html.indexOf("</aside>", i));
+  const text = (x) => x.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').trim();
+  const out = [], seen = new Set(); let sep = null, folder = null;
+  for (const m of s.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>|<button\b[^>]*>([\s\S]*?)<\/button>|<a\b[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g)) {
+    if (m[1] !== undefined) { sep = text(m[1]); folder = null; }
+    else if (m[2] !== undefined) { const t = text(m[2]); if (t) folder = t; }
+    else {
+      const url = cleanUrl(m[3].split("#")[0]);
+      if (docOf(url) === null || seen.has(url)) continue;
+      seen.add(url);
+      out.push({ url, name: text(m[4]), group: [sep, folder].filter(Boolean).join(" > ") });
+    }
+  }
+  return out.length ? { pages: out, source: "html" } : { error: "sidebar HTML found but no links parsed" };
+}
 // root: another docs root whose own sidebar lists a page (assignment page `sidebarRoot`, e.g. each
 // /vue/<framework> quickstart sits in its framework's sidebar, not in /vue's). Default: ROOT.
 async function liveSidebar(root = ROOT) {
-  const r = await get(`${ORIGIN}/${root}`);
+  const r = await get(`${ORIGIN}/${root}`, "text/html"); // HTML: the sidebar is not in the .md
   if (r.status !== 200) return { error: r.error || `HTTP ${r.status}` };
   let rsc = "";
   for (const m of r.text.matchAll(/self\.__next_f\.push\(\[1,("(?:[^"\\]|\\.)*")\]\)/g)) { try { rsc += JSON.parse(m[1]); } catch {} }
@@ -94,7 +115,22 @@ async function liveSidebar(root = ROOT) {
   for (let i = rsc.indexOf('"tree":{'); i >= 0; i = rsc.indexOf('"tree":{', i + 1)) {
     try { const o = JSON.parse(balanced(rsc, i + 7)); if (!tree || JSON.stringify(o).length > JSON.stringify(tree).length) tree = o; } catch {}
   }
-  if (!tree) return { error: "nav tree not found in the page payload (docs site markup changed?)" };
+  if (!tree) {
+    // The HTML sidebar renders only the open folder's pages (the one holding the current page), so
+    // union the sidebars of the root and of every tracked page under it. A page's own entry wins (its
+    // folder is open there). Folders that hold no tracked page stay unseen: new pages there are missed.
+    const first = htmlSidebar(r.text);
+    if (first.error) return first;
+    const byUrl = new Map(first.pages.map((p) => [p.url, p]));
+    const urls = [...new Set([...tracked.keys()].filter((d) => !abs(d)).map(urlOf))].filter((u) => u.startsWith(`/${root}/`));
+    const res = await pool(urls, 6, (u) => get(`${ORIGIN}${u}`, "text/html"));
+    for (const [u, x] of res) {
+      if (x.status !== 200) continue;
+      const sb = htmlSidebar(x.text);
+      for (const p of sb.pages || []) if (!byUrl.has(p.url) || p.url === cleanUrl(u)) byUrl.set(p.url, p);
+    }
+    return { pages: [...byUrl.values()], source: "html" };
+  }
   const out = [];
   (function walk(xs, group) {
     for (const x of xs) {
@@ -116,7 +152,10 @@ function fences(t) {
   const out = []; let cur = null, mark = null;
   for (const l of t.split("\n")) {
     const m = l.match(/^\s*(```+|~~~+)/);
-    if (cur === null) { if (m) { cur = [l.trim()]; mark = m[1][0]; } }
+    // 2026-11-18: the export moved file names from a first-line comment ("// src/x.ts") to the fence
+    // ('```ts title="src/x.ts"'). Both forms become "```ts" + "FILE:src/x.ts", so a format switch is not a code change.
+    if (cur === null) { if (m) { const t = l.trim().match(/^(\S+?)(?:\s+.*?title="([^"]+)".*)?$/); cur = t[2] ? [t[1], "FILE:" + t[2]] : [t[1]]; mark = m[1][0]; } }
+    else if (cur.length === 1 && /^(\/\/|#|<!--)\s*[\w./@[\]()-]+\.\w+\s*(-->)?$/.test(l.trim())) cur.push("FILE:" + l.trim().replace(/^(\/\/|#|<!--)\s*|\s*-->$/g, ""));
     else { cur.push(l.trim()); if (m && m[1][0] === mark && l.trim().replace(/[`~]/g, "") === "") { out.push(cur.join("\n")); cur = null; } }
   }
   if (cur) out.push(cur.join("\n"));

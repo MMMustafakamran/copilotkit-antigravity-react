@@ -2,11 +2,9 @@
 
 > Decompose work across multiple specialized agents with a visible delegation log.
 
-
 <!-- interactive demo: subagents -->
 
-
-## What is this?
+## What is this? [#what-is-this]
 
 Sub-agents are the canonical multi-agent pattern: a top-level
 **supervisor** LLM orchestrates one or more specialized **sub-agents**
@@ -18,7 +16,7 @@ This is fundamentally the same shape as tool-calling, but each "tool"
 is itself a full-blown agent with its own system prompt and (often) its
 own tools, memory, and model.
 
-## When should I use this?
+## When should I use this? [#when-should-i-use-this]
 
 Reach for sub-agents when a task has distinct specialized sub-tasks
 that each benefit from their own focus:
@@ -27,13 +25,13 @@ that each benefit from their own focus:
   different system prompt and temperature.
 - **Router + specialists**, where one agent classifies the request and
   dispatches to the right expert.
-- **Divide-and-conquer** — any problem that fits cleanly into parallel
+- **Divide-and-conquer**, for any problem that fits cleanly into parallel
   or sequential sub-problems.
 
 The example below uses the Research → Write → Critique shape as the
 canonical example.
 
-## Setting up sub-agents
+## Setting up sub-agents [#setting-up-sub-agents]
 
 <Steps>
   <Step>
@@ -54,7 +52,6 @@ canonical example.
     signature and docstring, dispatches the call in this process, and streams
     the `TOOL_CALL_*` events the UI renders its per-delegation cards from.
 
-    
 ~~~~python title="subagents.py"
 import uuid
 
@@ -170,7 +167,6 @@ def subagents_agent():
 
 ~~~~
 
-
     Write the tools as `async def`. The adapter awaits every server tool
     inline, and the SDK only offloads non-coroutine callables to a worker
     thread, so a synchronous HTTP call here would block the event loop for the
@@ -196,12 +192,9 @@ def subagents_agent():
   unchanged. Enable it on your own agent to get bracketed steps for free.
 </Callout>
 
-Each sub-agent is an isolated agent call with its own model, system
-prompt, and optional tools. They don't share memory or tools with the
-supervisor; the supervisor only ever sees what the sub-agent returns.
+Define one agent per role, each with its own system prompt:
 
-```python
-# src/agents/subagents.py
+```python title="src/agents/subagents.py"
 import uuid
 
 import httpx
@@ -313,27 +306,32 @@ def subagents_agent():
         tools=[research_agent, writing_agent, critique_agent],
     )
 
-
 ```
+
+Each sub-agent is an isolated agent call with its own model, system
+prompt, and optional tools. They don't share memory or tools with the
+supervisor; the supervisor only ever sees what the sub-agent returns.
 
 Keep sub-agent system prompts narrow and focused. The point of this pattern
 is that each one does one thing well. If a sub-agent needs to know
 the whole user context to do its job, that's a signal the boundary is
 wrong.
 
-## Exposing sub-agents as tools
+## Exposing sub-agents as tools [#exposing-sub-agents-as-tools]
 
 The supervisor delegates by calling tools. Each delegation tool is a thin
 wrapper around a specialized agent call that:
 
 1. Runs the sub-agent on the supplied `task` string.
-2. Records the delegation into a `delegations` slot in shared agent
-   state (so the UI can render a live log).
+2. Records the delegation into a `delegations` slot in [shared agent
+   state](/google-antigravity/shared-state) (so the UI can render a live log). In the Built-in Agent
+   example, the tool code below does not write this entry. The agent
+   loop writes it: after each delegation tool result, the loop emits a
+   `STATE_DELTA` event that sets `/delegations`.
 3. Returns the sub-agent's final message as the tool result, which the
    supervisor sees on its next turn.
 
-```python
-# src/agents/subagents.py
+```python title="src/agents/subagents.py"
 async def research_agent(task: str) -> str:
     """Delegate a research task; returns 3-5 key facts."""
     return await _run("research_agent", task)
@@ -348,8 +346,9 @@ async def critique_agent(task: str) -> str:
     """Delegate a review task; returns 2-3 critiques."""
     return await _run("critique_agent", task)
 
-
 ```
+
+If the excerpt uses a header-forwarding helper, such as `forwardingFetch` or `HeaderForwardingMiddleware`, leave it out of your app. The showcase uses it only to send request headers to its test server.
 
 This is where CopilotKit's shared-state channel earns its keep: the
 supervisor's tool calls mutate `delegations` as they happen, and the
@@ -357,25 +356,23 @@ frontend renders every new entry live.
 
 <Callout type="warn">
   Give every delegation a stable `id` and merge new entries by that `id`. The
-  client sends its copy of shared state back as run input on every run, so a
-  slot that blindly appends whatever it receives — a LangGraph
-  `Annotated[list, operator.add]` reducer, for example — concatenates the
-  entries the client just echoed onto the ones the agent already has, and the
-  log doubles when a thread is continued.
+  client sends its copy of shared state back as run input on every run. A slot
+  that appends everything it receives, such as a LangGraph
+  `Annotated[list, operator.add]` reducer, adds those entries again. Then the
+  log doubles when a thread continues. The LangGraph excerpt above uses
+  `operator.add`, so in your app, write a reducer that merges by `id`.
 </Callout>
 
-## Rendering a live delegation log
+## Rendering a live delegation log [#rendering-a-live-delegation-log]
 
 On the frontend, the delegation log is a reactive render of the
 `delegations` slot.
-
 
 Subscribe with `useAgent({ updates:
 [UseAgentUpdate.OnStateChanged, UseAgentUpdate.OnRunStatusChanged] })`,
 read `agent.state.delegations`, and render one card per entry.
 
-```typescript
-// src/app/demos/subagents/delegation-log.tsx
+```typescript title="src/app/demos/subagents/delegation-log.tsx"
 /**
  * Live delegation log — renders the `delegations` slot of agent state.
  *
@@ -505,16 +502,8 @@ export function DelegationLog({ delegations, isRunning }: DelegationLogProps) {
 }
 ```
 
+To stream each sub-agent's output token by token inside its log entry, see
+[State streaming](/google-antigravity/shared-state/streaming).
 
-
-
-The result: as the supervisor fans work out to its sub-agents, the log
-grows in real time, giving the user visibility into a process that
-would otherwise be a long opaque spinner.
-
-## Related
-
-- **[Shared State](/google-antigravity/shared-state)** — the channel that makes the
-  delegation log live.
-- **[State streaming](/google-antigravity/shared-state/streaming)** — stream
-  *individual* sub-agent outputs token-by-token inside each log entry.
+The log grows in real time as the supervisor delegates. The user sees each
+step while it happens, not a long spinner.

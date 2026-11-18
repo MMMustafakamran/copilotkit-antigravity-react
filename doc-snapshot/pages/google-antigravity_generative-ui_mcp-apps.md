@@ -2,38 +2,27 @@
 
 > Render interactive UI components from MCP servers directly in your chat interface.
 
-
 <!-- interactive demo: mcp-apps -->
 
-
-## What is this?
+## What is this? [#what-is-this]
 
 MCP Apps are MCP servers that expose tools with associated UI resources. When
 the agent calls one of these tools, CopilotKit automatically fetches the
-resource and renders the UI component in the chat; no additional frontend
-code required.
-
-<Callout type="info">
-  **Free course:** See this pattern built end-to-end in [Build Interactive Agents with Generative UI](https://www.deeplearning.ai/short-courses/build-interactive-agents-with-generative-ui/) — a free DeepLearning.AI short course taught by CopilotKit's CEO covering the full Generative UI spectrum (Controlled, Declarative, and Open-Ended).
-</Callout>
+resource and renders its UI (the widget) in the chat. You do not write any
+frontend code for it.
 
 Key benefits:
 
-- **Zero frontend code** — UI components are served by the MCP server
-- **Full interactivity** — components can use HTML, CSS, and JavaScript
-- **Secure sandboxing** — content runs in isolated iframes
-- **Thread persistence** — MCP Apps are stored in conversation history and restored on reconnect
+- **Zero frontend code**: the MCP server serves the widgets
+- **Full interactivity**: widgets can use HTML, CSS, and JavaScript
+- **Secure sandboxing**: widgets run in isolated iframes
+- **Thread persistence**: MCP Apps are stored in conversation history and restored on reconnect
 
-## Wire the runtime to your MCP server(s)
+## Wire the runtime to your MCP server(s) [#wire-the-runtime-to-your-mcp-servers]
 
-A single `mcpApps.servers` entry on the runtime is all it takes. The runtime
-auto-applies the MCP Apps middleware to every registered agent: each time an
-agent calls a tool backed by an MCP UI resource, the middleware fetches the
-resource and emits an `activity` event that the built-in
-`MCPAppsActivityRenderer` renders inline in the chat as a sandboxed iframe.
+Add your MCP server to `mcpApps.servers` on `CopilotRuntime`:
 
-```typescript
-// src/app/api/copilotkit-mcp-apps/route.ts
+```typescript title="src/app/api/copilotkit-mcp-apps/route.ts"
     // The `mcpApps.servers` config is all you need server-side. The runtime
     // auto-applies the MCP Apps middleware to every registered agent: on each
     // MCP tool call it fetches the associated UI resource and emits an
@@ -59,6 +48,14 @@ resource and emits an `activity` event that the built-in
     });
 ```
 
+The runtime adds the MCP Apps middleware to every agent. When an agent calls a
+tool with a UI resource, the middleware fetches the resource. The built-in
+`MCPAppsActivityRenderer` then renders the widget in the chat as a sandboxed
+iframe.
+
+On an Intelligence runtime, keep `mcpApps` as it is. See
+[MCP Apps with Intelligence](#mcp-apps-with-intelligence).
+
 <Callout type="info" title="Always pin a serverId">
   In production, always provide a stable `serverId`. Without it, CopilotKit
   hashes the server URL, and a URL change (for example between environments)
@@ -66,7 +63,34 @@ resource and emits an `activity` event that the built-in
   threads.
 </Callout>
 
-## MCP Apps with Intelligence
+## No frontend renderer needed [#no-frontend-renderer-needed]
+
+Unlike custom activity types, the MCP Apps renderer is already registered by
+`CopilotKit`. A plain `<CopilotChat />` is enough;
+no `renderActivityMessages` prop, no manual
+`useRenderActivityMessage` wiring.
+
+```typescript title="src/app/demos/mcp-apps/page.tsx"
+  // No `renderActivityMessages`, no `useRenderActivityMessage` — the
+  // CopilotKitProvider auto-registers the built-in `MCPAppsActivityRenderer`
+  // for the "mcp-apps" activity type. A plain <CopilotChat /> is enough.
+  return (
+    <CopilotKit runtimeUrl="/api/copilotkit-mcp-apps" agent="mcp-apps">
+      <div className="flex justify-center items-center h-screen w-full">
+        <div className="h-full w-full max-w-4xl">
+          <Chat />
+        </div>
+      </div>
+    </CopilotKit>
+  );
+```
+
+The demo's `Chat` component renders `<CopilotChat agentId="mcp-apps" />` and adds suggestion pills. In your app, render `<CopilotChat />` in its place.
+
+To check the setup, ask the agent to draw a flowchart with Excalidraw. The
+Excalidraw widget renders in the chat as an interactive iframe.
+
+## MCP Apps with Intelligence [#mcp-apps-with-intelligence]
 
 The `mcpApps` option works the same way on a runtime connected to
 [Intelligence](/google-antigravity/intelligence/quickstart). The two options do different jobs:
@@ -134,39 +158,18 @@ from an MCP App against the servers of that agent.
 For the API key, user identity, and route protection, follow the
 [Intelligence quickstart](/google-antigravity/intelligence/quickstart).
 
-## No frontend renderer needed
+## Sandbox and widget storage [#sandbox-and-widget-storage]
 
-Unlike custom activity types, the MCP Apps renderer is already registered by
-`CopilotKit` out of the box. A plain `<CopilotChat />` is enough;
-no `renderActivityMessages` prop, no manual
-`useRenderActivityMessage` wiring.
+Each widget runs in a sandboxed iframe with an opaque origin. Inside the
+sandbox, a widget:
 
-```typescript
-// src/app/demos/mcp-apps/page.tsx
-  // No `renderActivityMessages`, no `useRenderActivityMessage` — the
-  // CopilotKitProvider auto-registers the built-in `MCPAppsActivityRenderer`
-  // for the "mcp-apps" activity type. A plain <CopilotChat /> is enough.
-  return (
-    <CopilotKit runtimeUrl="/api/copilotkit-mcp-apps" agent="mcp-apps">
-      <div className="flex justify-center items-center h-screen w-full">
-        <div className="h-full w-full max-w-4xl">
-          <Chat />
-        </div>
-      </div>
-    </CopilotKit>
-  );
-```
-
-## Sandbox and widget storage
-
-Each MCP App runs in a sandboxed iframe with an opaque origin. A widget can't
-read your page's cookies, storage or DOM. It can't read responses from your
-APIs either, unless an API allows cross-origin requests (for example with
-`Access-Control-Allow-Origin: *`). It can still send requests, though, so
-protect state-changing endpoints against cross-site request forgery as you
-would for any other site. The trade-off is
-that the widget can't use `localStorage`, `sessionStorage`, `IndexedDB` or
-cookies of its own either.
+- cannot read the cookies, storage, or DOM of your page.
+- cannot read responses from your APIs, unless an API allows cross-origin
+  requests (for example with `Access-Control-Allow-Origin: *`).
+- can still send requests. Protect state-changing endpoints against
+  cross-site request forgery, as you do for any other site.
+- cannot use `localStorage`, `sessionStorage`, `IndexedDB`, or cookies of its
+  own.
 
 Requests a widget makes that need CORS, such as `<script type="module">` and
 `fetch`, are sent with `Origin: null`. Serve public widget assets with
@@ -189,17 +192,17 @@ If you wrote a widget yourself and it needs storage, you can restore
 ```
 
 <Callout type="warn" title="Only for widgets you trust">
-  With `allowSameOriginFallback`, every MCP App runs with your page's origin.
-  Any connected MCP server's widget can then read your cookies and storage and
-  act as the signed-in user. Don't enable it if you connect third-party MCP
-  servers.
+  If you connect a third-party MCP server, do not set
+  `allowSameOriginFallback`. With this option, every widget runs with the
+  origin of your page. A widget from any connected MCP server can then read
+  your cookies and storage and act as the signed-in user.
 </Callout>
 
-## Transport types
+## Transport types [#transport-types]
 
 The middleware supports two transport types:
 
-### HTTP
+### HTTP [#http]
 
 Use this format to connect to an MCP server that accepts standard HTTP requests:
 
@@ -211,7 +214,7 @@ Use this format to connect to an MCP server that accepts standard HTTP requests:
 }
 ```
 
-### SSE
+### SSE [#sse]
 
 Use this format to connect to an MCP server that streams events over a persistent connection:
 
@@ -226,11 +229,72 @@ Use this format to connect to an MCP server that streams events over a persisten
 }
 ```
 
-## Example MCP servers
+## Let a widget tell the model what the user is looking at [#let-a-widget-tell-the-model-what-the-user-is-looking-at]
+
+A widget can share its state with the model through
+`ui/update-model-context`: a selection, the filters it shows, a cart. Nothing
+appears in the chat and no run starts; the latest state rides along with the
+next turns of the conversation.
+
+```ts
+await app.updateModelContext({
+  content: [{ type: "text", text: "The user is looking at the Lyon station." }],
+  structuredContent: { stationId: "lyon", filter: "available" },
+});
+
+// Optionally, start a turn that uses it.
+await app.sendMessage({
+  role: "user",
+  content: [{ type: "text", text: "Which departures are available?" }],
+});
+```
+
+It is off by default. Turn it on with `mcpApps.modelContext` in React and
+Vue, or `provideMCPApps({ modelContext: true })` in Angular:
+
+```tsx
+<CopilotKit runtimeUrl="/api/copilotkit" mcpApps={{ modelContext: true }}>
+  {children}
+</CopilotKit>
+```
+
+While it is off, CopilotKit does not announce the capability and answers the
+request with "method not found".
+
+<Callout type="warn" title="Only for MCP servers you trust">
+  With `modelContext`, the widget of any MCP server your agent uses can write
+  into the system prompt of the built-in agent, as soon as it loads and
+  without any action from the user, who does not see what it wrote. Don't
+  enable it if you connect third-party MCP servers.
+</Callout>
+
+Once it is on:
+
+- Each update replaces the widget's previous state. There is one state per
+  widget in a conversation: two different widgets keep separate states, and
+  two instances of the same widget share one. Sending no content and no
+  `structuredContent` clears it.
+- Text blocks and `structuredContent` are supported. Images, audio and
+  resources are refused with an error, and so is a state whose serialized
+  JSON is longer than 32,768 characters (measured on the string's length,
+  not its byte size).
+- The state belongs to the conversation the widget was opened in and is never
+  sent to another one. It stays in memory while the page is open, survives
+  the widget leaving the screen, and is removed when the conversation is
+  deleted. It is not restored after a page reload.
+- The state is sent to the agent in the run's `context`. The built-in agent
+  adds it to its prompt; another agent has to read `RunAgentInput.context` to
+  use it.
+
+## Example MCP servers [#example-mcp-servers]
 
 Try these open-source MCP Apps servers to get started:
 
-- [Excalidraw](https://mcp.excalidraw.com) — collaborative whiteboard rendered in-chat
-- [modelcontextprotocol/ext-apps](https://github.com/modelcontextprotocol/ext-apps) — canonical reference implementations
+- [Excalidraw](https://mcp.excalidraw.com): collaborative whiteboard rendered in-chat
+- [modelcontextprotocol/ext-apps](https://github.com/modelcontextprotocol/ext-apps): canonical reference implementations
+
+<Callout type="info">
+  **Free course:** See this pattern built end-to-end in [Build Interactive Agents with Generative UI](https://www.deeplearning.ai/short-courses/build-interactive-agents-with-generative-ui/). This free DeepLearning.AI short course is taught by CopilotKit's CEO. It covers the full Generative UI spectrum (Controlled, Declarative, and Open-Ended).
+</Callout>
 
 <IntegrationGrid path="generative-ui/mcp-apps" />

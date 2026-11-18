@@ -2,12 +2,11 @@
 
 > Expose browser-side actions as structured tools that compatible agents can discover and call.
 
-
-## Overview
+## Overview [#overview]
 
 WebMCP lets your website tell compatible browser agents what they can do. Instead of guessing which buttons to click, an agent discovers a named tool with a description, a typed input schema, and a JavaScript handler.
 
-CopilotKit can publish an existing frontend tool to [`document.modelContext`](https://webmachinelearning.github.io/webmcp/). The same handler then works for your CopilotKit agent and for WebMCP-aware browser agents.
+CopilotKit can publish an existing [frontend tool](/google-antigravity/frontend-tools) to [`document.modelContext`](https://webmachinelearning.github.io/webmcp/). The same handler then works for your CopilotKit agent and for WebMCP-aware browser agents.
 
 <Callout type="warn" title="WebMCP is experimental">
   WebMCP is a draft Community Group report, not a W3C Standard. Chrome offers
@@ -18,13 +17,13 @@ CopilotKit can publish an existing frontend tool to [`document.modelContext`](ht
   before testing.
 </Callout>
 
-## Start with your coding agent
+## Start with your coding agent [#start-with-your-coding-agent]
 
 Use this pre-built prompt to add WebMCP to your project. Your coding agent will adapt the implementation to your app and verify that a compatible browser can discover and call the tool.
 
 <WebMCPSetupPrompt />
 
-## Do I need an agent?
+## Do I need an agent? [#do-i-need-an-agent]
 
 You do not need a CopilotKit backend agent to handle a WebMCP call. A compatible browser agent calls the frontend tool handler directly on the page; in that path, the handler context has no `agent`.
 
@@ -39,7 +38,7 @@ Choose the smallest path that fits your app:
 
 React Native does not expose `document.modelContext`, so WebMCP registration is a no-op there. CopilotKit currently supports this WebMCP option in its browser integrations for React, Vue, Angular, and direct core usage.
 
-## How CopilotKit connects WebMCP
+## How CopilotKit connects WebMCP [#how-copilotkit-connects-webmcp]
 
 1. Your app registers a CopilotKit frontend tool with `webmcp` enabled.
 2. CopilotKit mirrors the tool's name, description, JSON Schema, annotations, and handler onto `document.modelContext`.
@@ -48,11 +47,9 @@ React Native does not expose `document.modelContext`, so WebMCP registration is 
 
 The WebMCP call stays in the browser unless your handler deliberately calls an API. CopilotKit does not route that call through a Runtime or backend agent.
 
-## Add WebMCP manually
+## Add WebMCP manually [#add-webmcp-manually]
 
-
-
-### React frontend tool
+### React frontend tool [#react-frontend-tool]
 
 Add `webmcp` to the tool you already register. This code must run inside your existing `CopilotKitProvider`.
 
@@ -86,13 +83,7 @@ export function OrderSearch() {
 
 Use the equivalent option with [`useFrontendTool` for Vue](/reference/vue/hooks/useFrontendTool) or [`registerFrontendTool` for Angular](/reference/angular/functions/registerFrontendTool). The React API is documented in [`useFrontendTool`](/reference/hooks/useFrontendTool).
 
-
-
-
-
-
-
-### WebMCP only, with no agent
+### WebMCP only, with no agent [#webmcp-only-with-no-agent]
 
 For browser code that does not use a framework provider, register the frontend tool directly with the core. Keep the core instance alive for as long as the tool should remain available.
 
@@ -124,14 +115,21 @@ export const copilotkit = new CopilotKitCore({
 
 This path does not configure a Runtime or an agent. It only registers browser-side tools through CopilotKit's core lifecycle.
 
-## Design tools agents can use reliably
+## Design tools agents can use reliably [#design-tools-agents-can-use-reliably]
+
+Required:
 
 - Give every WebMCP tool a non-empty, specific `description`. CopilotKit skips WebMCP registration when it is missing.
-- Keep each tool focused on one action and give every parameter a useful description.
 - Use `readOnlyHint: true` only when the handler cannot change state.
+- Set the frontend tool to unavailable when the action cannot currently run; CopilotKit removes it from WebMCP until it is available again.
+
+For better results:
+
+- Keep each tool focused on one action and give every parameter a useful description.
 - Use `untrustedContentHint: true` when results may contain user-generated or external content.
 - Return concise, structured results that tell the caller what happened.
-- Set the frontend tool to unavailable when the action cannot currently run; CopilotKit removes it from WebMCP until it is available again.
+
+For more, see Chrome's [WebMCP best practices](https://developer.chrome.com/docs/ai/webmcp/best-practices).
 
 Annotations are hints for browser agents, not security controls. Enforce authentication, authorization, validation, rate limits, and required user confirmation inside the handler or the API it calls. See Chrome's [WebMCP tool security guidance](https://developer.chrome.com/docs/ai/webmcp/secure-tools).
 
@@ -142,23 +140,25 @@ Annotations are hints for browser agents, not security controls. Enforce authent
   first one and logs a warning.
 </Callout>
 
-## Test the complete path
+## Test the complete path [#test-the-complete-path]
+
+Set up the browser:
 
 1. Open Chrome 149 or newer and enable the WebMCP origin trial or local testing flag.
 2. Load the app in an [origin-isolated document](https://developer.chrome.com/docs/ai/webmcp#origin-isolation). The `tools` permissions policy defaults to `self`; cross-origin iframes also need `allow="tools"`.
-3. Confirm that `document.modelContext` exists.
-4. Use Chrome's [Model Context Tool Inspector](https://developer.chrome.com/docs/ai/webmcp#imitate-agent-chat-with-the-inspector-extension) to confirm the tool name and schema, call it with representative inputs, and inspect its result.
-5. Ask the inspector's agent to complete the user task in natural language. Verify that it chooses the right tool and that authentication and confirmation boundaries still hold.
+3. Make sure that `document.modelContext` exists.
 
-If the tool does not appear, check the browser setup first, then verify that the tool has a description, `webmcp` is enabled, and the frontend tool is currently available.
+Test the tool:
 
-## Related
+1. Open Chrome's [Model Context Tool Inspector](https://developer.chrome.com/docs/ai/webmcp#imitate-agent-chat-with-the-inspector-extension).
+2. Make sure that the tool name and schema appear.
+3. Call the tool with representative inputs and read its result.
+4. Ask the inspector's agent to complete the user task in natural language.
+5. Make sure that the agent chooses the right tool, and that authentication and confirmation boundaries still hold.
 
-- [Frontend tools](/google-antigravity/frontend-tools)
+If the tool does not appear, make sure that:
 
-- [React `useFrontendTool` reference](/reference/hooks/useFrontendTool)
-
-
-
-- [WebMCP specification](https://webmachinelearning.github.io/webmcp/)
-- [Chrome WebMCP best practices](https://developer.chrome.com/docs/ai/webmcp/best-practices)
+1. The browser setup is complete.
+2. The tool has a `description`.
+3. `webmcp` is set on the tool.
+4. The frontend tool is available.

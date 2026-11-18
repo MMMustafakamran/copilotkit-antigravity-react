@@ -2,14 +2,13 @@
 
 > Render rich, declarative UI surfaces from your agent using the A2UI protocol.
 
-## What is this?
+## What is this? [#what-is-this]
 
 [A2UI](https://a2ui.org) (Agent-to-UI) is a declarative Generative UI
-specification, led by Google with CopilotKit as a launch and design
-partner. It lets your agent render structured UI components through a
-JSON-based schema instead of plain text: cards, rows, columns, badges,
-and price tags, all composed from a catalog of components you (or the
-platform) define.
+specification. Your agent sends a JSON schema in place of plain text.
+The frontend renders that schema as cards, rows, columns, badges, and
+price tags from a catalog of components that you (or the platform)
+define.
 
 You can design and preview A2UI schemas visually using the
 [A2UI Composer](https://a2ui-composer.ag-ui.com/).
@@ -18,7 +17,7 @@ You can design and preview A2UI schemas visually using the
   **Free course:** See this pattern built end-to-end in [Build Interactive Agents with Generative UI](https://www.deeplearning.ai/short-courses/build-interactive-agents-with-generative-ui/), a free DeepLearning.AI short course taught by CopilotKit's CEO covering the full Generative UI spectrum (Controlled, Declarative, and Open-Ended).
 </Callout>
 
-## The two approaches
+## The two approaches [#the-two-approaches]
 
 CopilotKit ships two complementary A2UI approaches:
 
@@ -35,11 +34,12 @@ frontend renderer. The difference is *where the schema comes from* and
 *how data reaches the client*.
 
 <Callout type="info">
-  To let the agent render A2UI v1.0 with your own React components, in the chat
-  and in areas of your page, see [Components and surfaces](/google-antigravity/generative-ui/components).
+  This page uses A2UI v0.9 through the `a2ui` prop. For A2UI v1.0 with your
+  own React components, in the chat and in areas of your page, see
+  [Components and surfaces](/google-antigravity/generative-ui/components).
 </Callout>
 
-## How it works
+## How it works [#how-it-works]
 
 Every A2UI surface is assembled from three operations emitted by the
 agent and consumed by the frontend renderer:
@@ -62,16 +62,19 @@ a2ui.update_data_model(surface_id, {"items": data})
 a2ui.render(operations=[...])  # wraps in a2ui_operations and serializes
 ```
 
-## Setup
+## Setup [#setup]
 
 A2UI turns on in one of two ways. Most apps use the first.
 
-### Pass a catalog on the provider (recommended)
+### Pass a catalog on the provider (recommended) [#pass-a-catalog-on-the-provider-recommended]
 
 Pass an A2UI catalog to the `<CopilotKit>` provider. The catalog tells
 the renderer which components your agent can draw, and it does two
 things for you automatically: it enables A2UI and it injects the A2UI
 tool into your agent. No `a2ui` block on the runtime is required.
+
+Build `myCatalog` with `createCatalog`, as shown in
+[Dynamic Schema](./a2ui/dynamic-schema).
 
 ```tsx title="app/page.tsx"
 import { CopilotKit } from "@copilotkit/react-core/v2";
@@ -81,10 +84,10 @@ import { CopilotKit } from "@copilotkit/react-core/v2";
 </CopilotKit>;
 ```
 
-### Enable on the runtime without a catalog
+### Enable on the runtime without a catalog [#enable-on-the-runtime-without-a-catalog]
 
 If you do not pass a catalog, enable A2UI on the runtime instead.
-`a2ui: true` applies the middleware so the surfaces your agent emits
+`a2ui: {}` applies the middleware so the surfaces your agent emits
 are rendered; add `injectA2UITool: true` to also inject the render
 tool so the agent can generate surfaces dynamically:
 
@@ -98,9 +101,8 @@ const runtime = new CopilotRuntime({
 });
 ```
 
-The middleware handles the wire protocol automatically, intercepting
-tool results that contain A2UI operations and rendering them as rich
-surfaces in the chat.
+The middleware finds tool results that contain A2UI operations. It
+renders them as surfaces in the chat.
 
 <Callout type="warn">
 With neither a catalog on the provider nor `a2ui` on the runtime, A2UI
@@ -108,25 +110,30 @@ surfaces will not render. The operations fall through as plain tool
 results.
 </Callout>
 
-### What gets injected
+### What gets injected [#what-gets-injected]
 
-When injection is on, the runtime adds a tool named `generate_a2ui` to
-your agent. Calling it runs a secondary LLM, a subagent, that designs
+When injection is on, the runtime adds a tool named `render_a2ui` to
+your agent. The agent's model calls it with the surface components and
+data, and the A2UI middleware renders the surface in the chat.
+
+LangGraph agents that use the CopilotKit middleware (`CopilotKitMiddleware`
+in Python, `copilotkitMiddleware` in TypeScript) get `generate_a2ui` in its
+place. Calling `generate_a2ui` runs a secondary LLM, a subagent, that designs
 the full A2UI surface (components, layout, and data) from your catalog,
 then streams it into the chat. You do not write this tool yourself. See
 [Dynamic Schema](./a2ui/dynamic-schema) for the full flow.
 
-### Customize or opt out
+### Customize or opt out [#customize-or-opt-out]
 
-To take control instead of relying on auto-inject, set
-`injectA2UITool: false` and provide the tool yourself with the AG-UI
-factory (`get_a2ui_tools()` in Python, `getA2UITools()` in TypeScript),
-where you set the model, default catalog id, and more. An explicit
+To provide the tool yourself, set `injectA2UITool: false`. Then add the
+tool from the AG-UI factory: `get_a2ui_tools()` in Python or
+`getA2UITools()` in TypeScript. In the factory, you set the model, the
+default catalog id, and more. An explicit
 `injectA2UITool: false` always wins, even when a catalog is present.
 This is also how the [Fixed Schema](./a2ui/fixed-schema) approach
 works: your agent owns a data-only tool and no subagent is injected.
 
-## Colors and dark mode
+## Colors and dark mode [#colors-and-dark-mode]
 
 The built-in basic catalog takes its colors from CSS variables. In dark mode
 (`.dark` on an ancestor of the chat) CopilotKit's stylesheet sets them from the
@@ -145,9 +152,10 @@ set the variables on the surface: `.a2ui-surface` in React and Vue,
 ```
 
 Values you set on the surface apply in both light and dark mode. Scope them
-with `.dark .a2ui-surface` to set dark colors only.
+with `.dark .a2ui-surface` to set dark colors only. For fonts, image sizes,
+and a full theme file, see [Styling](/google-antigravity/generative-ui/a2ui/styling).
 
-## Choose your approach
+## Choose your approach [#choose-your-approach]
 
 <Cards>
   <Card

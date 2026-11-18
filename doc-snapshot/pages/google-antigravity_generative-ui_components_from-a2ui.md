@@ -2,11 +2,11 @@
 
 > Move an app from the a2ui renderer to components and surfaces: the provider, the catalog, the operations, and what the agent receives.
 
-## What is this?
+## What is this? [#what-is-this]
 
-The `a2ui` provider option and `@copilotkit/a2ui-renderer` render A2UI v0.9 by default, with explicit A2UI 1.0 support in React: you build a catalog with `createCatalog`, and the agent streams a fixed or a generated schema into it. Components and surfaces is a separate A2UI 1.0 engine. The idea is the same: the agent writes operations, and the browser renders your components. The engine adds typed catalogs, the [standard catalog](/generative-ui/components/standard-catalog), areas of the page as targets, two transports, dynamic values that compute in the browser, and functions the agent can call. This page maps one to the other.
+The `a2ui` provider option and `@copilotkit/a2ui-renderer` render A2UI v0.9 by default, with explicit A2UI 1.0 support in React: you build a catalog with `createCatalog`, and the agent streams a fixed or a generated schema into it. Components and surfaces is a separate A2UI 1.0 engine. The idea is the same: the agent writes operations, and the browser renders your components. The engine adds typed catalogs, the [standard catalog](/google-antigravity/generative-ui/components/standard-catalog), areas of the page as targets, two transports, dynamic values that compute in the browser, and functions the agent can call. This page maps one to the other.
 
-## Use 1.0 with the React a2ui renderer
+## Use 1.0 with the React a2ui renderer [#use-10-with-the-react-a2ui-renderer]
 
 You can keep the `a2ui` provider option and opt into the native 1.0 basic catalog:
 
@@ -44,7 +44,7 @@ Default basic-catalog cards using v0.9 and 1.0 can remain in the same chat histo
 
 Your agent integration must also emit native 1.0 `a2ui_operations` through the `a2ui-surface` activity. Selecting this catalog does not upgrade backend packages or establish support in every adapter and streaming mode. This path continues to use the `a2ui` contract; migrating to the `render_ui` contract below is a separate choice.
 
-## Before and after
+## Before and after [#before-and-after]
 
 The provider takes a UI instead of a catalog, and the runtime needs no A2UI option:
 
@@ -96,7 +96,7 @@ const runtime = new CopilotRuntime({ agents });
 
 The chat renders surfaces on its own. For an area of the page, mount [`<GenerativeUISurface id="...">`](/google-antigravity/generative-ui/components/surfaces), or `<copilot-generative-ui-surface>` in Angular. For an agent that cannot call tools, use the [markdown transport](/google-antigravity/generative-ui/components/markdown-mode). The agent keeps writing A2UI operations; see [Bindings and actions](#bindings-and-actions) for what changed in them.
 
-## Convert a custom catalog
+## Convert a custom catalog [#convert-a-custom-catalog]
 
 Before, a catalog was definitions plus renderers, and a bound prop had to be declared as a union with the binding object:
 
@@ -208,18 +208,21 @@ After, each component is one entry, with the component, a description and plain 
   </Tab>
 </Tabs>
 
-What to change:
+What every app changes:
 
 - **Prop types are plain.** Drop `DynamicStringSchema` and the unions. Any prop takes a literal, a binding `{ "@path": "/x" }` or a function value `{ "@call": ... }`, and the engine resolves it before your component renders. A component never sees a binding object.
 - **Every component gets a `description`.** The agent reads it to pick components.
-- **Children** are `slots` (`{ children: "multiple" }`, `{ child: "single" }`) or `child()` / `childList()` inside the props schema, for example `tabs: z.array(z.object({ title: z.string(), child: child() }))`. See [Catalogs](/google-antigravity/generative-ui/components/catalogs).
-- **The basic catalog** is `extends: [standardUI]`. Drop components with `standardUI.omit([...])` and replace one with `overrides`; see [the standard catalog](/generative-ui/components/standard-catalog#replace-a-component).
 - **The catalog id** is `id`. A surface with no `catalogId` pins to it. The run also lists the ids of the catalogs in `extends`, so an operation or a component can name `copilotkit/standard@1` or the id of any other base. Any other `catalogId` is rejected.
+
+What to change if you use them:
+
+- **Children** are `slots` (`{ children: "multiple" }`, `{ child: "single" }`) or `child()` / `childList()` inside the props schema, for example `tabs: z.array(z.object({ title: z.string(), child: child() }))`. See [Catalogs](/google-antigravity/generative-ui/components/catalogs).
+- **The basic catalog** is `extends: [standardUI]`. Drop components with `standardUI.omit([...])` and replace one with `overrides`; see [the standard catalog](/google-antigravity/generative-ui/components/standard-catalog#replace-a-component).
 - **Actions and app state** become `functions` with `useGenerativeUIFunction`, and `state` with `useGenerativeUIState`; in Angular, `registerGenerativeUIFunction` and `connectGenerativeUIState`. See [Connect app state and actions](/google-antigravity/generative-ui/components/state-and-actions).
 
 Your renderers stay as they are, apart from the props they read: a bound prop arrives resolved, and a slot or a child reference arrives as a React node, or as a `GenerativeUIChildren` handle in Angular. In Vue, a slot arrives as a named slot, and a child reference as a `VNode`.
 
-## Bindings and actions
+## Bindings and actions [#bindings-and-actions]
 
 The engine takes A2UI 1.0 operations only. A v0.9 shape is rejected with a reason that names the 1.0 form, and the agent sees the reason in the next run.
 
@@ -231,17 +234,17 @@ The engine takes A2UI 1.0 operations only. A v0.9 shape is rejected with a reaso
 | `"action": { "name": "buy", "context": { ... } }` | `"onClick": { "event": { "name": "buy", "userMessage": "Buy it", "context": { ... } } }` or `{ "functionCall": { "@call": "addToCart", "args": { ... } } }`       |
 | `"children": ["a", "b"]`                          | The same, or a template `{ "componentId": "row", "path": "/items" }` with `{ "@call": "@index" }` inside                                                          |
 | Validation in the agent                           | `"checks": [{ "condition": { "@call": "email", "args": { ... } }, "message": "..." }]`                                                                            |
-| An agent tool call per function                   | Not in this version: the agent cannot call renderer functions; see [Who may call a function](/google-antigravity/generative-ui/components/state-and-actions#who-may-call-a-function) |
+| An agent tool call per function                   | Not in this version: the agent cannot call renderer functions; see [Who may call a function](/google-antigravity/generative-ui/components/catalogs#who-may-call-a-function) |
 
-A2UI 1.0 has no arithmetic. CopilotKit adds `calc` and `series` as catalog functions, listed like the others, so a renderer without them rejects the call rather than misrendering. See [Compute values in the browser](/google-antigravity/generative-ui/components/state-and-actions#compute-values-in-the-browser).
+A2UI 1.0 has no arithmetic. CopilotKit adds `calc` and `series` as catalog functions, listed like the others. Another A2UI client that does not have them rejects the call. It does not render a wrong value. See [Compute values in the browser](/google-antigravity/generative-ui/components/state-and-actions#compute-values-in-the-browser).
 
-## What the agent receives
+## What the agent receives [#what-the-agent-receives]
 
-A click on an `{ "event" }` action becomes a visible user message: the `userMessage`, then the context as lines. The run also carries the structured A2UI action message (`name`, `surfaceId`, `sourceComponentId`, `timestamp`, `userMessage`, `context`) in `forwardedProps.copilotkit.ui.metadata.extensions.copilotkit_action`; `envelopeToManifest` from `@copilotkit/shared` gives it back as `action`. A second click while the agent runs is dropped, so a double click does not start two runs.
+A click on an `{ "event" }` action becomes a visible user message: the `userMessage`, then the context as lines. The run also carries the A2UI action message. It has `name`, `surfaceId`, `sourceComponentId`, `timestamp`, `userMessage`, and `context`. It is in `forwardedProps.copilotkit.ui.metadata.extensions.copilotkit_action`. To read it, call `envelopeToManifest` from `@copilotkit/shared` and use `action`. A second click while the agent runs is dropped, so a double click does not start two runs.
 
-The agent cannot call renderer functions in this version: a `callRendererFunction` operation is rejected with a reason, and the prompts do not mention it. See [Who may call a function](/google-antigravity/generative-ui/components/state-and-actions#who-may-call-a-function).
+The agent cannot call renderer functions in this version: a `callRendererFunction` operation is rejected with a reason, and the prompts do not mention it. See [Who may call a function](/google-antigravity/generative-ui/components/catalogs#who-may-call-a-function).
 
-## What changes in markdown mode
+## What changes in markdown mode [#what-changes-in-markdown-mode]
 
 In the tool transport, the browser renders what the agent wrote. In the markdown transport, the chat is a transcript, so the engine reshapes the surface of a fence before it renders:
 
@@ -251,11 +254,7 @@ In the tool transport, the browser renders what the agent wrote. In the markdown
 
 See [Markdown mode](/google-antigravity/generative-ui/components/markdown-mode).
 
-## Map and route
-
-`Map` takes `markers` (a list, or a binding to one), `selected` (writable: bind it to read the user's choice), `zoom`, `center` and `route: true`, which draws a line through the markers in order. It needs `npm install maplibre-gl`; without the package it shows the places as a list.
-
-## Support matrix
+## Support matrix [#support-matrix]
 
 The integration is experimental and implements A2UI 1.0 as of spec revision [`cbaa5ee`](https://github.com/a2ui-project/a2ui/tree/cbaa5ee62c737b50d0695c1e5794d0f648b61dca/specification/v1_0) (October 2026); upstream still calls 1.0 a candidate on [a2ui.org](https://a2ui.org/), so this table can change. This table is the supported scope. A 1.0 catalog and a complete 1.0 runtime are different claims: the catalog export is conforming, the runtime covers the rows marked Yes and nothing more.
 

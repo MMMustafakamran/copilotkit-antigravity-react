@@ -2,7 +2,7 @@
 
 > Give the standard components your colors and fonts, and turn on dark mode.
 
-## What is this?
+## What is this? [#what-is-this]
 
 The standard components look neutral by default. You want them to use your accent color, your font, and your dark mode.
 
@@ -65,10 +65,10 @@ Every color, radius, shadow, and font of the standard components is a CSS variab
 The keys are typed. A name that the components do not read, such as `"--a2ui-color-acent"`, is a type error.
 
 <Callout type="info" title="React Native">
-  React Native has no standard catalog and no CSS variables, so its `GenerativeUIProvider` has no `theme` prop: passing one is a type error, and a `theme` passed from JavaScript, or through a cast, is dropped, with a warning in development. Style the components of your own catalog with `StyleSheet`, as you style the rest of your app. See [Generative UI with your own components](/google-antigravity/react-native#generative-ui-with-your-own-components).
+  React Native has no standard catalog and no CSS variables, so its `GenerativeUIProvider` has no `theme` prop: passing one is a type error, and a `theme` passed from JavaScript, or through a cast, is dropped, with a warning in development. Style the components of your own catalog with `StyleSheet`, as you style the rest of your app. See [Generative UI with your own components](/react-native#generative-ui-with-your-own-components).
 </Callout>
 
-## The variables
+## The variables [#the-variables]
 
 | Group | Variables |
 | --- | --- |
@@ -105,7 +105,7 @@ Your editor lists all of them when you type a key in `theme`. To type a theme in
   </Tab>
 </Tabs>
 
-## Dark mode
+## Dark mode [#dark-mode]
 
 Dark mode is built in. The standard components switch to dark colors when an ancestor has the `dark` class, the same rule as the CopilotKit chat:
 
@@ -160,7 +160,7 @@ If your app already switches dark mode with a `dark` class, there is nothing to 
   </Tab>
 </Tabs>
 
-## Colors for each mode
+## Colors for each mode [#colors-for-each-mode]
 
 Values at the top level of `theme` apply in light and in dark mode. Values in `dark` replace them in dark mode only:
 
@@ -176,7 +176,7 @@ theme: {
 
 So a brand accent goes at the top level once, and only the colors that differ in dark mode go in `dark`.
 
-## The map
+## The map [#the-map]
 
 The `Map` component draws a light basemap, and a dark one in dark mode. Set your own [MapLibre style](https://maplibre.org/maplibre-style-spec/) for each mode:
 
@@ -187,7 +187,7 @@ theme: {
 },
 ```
 
-## Set variables in CSS
+## Set variables in CSS [#set-variables-in-css]
 
 You can also set the variables in your stylesheet, on the `.a2ui-surface` element that wraps every surface:
 

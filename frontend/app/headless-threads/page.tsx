@@ -3,14 +3,18 @@
 // --- Doc: https://docs.copilotkit.ai/google-antigravity/headless-threads (ThreadSidebar.tsx, verbatim) ---
 import { useThreads } from "@copilotkit/react-core/v2"; // [!code highlight]
 
-function ThreadSidebar({ onSelectThread }: { onSelectThread?: (id: string) => void }) { // HARNESS (FINDINGS.md #68): doc's ThreadSidebar takes no props, but App passes onSelectThread
+function ThreadSidebar({
+  onSelectThread,
+}: {
+  onSelectThread: (threadId: string) => void;
+}) {
   const { // [!code highlight:6]
     threads,
     isLoading,
     renameThread,
     archiveThread,
     deleteThread,
-  } = useThreads({ agentId: "antigravity_agent" }); // HARNESS (FINDINGS.md #70): doc has the placeholder "my-agent"; the chat runs as the quickstart's antigravity_agent (root layout)
+  } = useThreads({ agentId: "default" });
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -18,7 +22,9 @@ function ThreadSidebar({ onSelectThread }: { onSelectThread?: (id: string) => vo
     <div>
       {threads.map((thread) => (
         <div key={thread.id}>
-          <span onClick={() => onSelectThread?.(thread.id)}>{thread.name ?? "New conversation"}</span> {/* HARNESS (FINDINGS.md #68): doc never calls onSelectThread, so no row can be selected */}
+          <button onClick={() => onSelectThread(thread.id)}>
+            {thread.name ?? "New conversation"}
+          </button>
           <button onClick={() => renameThread(thread.id, "Renamed")}>
             Rename
           </button>
@@ -47,7 +53,7 @@ function App() {
 }
 
 // HARNESS: the page shows no export or provider. Mounted under CopilotKitProvider pointing at the doc's server.ts
-// runtime with CopilotKitIntelligence (app/api/copilotkit-threads; verifyAppSession stubbed there, FINDINGS.md #69).
+// runtime with CopilotKitIntelligence (app/api/copilotkit-threads; `agent` and verifyAppSession stubbed there, FINDINGS.md #69).
 import { CopilotKitProvider } from "@copilotkit/react-core/v2";
 
 export default function HeadlessThreadsPage() {

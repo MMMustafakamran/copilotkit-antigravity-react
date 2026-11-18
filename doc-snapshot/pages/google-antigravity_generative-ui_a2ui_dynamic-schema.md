@@ -2,27 +2,25 @@
 
 > LLM-generated A2UI. A secondary LLM creates both the schema and data from any prompt.
 
-
 <!-- interactive demo: declarative-gen-ui -->
 
+Use a dynamic schema when you cannot know the UI shape ahead of time,
+for example a dashboard whose layout changes per question. Your agent
+composes the surface (schema, data, and layout) from your components
+on each turn.
 
-In the dynamic-schema approach, a secondary LLM generates the entire
-UI (schema, data, and layout) based on the conversation context.
-It's the most flexible A2UI flavor; the agent can render any UI for
-any request without pre-defined schemas.
-
-## How it works
+## How it works [#how-it-works]
 
 1. The agent calls the A2UI tool to draw a surface, made available
    when `injectA2UITool: true`.
 2. The runtime serializes your client-side catalog (component names +
    Zod prop schemas) into the agent's `copilotkit.context` so the LLM
    knows which components it may emit.
-3. The tool call streams through LangGraph as `TOOL_CALL_ARGS` events.
+3. The tool call streams from the agent as `TOOL_CALL_ARGS` events.
 4. The A2UI middleware intercepts the stream and renders cards
    progressively as data items arrive.
 
-## The 3-file split
+## The 3-file split [#the-3-file-split]
 
 The canonical Bring-Your-Own-Catalog (BYOC) layout keeps three files
 side-by-side under `frontend/src/app/a2ui/`:
@@ -35,15 +33,15 @@ side-by-side under `frontend/src/app/a2ui/`:
 
 <Steps>
 <Step>
-### Declare your custom component definitions
+### Declare your custom component definitions [#declare-your-custom-component-definitions]
 
 Each entry pairs a Zod prop schema with a description. The description
-is crucial; the LLM reads it to decide which component to emit. The
-example below ships a small dashboard catalog (Card / StatusBadge /
-Metric / InfoRow / PrimaryButton):
+matters, because the LLM reads it to decide which component to emit. The
+example below is a dashboard catalog with cards (`Card`, `StatusBadge`,
+`Metric`, `InfoRow`, `DataTable`, `PrimaryButton`) and charts
+(`PieChart`, `BarChart`):
 
-```typescript
-// src/app/demos/declarative-gen-ui/a2ui/definitions.ts
+```typescript title="src/app/demos/declarative-gen-ui/a2ui/definitions.ts"
 import { z } from "zod";
 import type { CatalogDefinitions } from "@copilotkit/a2ui-renderer";
 
@@ -196,13 +194,15 @@ export const myDefinitions = {
 </Step>
 
 <Step>
-### Implement the React renderers
+### Implement the React renderers [#implement-the-react-renderers]
 
 Every key in `myDefinitions` must have a matching renderer. Props are
-statically typed against the Zod schema, so refactors stay safe:
+statically typed against the Zod schema, so refactors stay safe.
+The demo renderers use the demo's own `Badge` and `Button` components,
+its theme tokens, and `recharts` for the charts. Use your own
+components in their place:
 
-```typescript
-// src/app/demos/declarative-gen-ui/a2ui/renderers.tsx
+```typescript title="src/app/demos/declarative-gen-ui/a2ui/renderers.tsx"
 export const myRenderers: CatalogRenderers<MyDefinitions> = {
   Row: ({ props, children }) => {
     const justifyMap: Record<string, string> = {
@@ -552,15 +552,14 @@ export const myRenderers: CatalogRenderers<MyDefinitions> = {
 </Step>
 
 <Step>
-### Wire definitions × renderers into a catalog
+### Wire definitions and renderers into a catalog [#wire-definitions-and-renderers-into-a-catalog]
 
 `createCatalog` is what you hand to the provider. Flip
 `includeBasicCatalog: true` to merge CopilotKit's built-ins
 (Column, Row, Text, Image, Card, Button, List, Tabs, …), so the LLM
 can compose custom + basic components interchangeably:
 
-```typescript
-// src/app/demos/declarative-gen-ui/a2ui/catalog.ts
+```typescript title="src/app/demos/declarative-gen-ui/a2ui/catalog.ts"
 import { createCatalog } from "@copilotkit/a2ui-renderer";
 
 import { myDefinitions } from "./definitions";
@@ -574,14 +573,13 @@ export const myCatalog = createCatalog(myDefinitions, myRenderers, {
 </Step>
 
 <Step>
-### Pass the catalog to the provider
+### Pass the catalog to the provider [#pass-the-catalog-to-the-provider]
 
 A single prop (`a2ui={{ catalog }}`) is all the frontend needs; the
 provider registers the catalog and wires up the built-in A2UI
 activity-message renderer:
 
-```typescript
-// src/app/demos/declarative-gen-ui/page.tsx
+```typescript title="src/app/demos/declarative-gen-ui/page.tsx"
 import React from "react";
 import { CopilotKit } from "@copilotkit/react-core/v2";
 
@@ -603,30 +601,51 @@ export default function DeclarativeGenUIDemo() {
     </CopilotKit>
 ```
 
+In your app, use your own runtime URL and your own chat in place of the
+demo's `Chat` component.
+
 That is all the default path needs. The catalog auto-enables A2UI and
-injects the `generate_a2ui` tool, so the runtime needs no `a2ui` block.
+injects the `generate_a2ui` tool, so the runtime needs no `a2ui` block,
+unless your agent brings its own A2UI tool (see [Agent setup](#agent-setup)).
 (No catalog? Turn it on from the runtime instead with
 `a2ui: { injectA2UITool: true }`.)
 </Step>
+
+<Step>
+### Ask for a dashboard [#ask-for-a-dashboard]
+
+Ask the agent for a dashboard. For example, send `Show me my sales
+dashboard for this quarter`. The dashboard renders in the chat with the
+components from your catalog.
+</Step>
 </Steps>
 
-## I opted out of auto-inject, now what?
+## Agent setup [#agent-setup]
 
-By not passing a catalog, not setting `injectA2UITool`, or by passing
-a catalog and setting `injectA2UITool: false`, you have opted out
-entirely. That means you hook up two pieces yourself: the
-`generate_a2ui` tool which lets your agent generate A2UI surfaces, and
-the `A2UIMiddleware` which lets those surfaces render.
+Tell the model in its instructions when to call `generate_a2ui`, for example
+for any answer that needs a dashboard, a card layout, or a chart. A model with
+no instruction about the tool answers in prose and never calls it.
+
+## I opted out of auto-inject, now what? [#i-opted-out-of-auto-inject-now-what]
+
+When the runtime does not inject the `generate_a2ui` tool, what you add
+depends on your setup:
+
+- **The runtime has an `a2ui` block, or the provider passes a catalog.**
+  The runtime still attaches the `A2UIMiddleware`. Add only the A2UI
+  agent tool below.
+- **No catalog and no `a2ui` block.** A2UI is off. Add both the
+  `A2UIMiddleware` and the A2UI agent tool below.
 
 <Steps>
 <Step>
-### The `A2UIMiddleware`
+### The `A2UIMiddleware` [#the-a2uimiddleware]
 
 The `A2UIMiddleware` is what turns the agent's `a2ui_operations` into
 rendered surfaces. Without it, the agent's output never becomes UI; it
-falls through as a plain tool result. It can also inject the
-`generate_a2ui` tool for you (`injectA2UITool: true`), letting you skip
-the next step. Attach it to the AG-UI agent:
+falls through as a plain tool result. The middleware can also add a
+`render_a2ui` tool to the agent. To do this, set `injectA2UITool: true`
+and skip the next step. Attach it to the AG-UI agent:
 
 ```typescript
 import { A2UIMiddleware } from "@ag-ui/a2ui-middleware";
@@ -636,11 +655,11 @@ agent.use(new A2UIMiddleware({ injectA2UITool: false }));
 </Step>
 
 <Step>
-### The A2UI agent tool
+### The A2UI agent tool [#the-a2ui-agent-tool]
 
 The `generate_a2ui` tool runs a secondary LLM (a subagent) that designs
-the surface, which is why you hand it a model. Build it with the AG-UI
-factory and add it to your agent's tools:
+the surface, which is why you hand it a model. With LangGraph Python,
+build it with the AG-UI factory and add it to your agent's tools:
 
 ```python title="agent.py"
 from ag_ui_langgraph import get_a2ui_tools
@@ -648,17 +667,22 @@ from langchain_openai import ChatOpenAI
 
 generate_a2ui = get_a2ui_tools({
     "model": ChatOpenAI(model="gpt-6-luna", reasoning_effort="none"),
-    "default_catalog_id": "copilotkit://app-dashboard-catalog",
+    "default_catalog_id": "declarative-gen-ui-catalog",  # the catalogId you pass to createCatalog
 })
 
 tools = [my_other_tool, generate_a2ui]
 ```
+
+With other agents, define a `generate_a2ui` tool that calls a second
+model and returns an `a2ui_operations` container. The
+[Built-in Agent example](https://github.com/CopilotKit/CopilotKit/blob/main/showcase/integrations/built-in-agent/src/lib/factory/a2ui-factory.ts)
+shows this in TypeScript.
 </Step>
 </Steps>
 
-## Progressive streaming
+## Progressive streaming [#progressive-streaming]
 
-The secondary LLM's `render_a2ui` tool call streams through LangGraph
+The secondary LLM's `render_a2ui` tool call streams from the agent
 as `TOOL_CALL_ARGS` events. The A2UI middleware:
 
 1. Waits for the full `components` array before emitting anything;
@@ -673,7 +697,7 @@ as `TOOL_CALL_ARGS` events. The A2UI middleware:
 A built-in progress indicator shows while the schema is still
 generating and hides automatically once data items start arriving.
 
-## When should I use dynamic schemas?
+## When should I use dynamic schemas? [#when-should-i-use-dynamic-schemas]
 
 - You don't know the UI shape ahead of time; the agent decides what
   to show based on the user's request.

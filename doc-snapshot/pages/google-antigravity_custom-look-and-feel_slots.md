@@ -2,35 +2,32 @@
 
 > Customize any part of the chat UI by overriding individual sub-components via slots.
 
-
 <!-- interactive demo: chat-slots -->
 
-
-## What is this?
+## What is this? [#what-is-this]
 
 Every CopilotKit chat component is built from composable **slots**, named sub-components you can override individually. The slot system gives you three levels of customization without needing to rebuild the entire UI:
 
-1. **Tailwind classes** — pass a string to add/override CSS classes
-2. **Props override** — pass an object to override specific props on the default component
-3. **Custom component** — pass your own React component to fully replace a slot
+1. **Tailwind classes**: pass a string to add/override CSS classes
+2. **Props override**: pass an object to override specific props on the default component
+3. **Custom component**: pass your own React component to fully replace a slot
 
 Slots are recursive: you can drill into nested sub-components at any depth.
 
-## What it looks like in code
+## What it looks like in code [#what-it-looks-like-in-code]
 
-The `chat-slots` cell above overrides three slots on a single `<CopilotChat>` —
-the welcome screen, the assistant message card, and the input's disclaimer.
+The demo above overrides many slots on `<CopilotChat>` and outlines each one.
+The three examples below show the welcome screen, the assistant message, and the input disclaimer.
 Each slot is just a prop; the demo extracts them into locals so the override
 points are easy to see.
 
-### Welcome screen slot
+### Welcome screen slot [#welcome-screen-slot]
 
 The `welcomeScreen` prop replaces the empty-state view shown before the first
 message is sent. The demo swaps in a gradient card that still renders the
 default input and suggestions:
 
-```typescript
-// src/app/demos/chat-slots/slot-overrides.snippet.tsx
+```typescript title="src/app/demos/chat-slots/slot-overrides.tsx"
 import type {
   CopilotChatAssistantMessage,
   CopilotChatInput,
@@ -46,14 +43,13 @@ export function ChatSlotsTeachingExtracts() {
     CustomWelcomeScreen as unknown as typeof CopilotChatView.WelcomeScreen;
 ```
 
-### Assistant message slot
+### Assistant message slot [#assistant-message-slot]
 
 Drill into `messageView={{ assistantMessage: ... }}` to wrap every assistant
-response. The cell wraps the default component with a tinted card and a small
+response. The demo wraps the default component with a tinted card and a small
 "slot" badge so you can see the override is active during the message flow:
 
-```typescript
-// src/app/demos/chat-slots/slot-overrides.snippet.tsx
+```typescript title="src/app/demos/chat-slots/slot-overrides.tsx"
 import type {
   CopilotChatAssistantMessage,
   CopilotChatInput,
@@ -74,15 +70,13 @@ export function ChatSlotsTeachingExtracts() {
   };
 ```
 
-### Disclaimer slot
+### Disclaimer slot [#disclaimer-slot]
 
 The `input={{ disclaimer: ... }}` sub-slot lets you replace the small text
-shown below the input. The demo uses it to display a visibly tagged disclaimer
-so reviewers can tell the override is still in effect once the welcome screen
-is gone:
+shown below the input. The demo tags its disclaimer, so you can see that the
+override stays after the first message:
 
-```typescript
-// src/app/demos/chat-slots/slot-overrides.snippet.tsx
+```typescript title="src/app/demos/chat-slots/slot-overrides.tsx"
 import type {
   CopilotChatAssistantMessage,
   CopilotChatInput,
@@ -108,9 +102,9 @@ export function ChatSlotsTeachingExtracts() {
   };
 ```
 
-## Tailwind Classes
+## Tailwind Classes [#tailwind-classes]
 
-The simplest way to customize a slot. Pass a Tailwind class string and it will be merged with the default component's classes.
+Pass a Tailwind class string. CopilotKit merges it with the classes of the default component.
 
 ```tsx title="page.tsx"
 import { CopilotChat } from "@copilotkit/react-core/v2";
@@ -125,7 +119,9 @@ export function Chat() {
 }
 ```
 
-## Props Override
+Reload the page. The message list has a gray background and the input has a blue border.
+
+## Props Override [#props-override]
 
 Pass an object to override specific props on the default component. This is useful for adding `className`, event handlers, data attributes, or any other prop the default component accepts.
 
@@ -139,18 +135,22 @@ Pass an object to override specific props on the default component. This is usef
 />
 ```
 
-## Custom Components
+## Custom Components [#custom-components]
 
-For full control, pass your own React component. It receives all the same props as the default component.
+For full control, pass your own React component. It receives all the same props as the default component. The slot type is the default component, so cast your component to that type.
 
 ```tsx title="page.tsx"
-import { CopilotChat } from "@copilotkit/react-core/v2";
+import {
+  CopilotChat,
+  CopilotChatMessageView,
+  type CopilotChatMessageViewProps,
+} from "@copilotkit/react-core/v2";
 
-const CustomMessageView = ({ messages, isRunning }) => (
+const CustomMessageView = ({ messages, isRunning }: CopilotChatMessageViewProps) => (
   <div className="space-y-4 p-6">
     {messages?.map((msg) => (
       <div key={msg.id} className={msg.role === "user" ? "text-right" : "text-left"}>
-        {msg.content}
+        {typeof msg.content === "string" ? msg.content : null}
       </div>
     ))}
     {isRunning && <div className="animate-pulse">Thinking...</div>}
@@ -158,15 +158,15 @@ const CustomMessageView = ({ messages, isRunning }) => (
 );
 
 export function Chat() {
-  return <CopilotChat messageView={CustomMessageView} />;
+  return <CopilotChat messageView={CustomMessageView as typeof CopilotChatMessageView} />;
 }
 ```
 
-## Nested Slots (Drill-Down)
+## Nested Slots (Drill-Down) [#nested-slots-drill-down]
 
 Slots are recursive. You can customize sub-components at any depth by nesting objects.
 
-### Two levels deep
+### Two levels deep [#two-levels-deep]
 
 Override the assistant message's toolbar within the message view:
 
@@ -182,7 +182,7 @@ Override the assistant message's toolbar within the message view:
 />
 ```
 
-### Three levels deep
+### One toolbar button [#one-toolbar-button]
 
 Override a specific button inside the assistant message toolbar:
 
@@ -198,7 +198,7 @@ Override a specific button inside the assistant message toolbar:
 />
 ```
 
-### Tool calls
+### Tool calls [#tool-calls]
 
 The `assistantMessage` slot holds `toolCallsView`, which renders the tool calls
 of one assistant message. Wrap the default `CopilotChatToolCallsView` to change
@@ -241,7 +241,7 @@ The `assistantMessage` slot also holds `markdownRenderer`, which controls how
 assistant markdown is rendered. It has its own guide:
 [Markdown Rendering](/google-antigravity/custom-look-and-feel/markdown).
 
-## Labels
+## Labels [#labels]
 
 Customize any text string in the UI via the `labels` prop. This is a separate convenience prop on `CopilotChat`, `CopilotSidebar`, and `CopilotPopup`, not part of the slot system.
 
@@ -255,9 +255,9 @@ Customize any text string in the UI via the `labels` prop. This is a separate co
 />
 ```
 
-## Available Slots
+## Available Slots [#available-slots]
 
-### `CopilotChat` / `CopilotSidebar` / `CopilotPopup`
+### `CopilotChat` / `CopilotSidebar` / `CopilotPopup` [#copilotchat--copilotsidebar--copilotpopup]
 
 These are the root-level slot props available on all chat components:
 

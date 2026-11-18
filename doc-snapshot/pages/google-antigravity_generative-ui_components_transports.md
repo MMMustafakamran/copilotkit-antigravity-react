@@ -2,7 +2,7 @@
 
 > Choose how the agent sends generated UI: with the render_ui tool, or inside its markdown reply.
 
-## What is this?
+## What is this? [#what-is-this]
 
 The agent must send the UI to the app somehow: the browser, or a React Native app. Some agents are good at tool calls. Others only stream text, or you build their prompt yourself. A **transport** is the way the UI travels:
 
@@ -11,7 +11,7 @@ The agent must send the UI to the app somehow: the browser, or a React Native ap
 
 Both transports use the same catalogs, surfaces, and components. Only the path between the agent and the app changes.
 
-## Which one to use
+## Which one to use [#which-one-to-use]
 
 | | Tool | Markdown |
 | --- | --- | --- |
@@ -22,13 +22,15 @@ Both transports use the same catalogs, surfaces, and components. Only the path b
 
 Start with the tool transport. If your agent cannot call client tools, or you want the UI inside the text of the reply, use markdown.
 
-## Tool transport
+## Tool transport [#tool-transport]
 
 This is the default, so the provider needs only the catalog:
 
 <Tabs groupId="frontend_framework" items={["React", "Angular", "React Native", "Vue"]} persist>
   <Tab value="React">
     ```tsx
+    import { standardUI } from "@copilotkit/react-core/v2/generative-ui";
+
     <CopilotKitProvider runtimeUrl="/api/copilotkit" generativeUI={{ ui: standardUI }}>
     ```
   </Tab>
@@ -69,7 +71,7 @@ const runtime = new CopilotRuntime({
 
 Your agent must use the tools and the context entries of the run. The built-in agent does this. For a LangGraph Python agent, add `CopilotKitMiddleware`.
 
-## Markdown transport
+## Markdown transport [#markdown-transport]
 
 Set `transport: "markdown"`:
 
@@ -96,7 +98,7 @@ Set `transport: "markdown"`:
 
 The provider sends the component schemas and a writing guide as context, and the agent writes the UI in its reply. See [Markdown mode](/google-antigravity/generative-ui/components/markdown-mode) for what the agent writes, how it streams, and how to build your own prompt.
 
-## Only some agents
+## Only some agents [#only-some-agents]
 
 By default every agent gets generative UI. To give it only to some of them, list their ids:
 
@@ -131,8 +133,8 @@ By default every agent gets generative UI. To give it only to some of them, list
 
 The other agents get no catalog, no guide, and no `render_ui` tool.
 
-## Cost in tokens
+## Cost in tokens [#cost-in-tokens]
 
-Each run carries the catalog and a guide. The guide has only the rules that your catalog needs, so a small catalog gets a short guide. The full standard catalog is the largest part. To keep runs small, drop the components that you do not need with [`omit`](/generative-ui/components/standard-catalog#drop-components).
+Each run carries the catalog and a guide. The guide has only the rules that your catalog needs, so a small catalog gets a short guide. The full standard catalog is the largest part. To keep runs small, drop the components that you do not need with [`omit`](/google-antigravity/generative-ui/components/standard-catalog#drop-components).
 
 Your agent now gets the UI tools it needs, in the transport that fits it.

@@ -671,7 +671,9 @@ export class RecordingEngine {
         await humanScrollDown(page, 20000, 4500, { toBottom: true });
       }
       await pause(500);
-      const codeBox = await scrollDocCodeBlockIntoView(page);
+      // Error clips: the evidence highlight is the doc selection; a generic snippet drag first
+      // reads as a stray selection of the wrong block (review 2026-11-17).
+      const codeBox = evidence.length ? null : await scrollDocCodeBlockIntoView(page);
       if (codeBox) {
         // Select the snippet on the doc page with the cursor -- the same
         // gesture the IDE step makes on the project file a moment later, so
