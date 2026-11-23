@@ -70,9 +70,9 @@ Stack: `@copilotkit/react-core`/`runtime` 1.90.0 (npm latest, CI 2026-11-23), `@
 - **Result:** no Airport/Arrow UI ever shows up; runs end in an empty reply or a failed run (3 probes 2026-11-13). Same on the doc's own runtime shape (re-checked 2026-11-12).
 
 ### [A2UI](https://docs.copilotkit.ai/google-antigravity/generative-ui/a2ui)
-**#103 No dashboard renders: the agent's surface is rejected ("Component type VStack is not in the catalog") or the run fails with AntigravityExecutionError.**
+**#103 No dashboard renders: the agent from the page errors out (the error varies by run: a catalog error, several render_a2ui calls, AntigravityExecutionError) or dumps raw JSON.**
 - **Doc:** "The frontend renders that schema as cards, rows, columns, badges, and price tags from a catalog of components"; catalog and agent come from the linked Dynamic Schema page.
-- **Result:** "Show me a quick sales KPI dashboard with revenue, deals and win rate." gives "Couldn't generate the UI" / "Component type 'VStack' is not in the catalog", or the agent apologizes and prints JSON; no dashboard. Failed in CI 45067972847 and 45137739455 and in 2 local probes (2026-11-23).
+- **Result:** "Show me a quick sales KPI dashboard with revenue, deals and win rate." never gives a dashboard: runs end in "Couldn't generate the UI" (e.g. "Component type 'VStack' is not in the catalog"), "can't render, multiple render_a2ui calls" plus a JSON dump, or a failed run. Failed in CI 45142119181 too. Failed in CI 45067972847 and 45137739455 and in 2 local probes (2026-11-23).
 
 ### [Styling](https://docs.copilotkit.ai/google-antigravity/generative-ui/a2ui/styling) (in-content, linked from A2UI)
 **#104 The themed flight card renders empty: no airline, airports or price, so there is nothing styled to see.**
