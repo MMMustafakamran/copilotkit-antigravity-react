@@ -13,6 +13,7 @@
  *   --wait 300         cap on the page action, seconds (default 300)
  *   --parallel 3       pages at once (default 3); each page runs in its own process
  *   --repeat N         run every page N times: pass = all ok, fail = none, else flaky
+ *   --retry-fail N     then a page whose last run failed runs up to N more times (CI: 1 = working 1 run, failing 2; owner 2026-11-19)
  *   --warm             GET every demo route once first (errors ignored)
  *   --health           check frontend + backend(s) first; any down -> setup-failed, exit 3
  *   --headed           show the browser (embedded apps / iframes / canvas, e.g. MCP Apps)
@@ -36,7 +37,7 @@ const opt = (n: string, d?: string) => {
   const i = args.indexOf(`--${n}`);
   return i >= 0 && i + 1 < args.length ? args[i + 1] : d;
 };
-const valued = new Set(['prompt', 'route', 'wait', 'parallel', 'repeat', 'child']);
+const valued = new Set(['prompt', 'route', 'wait', 'parallel', 'repeat', 'retry-fail', 'child']);
 const ids: string[] = [];
 for (let i = 0; i < args.length; i++) {
   if (args[i].startsWith('--')) { if (valued.has(args[i].slice(2))) i++; continue; }
@@ -75,6 +76,7 @@ if (childId) {
 // ---- parent -------------------------------------------------------------------------------------
 const PAR = Math.max(1, Number(opt('parallel', '3')));
 const REPEAT = Math.max(1, Number(opt('repeat', '1')));
+const RETRY_FAIL = Math.max(0, Number(opt('retry-fail', '0')));
 const pages = flag('all') ? PAGES.filter((p: any) => !SKIP_RECORDING[p.id]) : PAGES.filter((p: any) => ids.includes(p.id));
 const unknown = ids.filter((i) => !PAGES.some((p: any) => p.id === i));
 if (unknown.length) console.error(`unknown page id(s): ${unknown.join(', ')}`);
@@ -158,6 +160,7 @@ await Promise.all(Array.from({ length: Math.min(PAR, queue.length) }, async () =
     const p = queue.shift();
     const runs: any[] = [await runOnce(p.id, 1)];
     while (runs.length < REPEAT) runs.push(await runOnce(p.id, runs.length + 1));
+    while (!runs[runs.length - 1].ok && runs.length < REPEAT + RETRY_FAIL) runs.push(await runOnce(p.id, runs.length + 1));
     const oks = runs.filter((r) => r.ok).length;
     const result = oks === runs.length ? 'pass' : oks === 0 ? 'fail' : 'flaky';
     done.push({ id: p.id, runs, result });

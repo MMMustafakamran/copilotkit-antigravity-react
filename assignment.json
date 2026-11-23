@@ -4,14 +4,14 @@
  "repo": "Antigravity-react",
  "docBase": "https://docs.copilotkit.ai/google-antigravity/",
  "versions": {
-  "@copilotkit/react-core": "1.88.0",
-  "@copilotkit/runtime": "1.88.0",
-  "@ag-ui/client": "1.0.4",
+  "@copilotkit/react-core": "1.90.0",
+  "@copilotkit/runtime": "1.90.0",
+  "@ag-ui/client": "1.0.5",
   "next": "16.4.5",
   "react": "19.3.0",
-  "google-antigravity": "0.1.23",
+  "google-antigravity": "0.1.24",
   "ag-ui-antigravity": "0.2.1",
-  "fastapi": "0.162.0",
+  "fastapi": "0.165.0",
   "uvicorn": "0.54.0",
   "copilotkit": "4.33.1"
  },
@@ -183,7 +183,7 @@
     40
    ],
    "notes": [
-    "Note: `copilotkit init --framework antigravity` fails (unsupported framework); copying the starter from the CopilotKit repo works"
+    "Note: copilotkit init --framework antigravity fails; copy the starter from the repo."
    ],
    "block": null,
    "links": []
@@ -206,15 +206,15 @@
     40
    ],
    "notes": [
-    "Note: `main.py` reads GEMINI_API_KEY but nothing loads `.env`; start with `uv run --env-file .env`"
+    "Note: main.py never loads .env; start it with uv run --env-file .env."
    ],
    "block": null,
    "links": [
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-01-Quickstart",
-     "loom": "https://www.loom.com/share/72168c6d249f43708d21d5120c5c4c1e",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/b54811dbfbd54c5d9e10ae2ca93141f5",
+     "filmed": "2026-11-23"
     }
    ]
   },
@@ -231,15 +231,15 @@
     52
    ],
    "notes": [
-    "Note: the page imports useAgenticChatSuggestions from ./suggestions, which it never shows."
+    "Note: ./suggestions is imported but never shown."
    ],
    "block": null,
    "links": [
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-15-CopilotChat",
-     "loom": "https://www.loom.com/share/3bb3f1210f8b49c989fb7b66a07c7f1a",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/fac8138316584332ae304e84a5f001a0",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -264,8 +264,8 @@
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-16-CopilotSidebar",
-     "loom": "https://www.loom.com/share/9cb8606cc6164b108d715bc740e5396f",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/403584bb91664460b88759f6180f96a0",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -290,8 +290,8 @@
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-17-CopilotPopup",
-     "loom": "https://www.loom.com/share/e74cd7ba51bd46379320ff2f26a1b23b",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/8d94f7c7bce64dd78029e7460989df3a",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -316,8 +316,8 @@
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-18-ChatControls",
-     "loom": "https://www.loom.com/share/c62a47eb18484934a1438f59dd085582",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/b541ba58742343679a68b871cdb1c456",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -336,15 +336,15 @@
     57
    ],
    "notes": [
-    "Note: the CSS variables snippet imports from @copilotkit/react-ui (v1, never installed) and the icons snippet uses placeholder components."
+    "Note: CSS snippet imports @copilotkit/react-ui (v1, not installed); icons are placeholders."
    ],
    "block": null,
    "links": [
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-36-CSSCustomization",
-     "loom": "https://www.loom.com/share/4fcec2c82e3742e8b2c9802cbebf613b",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/cd2372cf31af4eadae0d3e9fb4c2696a",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -362,15 +362,15 @@
     59
    ],
    "notes": [
-    "Note: the \"two levels\" snippet uses CustomToolbar and CustomCopyButton, defined nowhere."
+    "Note: CustomToolbar and CustomCopyButton are never defined."
    ],
    "block": null,
    "links": [
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-37-Slots",
-     "loom": "https://www.loom.com/share/15e429d9753e478f824f6a2bfbc1dc82",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/e45143193747467ca08eac63c630388d",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -391,8 +391,8 @@
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-38-MarkdownRendering",
-     "loom": "https://www.loom.com/share/4ee7db194fe44065927f505560b9a01b",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/287612cf30be44629bfe4f9d72fa6dac",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -410,15 +410,15 @@
     60
    ],
    "notes": [
-    "Note: the snippets are fragments (no component, `visible`, Avatar/cn/AttachmentChip never shown) and agent \"headless-simple\" is never registered; recorded with harness stand-ins."
+    "Note: snippets are fragments; agent \"headless-simple\" is never registered."
    ],
    "block": null,
    "links": [
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-39-HeadlessUI",
-     "loom": "https://www.loom.com/share/d8501d206cf54206993a5e481312c8c9",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/73e5b2e09b8248889ec4c14b5dd906dc",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -436,15 +436,15 @@
     61
    ],
    "notes": [
-    "Issue: no reasoning message renders, even on the page's own reasoning.py; the page names only gpt-6-luna (not usable with Antigravity) and never says which Gemini model or thinking setting emits reasoning."
+    "Issue: no reasoning message renders; the page never says which Gemini model or setting gives reasoning."
    ],
    "block": null,
    "links": [
     {
      "text": "Issue",
      "clip": "ANTIGRAVITY-react-40-ReasoningMessages",
-     "loom": "https://www.loom.com/share/0bad103d4c5a4ffebd407e414224243b",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/6082b0fbb708424ea106b125daaf7906",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -462,15 +462,15 @@
     62
    ],
    "notes": [
-    "Note: the snippet uses agentId=\"my-agent\", u have to swap in your own agent id."
+    "Note: swap agentId=\"my-agent\" for your own agent id."
    ],
    "block": null,
    "links": [
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-23-MultimodalAttachments",
-     "loom": "https://www.loom.com/share/f33fd64b71324fd69c9ff6125018a9ee",
-     "filmed": "2026-11-16"
+     "loom": "https://www.loom.com/share/709ec711707d4fce893f47a862ea2666",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -483,20 +483,20 @@
    "child": true,
    "docPath": "voice",
    "reachable": "sidebar",
-   "status": "❌",
+   "status": "✅",
    "findings": [
     63
    ],
    "notes": [
-    "Issue: page.tsx imports ./voice-chat, which no tab shows; Next fails with \"Module not found: Can't resolve './voice-chat'\" and the build error blanks every route of the app."
+    "Note: voice-chat.tsx isn't on the page; use CopilotChat as the page says."
    ],
    "block": null,
    "links": [
     {
-     "text": "Not Working",
+     "text": "Voice - JS",
      "clip": "ANTIGRAVITY-react-24-Voice",
-     "loom": "https://www.loom.com/share/ef4fe4000ab74a5185ba66a8aa271434",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/414c223645974452aec2dc6a327fa9f1",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -514,15 +514,15 @@
     64
    ],
    "notes": [
-    "Issue: no reasoning block renders; useReasoningCustomSuggestions is never defined and the backend's reasoning model comes from the unpublished agents._common."
+    "Issue: no reasoning block renders; useReasoningCustomSuggestions is never defined."
    ],
    "block": null,
    "links": [
     {
      "text": "Issue",
      "clip": "ANTIGRAVITY-react-25-Reasoning",
-     "loom": "https://www.loom.com/share/7d72bcd6b46b4bdbb3e66538524317c7",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/a457c2ad1180477c8c1fa2914d6d8924",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -545,8 +545,8 @@
     {
      "text": "Threads Drawer - JS",
      "clip": "ANTIGRAVITY-react-26-ThreadsDrawer",
-     "loom": "https://www.loom.com/share/b8a50661cc704d55850f979b208abc8f",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/b6fee8aac2f84605a83db167ddb77c1b",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -564,15 +564,15 @@
     69
    ],
    "notes": [
-    "Note: server.ts uses agent and verifyAppSession without defining them (stubbed in the harness)."
+    "Note: server.ts uses agent and verifyAppSession without defining them."
    ],
    "block": null,
    "links": [
     {
      "text": "Headless Threads - JS",
      "clip": "ANTIGRAVITY-react-27-HeadlessThreads",
-     "loom": "https://www.loom.com/share/44f3f1ad6a3e41afbbd6cef41ef6cbca",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/84c4dc477adf48de8d65b4f2fc628540",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -594,15 +594,15 @@
     11
    ],
    "notes": [
-    "Note: ./background and ./suggestions are imported but never shown; the agent snippet imports the unpublished agents._common."
+    "Note: ./background, ./suggestions and agents._common are never shown."
    ],
    "block": null,
    "links": [
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-02-FrontendTools",
-     "loom": "https://www.loom.com/share/b760736fcc6749be816249446faeedd5",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/2d9fae6352f3487ba1810725ef3768d7",
+     "filmed": "2026-11-23"
     }
    ]
   },
@@ -620,15 +620,15 @@
     101
    ],
    "notes": [
-    "Note: ./pie-chart and ./suggestions are imported but never shown; the backend imports the unpublished agents._common."
+    "Note: ./pie-chart, ./suggestions and agents._common are never shown."
    ],
    "block": null,
    "links": [
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-19-ComponentsAsTools",
-     "loom": "https://www.loom.com/share/f2f8e17251744ab2bf276fa3a1d49015",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/1ae4199f5112417bb0f93ac326bbafdf",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -646,15 +646,15 @@
     36
    ],
    "notes": [
-    "Note: prose says roll_dice, the tool is roll_d20; the backend imports the unpublished agents._common."
+    "Note: prose says roll_dice but the tool is roll_d20."
    ],
    "block": null,
    "links": [
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-08-ToolRendering",
-     "loom": "https://www.loom.com/share/06f1f9bfed484fa6815c85a1e321fbb3",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/0beb8fa101644cc48624ca3cc7706f73",
+     "filmed": "2026-11-23"
     }
    ]
   },
@@ -665,13 +665,14 @@
    "group": "Controlled",
    "child": true,
    "docPath": "generative-ui/state-rendering",
-   "reachable": "sidebar",
+   "reachable": "none",
+   "removed": "2026-11-20: doc page gone (404) in the drift check; dropped from report and recording (DRIFT.md section 3)",
    "status": "✅",
    "findings": [
     39
    ],
    "notes": [
-    "Note: set_steps uses experimental_get_state/experimental_set_state without imports."
+    "Note: set_steps uses experimental_get_state/set_state without imports."
    ],
    "block": null,
    "links": [
@@ -697,15 +698,15 @@
     42
    ],
    "notes": [
-    "Issue: \"Do step 3 only\" with the Antigravity agent renders no component; the agent answers in plain text."
+    "Issue: only a BuiltInAgent setup is shown; with Antigravity no component renders."
    ],
    "block": null,
    "links": [
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-10-Components",
-     "loom": "https://www.loom.com/share/75425bcfed9a4dda91391ef666636195",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/8e5a6eb231964a66b66a3939166e5538",
+     "filmed": "2026-11-23"
     }
    ]
   },
@@ -723,15 +724,15 @@
     88
    ],
    "notes": [
-    "Issue: the agent calls render_ui but nothing renders, neither in the page target nor in the chat. Same problem as the Components and surfaces page."
+    "Issue: the agent calls render_ui but nothing renders, in the page or the chat."
    ],
    "block": null,
    "links": [
     {
      "text": "Issue",
      "clip": "ANTIGRAVITY-react-28-Surfaces",
-     "loom": "https://www.loom.com/share/35f973af107a424f9294852da87244dd",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/34a2099840cb416aad8a75482dddf4d5",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -749,15 +750,15 @@
     89
    ],
    "notes": [
-    "Issue: no catalog component renders, the agent calls generate_image and the run fails with a Gemini 400 (multimodal function responses not supported)."
+    "Issue: no Antigravity setup on the page; no catalog component renders."
    ],
    "block": null,
    "links": [
     {
      "text": "Issue",
      "clip": "ANTIGRAVITY-react-29-Catalogs",
-     "loom": "https://www.loom.com/share/f274f70faa8345cbae7d2e0d63c7ee7d",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/36764bea1a474619b5f8254884700efe",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -775,15 +776,15 @@
     90
    ],
    "notes": [
-    "Issue: no standard component renders, the agent answers with a plain markdown table. Same as the Components and surfaces page."
+    "Issue: no standard component renders; the agent replies with a plain markdown table."
    ],
    "block": null,
    "links": [
     {
      "text": "Issue",
      "clip": "ANTIGRAVITY-react-30-StandardCatalog",
-     "loom": "https://www.loom.com/share/3332560b77e848208276b3e978e9711f",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/2dcff48d7d724c019bc81f16ce723c9e",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -802,15 +803,15 @@
     92
    ],
    "notes": [
-    "Issue: no product card ever renders; the run ends with an empty reply or fails."
+    "Issue: no Antigravity setup on the page; no product card renders."
    ],
    "block": null,
    "links": [
     {
      "text": "Issue",
      "clip": "ANTIGRAVITY-react-31-StateAndActions",
-     "loom": "https://www.loom.com/share/a8773a2cc087450e8705f1561cdae16b",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/6969be5be4414530ae9e538f65e192e7",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -835,8 +836,8 @@
     {
      "text": "Issue",
      "clip": "ANTIGRAVITY-react-32-Theming",
-     "loom": "https://www.loom.com/share/c062d55415b1441fa75ba256706846df",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/8ae7ce28e2f1494f985027f2a03437d3",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -855,15 +856,15 @@
     96
    ],
    "notes": [
-    "Issue: no Antigravity agent setup on the page (only LangGraph CopilotKitMiddleware); with the Antigravity agent no generated UI shows up, just a plain text answer or a failed run."
+    "Issue: only a LangGraph middleware setup; with Antigravity no generated UI shows."
    ],
    "block": null,
    "links": [
     {
      "text": "Issue",
      "clip": "ANTIGRAVITY-react-33-Transports",
-     "loom": "https://www.loom.com/share/b68714fd588b4946b8ff5fbf3616b36c",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/3fd1504364f946658f035ad7a4e6dc8b",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -882,15 +883,15 @@
     98
    ],
    "notes": [
-    "Issue: no a2ui block or generated UI ever shows up (empty reply, failed run, or html files instead). The page doesn't say how to pass the context to an Antigravity agent."
+    "Issue: no a2ui block renders; the page never says how to pass context to Antigravity."
    ],
    "block": null,
    "links": [
     {
      "text": "Issue",
      "clip": "ANTIGRAVITY-react-34-MarkdownMode",
-     "loom": "https://www.loom.com/share/4cab2f5f8f424b929c3c8b7ec53ad97b",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/efdf13208a7d4ee4a9e2b220a92ff6bd",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -909,15 +910,15 @@
     100
    ],
    "notes": [
-    "Issue: no Airport/Arrow UI renders; the run ends with an empty reply or fails."
+    "Issue: render_ui renders nothing on Antigravity; no Airport/Arrow UI."
    ],
    "block": null,
    "links": [
     {
      "text": "Issue",
      "clip": "ANTIGRAVITY-react-35-FromA2UI",
-     "loom": "https://www.loom.com/share/697b4ab345f14c6793db5915cfc41615",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/21a5ad348afe4e4696399e7c91428a8c",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -932,18 +933,19 @@
    "reachable": "sidebar",
    "status": "❌",
    "findings": [
-    71
+    71,
+    103
    ],
    "notes": [
-    "Issue: the page only shows fragments; myCatalog is never defined and no agent is named, and with the guessed setup no A2UI dashboard renders."
+    "Issue: no dashboard renders, VStack not in catalog or the run errors."
    ],
    "block": null,
    "links": [
     {
      "text": "Issue",
      "clip": "ANTIGRAVITY-react-41-A2UI",
-     "loom": "https://www.loom.com/share/c13ea58573684f39ab4f07b95850c818",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/298f00d1092d453abc35fb860590ca35",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -961,15 +963,15 @@
     72
    ],
    "notes": [
-    "Issue: no dashboard renders; the chat shows \"A2UI render error: Cannot read properties of undefined (reading 'map')\"."
+    "Issue: no dashboard renders, just an A2UI render error (reading 'map')."
    ],
    "block": null,
    "links": [
     {
      "text": "Issue",
      "clip": "ANTIGRAVITY-react-42-A2UIDynamicSchema",
-     "loom": "https://www.loom.com/share/f39f990c960041d891a41f8f05374ea0",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/38b4fd1c9adc4aaea616e86c93fad41a",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -987,18 +989,70 @@
     73
    ],
    "notes": [
-    "Issue: the flight card renders but stays empty: no airline, airports or price, only \"Flight Details\" and the Book button."
+    "Issue: the flight card renders empty, no airline, airports or price."
    ],
    "block": null,
    "links": [
     {
      "text": "Issue",
      "clip": "ANTIGRAVITY-react-43-A2UIFixedSchema",
-     "loom": "https://www.loom.com/share/1279236c2fcb4d098b86d0d881004c29",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/96af2f6844ad4dd18376ca0e0741429d",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
+  },
+  {
+   "id": "a2ui-styling",
+   "label": "Styling",
+   "kind": "guide",
+   "group": "A2UI",
+   "child": true,
+   "docPath": "generative-ui/a2ui/styling",
+   "reachable": "in-content",
+   "status": "❌",
+   "findings": [
+    104
+   ],
+   "notes": [
+    "Issue: themed flight card renders empty, no airline, airports or price."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": "Issue",
+     "clip": "ANTIGRAVITY-react-47-A2UIStyling",
+     "loom": "https://www.loom.com/share/dcd2676bf8134217a7cea31fbb6149a8",
+     "filmed": "2026-11-23"
+    }
+   ],
+   "added": "2026-11-23"
+  },
+  {
+   "id": "a2ui-advanced",
+   "label": "Advanced",
+   "kind": "guide",
+   "group": "A2UI",
+   "child": true,
+   "docPath": "generative-ui/a2ui/advanced",
+   "reachable": "in-content",
+   "status": "❌",
+   "findings": [
+    105
+   ],
+   "notes": [
+    "Issue: no dashboard renders, A2UI render error reading 'map'."
+   ],
+   "block": null,
+   "links": [
+    {
+     "text": "Issue",
+     "clip": "ANTIGRAVITY-react-48-A2UIAdvanced",
+     "loom": "https://www.loom.com/share/76e2bc159cc24cfb8df4b5aba69e5f7d",
+     "filmed": "2026-11-23"
+    }
+   ],
+   "added": "2026-11-23"
   },
   {
    "id": "json-render",
@@ -1018,8 +1072,8 @@
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-44-JSONRender",
-     "loom": "https://www.loom.com/share/6ba37c147eb84ced8978b48bfa6a5008",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/297a6d9ec5ac43749e5f5552e7bafcff",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -1042,8 +1096,8 @@
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-45-Hashbrown",
-     "loom": "https://www.loom.com/share/b7430a9e1c4144d494295b4fae3c94f7",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/f139072bcf894dd79bc614f1f05f1c0a",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -1061,15 +1115,15 @@
     44
    ],
    "notes": [
-    "Note: the \"with Intelligence\" example uses a BuiltInAgent with gpt-6-luna, not Antigravity."
+    "Note: the Intelligence example uses a BuiltInAgent, not Antigravity."
    ],
    "block": null,
    "links": [
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-11-McpApps",
-     "loom": "https://www.loom.com/share/685789628eaf49adb3d0516fb8c1287e",
-     "filmed": "2026-11-16"
+     "loom": "https://www.loom.com/share/94a0e2f330f2430aa091f9c1e463aabc",
+     "filmed": "2026-11-23"
     }
    ]
   },
@@ -1089,8 +1143,8 @@
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-46-OpenGenerativeUI",
-     "loom": "https://www.loom.com/share/f06d55168940457f8f5c15712bb6b144",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/b2d5fa7b39a64baf910837fe21d27731",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -1109,15 +1163,15 @@
     25
    ],
    "notes": [
-    "Note: `set_notes` uses `experimental_get_state`/`experimental_set_state` without importing them from `ag_ui_antigravity`; `build()` comes from the unpublished agents._common."
+    "Note: set_notes uses experimental state helpers without importing them."
    ],
    "block": null,
    "links": [
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-06-SharedState",
-     "loom": "https://www.loom.com/share/61621e5d34e54502b3e4516490cba09f",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/62e5ab17f57c414eb08f8c472dc03e0d",
+     "filmed": "2026-11-23"
     }
    ]
   },
@@ -1129,21 +1183,21 @@
    "child": true,
    "docPath": "shared-state/rendering-in-app",
    "reachable": "sidebar",
-   "status": "❌",
+   "status": "✅",
    "findings": [
     79,
     80
    ],
    "notes": [
-    "Issue: the canvas shows, but the agent never sees its state: asked about the canvas title and done items it can't answer. The page shows no backend and never says the agent needs get_shared_state."
+    "Note: backend comes from the linked Shared State page."
    ],
    "block": null,
    "links": [
     {
-     "text": "Issue",
+     "text": "Render agent state in your app - JS",
      "clip": "ANTIGRAVITY-react-20-RenderingInApp",
-     "loom": "https://www.loom.com/share/53894fca8eaa48bfafd69664acc98889",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/2a9b2f5fc96d4e598f9f9292e7a916f7",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -1155,11 +1209,11 @@
    "group": "Shared state",
    "child": true,
    "docPath": "shared-state/streaming",
-   "reachable": "sidebar",
+   "reachable": "none",
    "status": "N/A",
    "findings": [],
    "notes": [
-    "Note: Not available for Google Antigravity (the page says \"Not supported on Google Antigravity: Google Antigravity doesn't support Shared State: Streaming\")"
+    "Note: not available, the page says Google Antigravity doesn't support it."
    ],
    "block": null,
    "links": []
@@ -1179,15 +1233,15 @@
     83
    ],
    "notes": [
-    "Note: app_context.py imports build from the unpublished agents._common, and ./demo-layout and ./suggestions are never shown."
+    "Note: agents._common, ./demo-layout and ./suggestions are never shown."
    ],
    "block": null,
    "links": [
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-21-AgentReadonlyContext",
-     "loom": "https://www.loom.com/share/587803ab1ab2487ea8ef328d53318972",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/eb976b94b8f84fcfa28fe0af5e44e991",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -1212,15 +1266,15 @@
     47
    ],
    "notes": [
-    "Note: hitl.py imports build from the unpublished agents._common."
+    "Note: hitl.py imports build from agents._common, which is never shown."
    ],
    "block": null,
    "links": [
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-03-HumanInTheLoop",
-     "loom": "https://www.loom.com/share/0ee21f7fc912478294197b4e9775ae98",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/93d0137667c34a85aa5e6c04322cf0f7",
+     "filmed": "2026-11-23"
     }
    ]
   },
@@ -1235,7 +1289,7 @@
    "status": "N/A",
    "findings": [],
    "notes": [
-    "Note: Not available for Google Antigravity (the page says \"Not supported on Google Antigravity: Google Antigravity doesn't support Human in the Loop: Interrupts\")"
+    "Note: not available, the page says Google Antigravity doesn't support it."
    ],
    "block": null,
    "links": []
@@ -1251,7 +1305,7 @@
    "status": "N/A",
    "findings": [],
    "notes": [
-    "Note: Not available for Google Antigravity (the page says \"Not supported on Google Antigravity: Google Antigravity doesn't support Human in the Loop: Headless Interrupts\")"
+    "Note: not available, the page says Google Antigravity doesn't support it."
    ],
    "block": null,
    "links": []
@@ -1271,15 +1325,15 @@
     86
    ],
    "notes": [
-    "Note: only the useHumanInTheLoop approval card can be tried; the useInterrupt variant has no backend shown for Antigravity."
+    "Note: only the useHumanInTheLoop card works; useInterrupt has no Antigravity backend."
    ],
    "block": null,
    "links": [
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-22-GovernedActions",
-     "loom": "https://www.loom.com/share/991b0156e1b44011a431c23fd59e3161",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/469357bb7b87442a9cd192b6250e2e1b",
+     "filmed": "2026-11-23"
     }
    ],
    "added": "2026-11-10"
@@ -1304,8 +1358,8 @@
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-13-WebMCP",
-     "loom": "https://www.loom.com/share/f291cd039b57478c83dae7c0f4362f94",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/8cca0d921b94456a863cc7fdfb267e56",
+     "filmed": "2026-11-23"
     }
    ]
   },
@@ -1317,21 +1371,21 @@
    "child": false,
    "docPath": "multi-agent/subagents",
    "reachable": "sidebar",
-   "status": "❌",
+   "status": "✅",
    "findings": [
     27,
     49
    ],
    "notes": [
-    "Issue: the sub-agents server won't start: `subagents.py` imports `httpx`, which the page's install step never installs (`ModuleNotFoundError: No module named 'httpx'` since google-genai 3.0)."
+    "Note: install step leaves out httpx."
    ],
    "block": null,
    "links": [
     {
-     "text": "Not Working",
+     "text": "Sub-Agents - JS",
      "clip": "ANTIGRAVITY-react-12-SubAgents",
-     "loom": "https://www.loom.com/share/13a42e20f2384da8b760f7378875d6ee",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/b8ec3f5dfdbf48998910e2c0f7da5005",
+     "filmed": "2026-11-23"
     }
    ]
   },
@@ -1353,8 +1407,8 @@
     {
      "text": null,
      "clip": "ANTIGRAVITY-react-14-Inspector",
-     "loom": "https://www.loom.com/share/b2befdc612ed49cf9378a68b648c9e4f",
-     "filmed": "2026-11-18"
+     "loom": "https://www.loom.com/share/b1983907fd1342dc9d8b050073801088",
+     "filmed": "2026-11-23"
     }
    ]
   }

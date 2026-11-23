@@ -68,6 +68,10 @@ What each `drift.mjs --sync` took into the snapshot (newest first).
 
 ## 2026-11-18
 
+## 2026-11-22 (shared-state/streaming)
+
+- shared-state/streaming: live HTTP 404, snapshot left as is
+
 - prebuilt-components/sidebar: MEDIUM structure, banner (+10 / -15)
 - prebuilt-components/chat: MEDIUM structure, banner (+9 / -17)
 - custom-look-and-feel/css: HIGH code, banner (+57 / -54)

@@ -13,7 +13,7 @@ Two tools, two jobs:
 
 Never use a full humanized take to find out what a page does.
 
-- Probe runs the page's own checks through the recorder's fast mode (same checkpoints as a take, no tour, no humanizing); `--repeat 3` runs each page 3 times (owner, 2026-11-18).
+- Probe runs the page's own checks through the recorder's fast mode (same checkpoints as a take, no tour, no humanizing); `--repeat N` runs each page N times; `--retry-fail 1` gives a failing page one more run (owner, 2026-11-19: working pages 1 run, failing pages 2).
 
 ## 1. Clips must look hand-recorded
 
@@ -30,7 +30,7 @@ Order (owner, 2026-11-13): **doc (with highlight) → ide (with added code) → 
 Full clips:
 
 1. **Doc:** the docs page under test, wheel-scrolled to each faulty snippet or sentence (empty or cut-off snippet, undefined identifier, wrong-framework code, "Not supported" banner, a missing piece). Click a language tab first if the snippet sits behind one. Drag-select each one, pause on it. Each highlight is an `evidence` mark inside the `doc` segment, so it comes before the IDE segment.
-2. **IDE:** VS Code with the doc's code. If the page was missing something and the tester added it (HARNESS code), that added line is drag-selected and held ~2 s. Set it per IDE tab with `addedText` (exact text of one added line, in the page's `ideTabs`); the recorder finds it by text, warns and skips if it isn't there. One entry per added line. Nothing added → no selection. No mark of its own (it stays inside `ide`). Applies to ❌ and ⚠️ whenever the failure comes from a missing or partial snippet.
+2. **IDE:** VS Code with the doc's code, scrolled through normally. **Only code that had to be added to make the page run at all** (a missing helper, file or stand-in the page never shows) is drag-selected and held ~2 s (owner, 2026-11-20). Other HARNESS changes (agent ids, runtime URLs, ports, wiring) are not highlighted or mentioned: their `HARNESS` comment in the code is enough, the viewer reads it while it scrolls by. Set it per IDE tab with `addedText` (exact text of one added line, in the page's `ideTabs`); the recorder finds it by text, warns and skips if it isn't there. One entry per added line. Nothing added → no selection. No mark of its own (it stays inside `ide`). Applies to ❌ and ⚠️ whenever the failure comes from a missing or partial snippet.
 3. **Demo:** show the defect happening in the app (crash, error banner, nothing rendered, a plain text reply where a component should be).
 4. **Notepad:** open it from the simulated taskbar and paste the note in (one Ctrl+V, not typed; owner, 2026-11-09). It stays open for a few seconds so the note can be read.
 
@@ -57,6 +57,7 @@ A failed take still ends with the failure terminal (section 1).
 - Always pass the note through `humanizeNote()` (shared: `core/overlays/note-style.ts`) and put it in with `typeInNotepad`, which pastes it (`{ typed: true }` types it key by key, the old way). Deterministic per note. Write the note text plainly; `humanizeNote` drops titles and finding numbers, lowercases, shortens versions and strips brackets.
 - `closeNotepad` keeps the window up for a fixed hold of about 7 s from when it opened, so the note can be read.
 - Chat prompts in the demo are still typed, at a slower human pace. The failure terminal's commands are pasted.
+- **React Native emulator exception (owner, 2026-11-20):** on the Android emulator the chat prompt is **pasted in one go** (one adb `input text`, via `pastePrompt()` in `actions/android.actions.ts`), no typing effect. `ANDROID_TYPE=human` brings back the old per-character `typeHuman` pacing. Applies to every `*/react-native` repo.
 - Call `openNotepad` / `typeInNotepad` / `closeNotepad` from the page's action, not from `core/`.
 
 ## 3. Working clips (✅ pages)

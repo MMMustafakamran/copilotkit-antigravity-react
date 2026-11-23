@@ -234,7 +234,8 @@ function checkPages(rootDir: string, problems: Problem[]): void {
     // tree; other frontends skip it (and --online still probes the URL).
     if (!page.devServer) {
       const appDir = join(rootDir, 'frontend', 'src', 'app');
-      if (existsSync(appDir)) {
+      // Angular (angular.json) routes live in app.routes.ts, not in page files: skip, --online probes them.
+      if (existsSync(appDir) && !existsSync(join(rootDir, 'frontend', 'angular.json'))) {
         const routeDir = join(appDir, ...page.route.split('/'), ...PROJECT.demoSuffix.split('/').filter(Boolean));
         const hasPage = ['page.tsx', 'page.ts', 'page.jsx', 'page.js', 'route.ts'].some((f) =>
           existsSync(join(routeDir, f)),

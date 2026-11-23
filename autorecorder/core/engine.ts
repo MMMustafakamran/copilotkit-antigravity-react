@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, unlinkSync, writeFileSync } from 'node:fs';
-import { basename, join } from 'node:path';
+import { basename, isAbsolute, join } from 'node:path';
 import { chromium, type Browser, type BrowserContext, type Page } from 'playwright';
 import { executePageAction } from '../actions';
 import { endTimeline, mark, saveTimeline, setTimelinePage, startTimeline, timelineCheckpoints } from './timeline';
@@ -27,7 +27,7 @@ import { loadVoicePlan, voiceGate, voiceTail } from './voice';
 import { setFast } from './fast';
 import { humanClick, humanGlide, humanScrollDown, restCursorSomewhere, sleep } from './overlays/cursor';
 import { between, jitter, pause, seedTake } from './overlays/human';
-import { clickTaskbarApp, ensureOverlays, waitForHydration } from './overlays/taskbar';
+import { clickTaskbarApp, ensureOverlays } from './overlays/taskbar';
 import { timeoutsFor } from './timeouts';
 import { docEvidenceFor, highlightDocEvidence, type DocEvidenceItem } from './doc-evidence';
 import { type ActionContext, type PageRecordConfig, type RecorderTimeouts } from './types';
@@ -80,6 +80,25 @@ async function humanScrollCodeViewport(
 }
 
 /** Current scroll offset of the doc page's scroller (or the window). */
+async function waitForDocSettled(page: Page, timeoutMs: number): Promise<boolean> {
+  return page
+    .evaluate(async (timeout) => {
+      // (No named inner functions here: tsx adds a __name helper the page doesn't have.)
+      const sel = 'main, article, #fd-spacious-layout, #nd-docs-layout';
+      const started = Date.now();
+      let last = -1, stableSince = Date.now();
+      while (Date.now() - started < timeout) {
+        await new Promise((r) => setTimeout(r, 200));
+        let now = document.documentElement.scrollHeight;
+        for (const e of Array.from(document.querySelectorAll(sel))) now = Math.max(now, (e as HTMLElement).scrollHeight);
+        if (now !== last) { last = now; stableSince = Date.now(); }
+        else if (Date.now() - stableSince >= 1000 && document.readyState !== 'loading') return true;
+      }
+      return false;
+    }, timeoutMs)
+    .catch(() => false);
+}
+
 async function docScrollTop(page: Page): Promise<number> {
   return page
     .evaluate(() => {
@@ -453,6 +472,8 @@ export class RecordingEngine {
    * unchanged. `shutdown()` closes it once the suite is done.
    */
   private browser?: Browser;
+  /** A page with `fakeMicWav` gets its own Chromium (fake mic flags); closed after that take. */
+  private micBrowser?: Browser;
 
   private readonly opts: EngineOptions;
 
@@ -470,6 +491,40 @@ export class RecordingEngine {
     }
   }
 
+  /** Chromium launch args + context permissions that feed `fakeMicWav` as the microphone. */
+  private micSetup(fakeMicWav?: string): { args: string[]; permissions: string[] } {
+    if (!fakeMicWav) return { args: [], permissions: [] };
+    const wav = isAbsolute(fakeMicWav) ? fakeMicWav : join(this.rootDir, 'autorecorder', fakeMicWav);
+    if (!existsSync(wav)) throw new Error(`fakeMicWav not found: ${wav}`);
+    return {
+      args: [
+        '--use-fake-ui-for-media-stream',
+        '--use-fake-device-for-media-stream',
+        `--use-file-for-fake-audio-capture=${wav.split('\\').join('/')}`,
+      ],
+      permissions: ['microphone'],
+    };
+  }
+
+  /** The shared browser, or a dedicated fake-mic one for a `fakeMicWav` page. */
+  private async browserFor(launchArgs: string[], headless: boolean, fakeMicWav?: string): Promise<Browser> {
+    await this.closeMicBrowser();
+    if (fakeMicWav) {
+      this.micBrowser = await chromium.launch({ headless, args: [...launchArgs, ...this.micSetup(fakeMicWav).args] });
+      return this.micBrowser;
+    }
+    if (!this.browser || !this.browser.isConnected()) {
+      this.browser = await chromium.launch({ headless, args: launchArgs });
+    }
+    return this.browser;
+  }
+
+  private async closeMicBrowser(): Promise<void> {
+    const b = this.micBrowser;
+    this.micBrowser = undefined;
+    if (b) await b.close().catch(() => {});
+  }
+
   /**
    * Launches the browser and opens a video-recording page.
    *
@@ -477,24 +532,19 @@ export class RecordingEngine {
    * identical launch flags, viewport and colour scheme — a terminal clip that
    * differed in any of those would cut against the rest of the suite.
    */
-  private async openStage(warmUrl?: string, docStorage?: Record<string, string>): Promise<{
+  private async openStage(warmUrl?: string, docStorage?: Record<string, string>, fakeMicWav?: string): Promise<{
     browser: Browser;
     context: BrowserContext;
     page: Page;
   }> {
-    if (!this.browser || !this.browser.isConnected()) {
-      this.browser = await chromium.launch({
-        headless: false,
-        args: [
-          '--start-maximized',
-          '--force-dark-mode',
-          '--background-color=#1e1e1e',
-        ],
-      });
-    }
-    const browser = this.browser;
+    const browser = await this.browserFor(
+      ['--start-maximized', '--force-dark-mode', '--background-color=#1e1e1e'],
+      false,
+      fakeMicWav,
+    );
 
     const context = await browser.newContext({
+      ...(fakeMicWav ? { permissions: this.micSetup(fakeMicWav).permissions } : {}),
       viewport: { width: 1920, height: 1080 },
       colorScheme: 'dark',
       recordVideo: {
@@ -653,6 +703,7 @@ export class RecordingEngine {
     const browser = this.browser;
     this.browser = undefined;
     if (browser) await browser.close().catch(() => {});
+    await this.closeMicBrowser();
   }
 
   /**
@@ -692,14 +743,17 @@ export class RecordingEngine {
       // Scrolling is the part that must wait: a hydration remount snaps the
       // page back to the top mid-scroll. Start the wait now and let the intro
       // play over it rather than stalling on a frozen frame.
-      const hydration = waitForHydration(page, 15000);
+      // The docs site no longer remounts <html> on hydration, so the old probe never fired and
+      // every take sat 15 s on a still cursor (2026-11-20). Wait instead until the page height
+      // stops changing (settled ~1 s), capped at 6 s.
+      const hydration = waitForDocSettled(page, 6000);
 
       // Crisp pause so viewer registers the doc title, then glide straight into reading
       await sleep(500);
       await humanGlide(page, 960, 380, 16);
 
       if (!(await hydration)) {
-        console.warn(`   ⚠️ Doc page hydration not observed within 15s; scrolling anyway.`);
+        console.warn(`   ⚠️ Doc page height still changing after 6s; scrolling anyway.`);
       }
 
       // Skim the whole page to the bottom in wheel bursts, so the clip shows
@@ -1136,10 +1190,12 @@ export class RecordingEngine {
       }
     }
 
-    if (!this.browser || !this.browser.isConnected()) {
-      this.browser = await chromium.launch({ headless: !this.opts.headed });
-    }
-    const context = await this.browser.newContext({ viewport: { width: 1920, height: 1080 }, colorScheme: 'dark' });
+    const probeBrowser = await this.browserFor([], !this.opts.headed, config.fakeMicWav);
+    const context = await probeBrowser.newContext({
+      ...(config.fakeMicWav ? { permissions: this.micSetup(config.fakeMicWav).permissions } : {}),
+      viewport: { width: 1920, height: 1080 },
+      colorScheme: 'dark',
+    });
     const page = await context.newPage();
     startTimeline(page);
     setTimelinePage(config.id, config.docUrl);
@@ -1296,7 +1352,7 @@ export class RecordingEngine {
       }
     }
 
-    const { browser, context, page } = await this.openStage(config.docUrl, config.docStorage);
+    const { browser, context, page } = await this.openStage(config.docUrl, config.docStorage, config.fakeMicWav);
     setTimelinePage(config.id, config.docUrl);
     loadVoicePlan(this.rootDir, config.id, config.filename ?? config.id);
 

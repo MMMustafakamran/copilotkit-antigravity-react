@@ -28,3 +28,5 @@ Notes
 - **Daily: always `deliver.py --all`** from that day's full run, upload every clip and `apply_loom.py --overwrite`, so the report links only today's videos (owner, 2026-11-09). Without `--all`, `deliver.py` copies only clips with no Loom URL; the manifest lists all, with `needs_upload`, `sha256`, and `alternatives` (other copies found).
 - Two row styles exist on purpose: LangGraph uses the REPORT.md `team` style; the team doc's Google Antigravity section uses the older `status` style, which `style: "status"` reproduces (inline styles, no `<th>`/classes). Switch the Antigravity files to `team` if the owner wants REPORT.md's style there too (link texts then need setting).
 - No secrets are read or printed; nothing here commits or touches the repos.
+
+- Guide rows follow the live docs sidebar: `build.py` reads `doc-snapshot/sidebar-order.json` (from `tools/sidebar_order.mjs`), falls back to `doc-snapshot/sidebar.json`, then to assignment order (REPORT.md §2).

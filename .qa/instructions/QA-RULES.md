@@ -32,6 +32,7 @@ Missing steps, undefined identifiers, unstated prerequisites, wrong-framework co
 | Antigravity-vue | 5140 (Vite) | 8140 | 8141 own backend (`backend/`, quickstart agent) |
 | OpenAIAgents-Vue | 5130 (Vite) | 8130 (`server.openai.ts`) | 8131 quickstart agent · 8132–8139 page agents (own `backend/`) |
 | OpenAIAgents-React | 3090 | (Next route) | 8091 quickstart · 8092–8094 page agents (own `backend/`) |
+| Antigravity-angular | 4280 | 8280 (`server.ts`) | 8281 agent server · 8282–8284 page agents · 8285 Gemini pool (own `backend/`) |
 | GoogleADK-vue | 5120 (Vite) | 8120 | 8121 quickstart agent · 8122 page agents (own `backend/`) · 8129 Gemini pool |
 
 Each Vue repo runs its own backend; none depends on a React repo's servers at runtime.
@@ -95,7 +96,7 @@ When a framework's quickstart is a **complete block** (level 1: no usable setup 
 - **Report the block once, on the quickstart row only (owner, 2026-11-18).** Guide rows are no longer marked ❌ `Blocked: …` / `Tested anyway on a setup built by hand…`: each page shows its own status, clip and notes, since a reader with an existing setup (or QA with a hand-built one) can still use it.
 - Keep testing and recording each page on the harness-built setup (marked HARNESS): its own result stays in `status`, and its own findings stay in `FINDINGS.md`, so nothing is lost once the quickstart is fixed.
 - Not for minor quickstart issues (level 3, e.g. a missing `.env` load): those leave the other pages alone.
-- Applies today to: Antigravity Vue, Google ADK Vue, AG2 Angular.
+- Applies today to: Antigravity Vue, Antigravity Angular, Google ADK Vue, AG2 Angular.
 
 ## 9. Scope: reachable pages only
 
@@ -111,6 +112,13 @@ We test as the human reviewer the company asked for: we were given the docs link
 - Doc changes and new package versions: [DRIFT.md](DRIFT.md).
 - Automated fetching (drift check, `.md` export) is an internal tool only. A page it discovers counts only once it is in the sidebar or linked from a reachable page's content.
 - Check by hand: new pages with no route or recorder entry, removed pages whose stale route still records a green clip, legacy code left beside new code, silent failures, React vs Vue/Angular divergence.
+
+## 9a. Threads pages need a valid Intelligence key (owner, 2026-11-20)
+
+- Pages that use threads (threads drawer, headless threads, thread lists, anything the doc says is served by CopilotKit Intelligence) must run with a **valid** `CPK_INTELLIGENCE_API_KEY` (from `4-private/.env` locally, a GitHub secret in CI, set with `4-private/set-secrets.py`). Wire it in as the doc says; if the doc doesn't say where, add it as a `HARNESS` line.
+- A missing, empty or invalid key is **harness trouble, never a finding**: don't mark the page ❌ or ⚠️, don't write a finding, don't film it as a failure. Keep the page's previous status, note `blocked: no Intelligence key` in the run summary, and tell the owner.
+- Before calling a threads page failing, check the key was set and accepted (no 401/403 on the Intelligence requests in `result.json` / events). Only a failure with a valid key counts.
+- The key's value is a secret (§10): never print, log or commit it.
 
 ## 10. Secrets
 

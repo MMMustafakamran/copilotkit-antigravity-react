@@ -47,7 +47,7 @@ function App() {
   return (
     <div className="flex">
       <ThreadSidebar onSelectThread={setActiveThreadId} />
-      <CopilotChat threadId={activeThreadId} /> {/* [!code highlight] */}
+      <CopilotChat threadId={activeThreadId} agentId="default" /> {/* [!code highlight] */} {/* HARNESS: agentId="default" is the doc default; without it the chat picks up the harness root layout agent antigravity_agent, which the doc never has, and the list (agentId "default") stays empty */}
     </div>
   );
 }

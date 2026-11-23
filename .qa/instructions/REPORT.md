@@ -22,12 +22,12 @@ Source of truth: the team doc's export, `C:\Users\QS\Downloads\_Updated Testing 
 - `<h2>` sections in the team doc's order: `Quickstarts`, then the guide sections (`React Guides`, `Vue Guides`, `Angular Guides`) for the frontends tested.
 - Columns: `Page/Section | <Framework>.<variant> | <Framework>.<variant>`, one result column per variant (e.g. `LangGraph.python | LangGraph.js`). First row is the header, in bold. Leave other teams' columns empty.
 - Quickstarts table: one row per frontend (e.g. `JS (React)`, `JS (Vue)`): page cell + result cell.
-- Grouping rows (bold label in the first cell), as in the team doc:
-  - Section: `Basics | Section | Section`
-  - Sub-section: `Chat | Sub section | Sub Section`, `Controlled | Sub-Section | Sub-Section`
+- Grouping rows (owner, 2026-11-23): one bold label in a single cell spanning the whole row (`colspan`), e.g. **Basics**, **Chat**, **Controlled**. No `Section` / `Sub section` cells: they made an extra narrow column in the Google Doc.
   - Child pages under a sub-section are prefixed with `- ` (e.g. `- Components as Tools`).
+- A page filmed in several clips (e.g. a page with default and custom variants) gets a distinct link text per clip (`links[].text`, e.g. `Tool Call Rendering (custom render) - JS`), never the same text repeated.
 - Page cell: the page name, linked to the doc page URL.
 - Only pages a real user can reach (sidebar, or linked from page content) get a row ([QA-RULES.md](QA-RULES.md) section 9).
+- **Rows follow the live docs sidebar order** for that frontend + framework (owner, 2026-11-23). `node .qa/tools/sidebar_order.mjs` (run from the repo root, Playwright headless) expands every folder and writes `doc-snapshot/sidebar-order.json` (url, name, group path, in visual order); `build.py` orders rows by it: a bold row when a section heading or folder is entered (never repeated when a page comes back up a level), `- ` for pages inside a folder, pages not in the sidebar (in-content) last under `Other pages`. Rerun it and commit the file whenever drift reports sidebar changes. It is not a drift baseline (`sidebar.json` stays drift.mjs's).
 
 ## 3. Result cell
 
@@ -38,7 +38,7 @@ In this order, each part separated by `<br>`:
    - ✅: `<Page> - JS` (suffix per variant: `- JS`, `- Vue`), e.g. `Frontend Tools - JS`.
    - ⚠️ / ❌: `Issue`, or `Not Working` when the page is unusable. `Working` is also used in the team doc.
    - Temperature fix clip, when linked: `Issue + Fix ( Backend Code)`.
-3. **Notes** (optional, short, plain slightly informal English; not every row has one):
+3. **Notes** (optional, short, plain slightly informal English; not every row has one). **Keep it short (owner, 2026-11-20):** one line, about 15 words at most: what breaks, plus the missing piece. No file lists, no run counts, no "expected to work", no harness details (those go in `FINDINGS.md`). E.g. `Issue: /api/weather never provided, card shows index.html.`
    - `Issue: ...`
    - `Note: ...` (the team doc also writes `Note : ...`)
    - Several minor issues: `Minor Issue: ` then `1) ...`, `2) ...`, each on its own line.

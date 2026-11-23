@@ -5,7 +5,7 @@ import { Canvas } from "./components/Canvas"; // HARNESS: path; doc uses "../com
 
 export default function Page() {
   return (
-    <CopilotKit runtimeUrl="/api/copilotkit">
+    <CopilotKit runtimeUrl="/api/copilotkit-rendering-in-app"> {/* HARNESS: doc uses /api/copilotkit; own route whose default agent is the Shared State page agent (:8042), the page shows no backend */}
       <div className="app-shell">
         {/* Your app UI, driven by agent.state */}
         <Canvas />

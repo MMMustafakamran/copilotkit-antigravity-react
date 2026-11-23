@@ -233,14 +233,28 @@ export async function humanScrollDown(
   // Resolve the scroller once and stash it, so every tick moves the same element.
   const actualTarget = (await page
     .evaluate(({ requestedPixels, toBottom }) => {
-      const candidates = [
+      // Docs renamed their layout id (nd-docs-layout -> fd-spacious-layout, 2026-11). Try the
+      // known ids, then fall back to the tallest element that actually scrolls, so a rename
+      // never again leaves the skim inching 300 px at a time.
+      // (No named inner functions here: tsx adds a __name helper the page doesn't have.)
+      let nested: HTMLElement | undefined;
+      for (const el of [
+        document.getElementById('fd-spacious-layout'),
         document.getElementById('nd-docs-layout'),
         document.querySelector('main'),
         document.querySelector('article'),
-      ];
-      const nested = candidates.find(
-        (el) => el instanceof HTMLElement && el.scrollHeight > el.clientHeight + 40,
-      ) as HTMLElement | undefined;
+      ]) {
+        if (el instanceof HTMLElement && el.scrollHeight > el.clientHeight + 40
+          && /auto|scroll|overlay/.test(getComputedStyle(el).overflowY)) { nested = el; break; }
+      }
+      if (!nested) {
+        let best = 0;
+        for (const el of Array.from(document.querySelectorAll('body *'))) {
+          if (!(el instanceof HTMLElement) || el.clientHeight < window.innerHeight * 0.5) continue;
+          const room = el.scrollHeight - el.clientHeight;
+          if (room > 40 && room > best && /auto|scroll|overlay/.test(getComputedStyle(el).overflowY)) { best = room; nested = el; }
+        }
+      }
 
       (window as any).__autorecordScroller = nested ?? null;
 

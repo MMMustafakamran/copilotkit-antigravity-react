@@ -144,6 +144,14 @@ export interface PageDefinition {
    */
   docStorage?: Record<string, string>;
 
+  /**
+   * Voice pages: a wav (path relative to `autorecorder/`) played as the browser's microphone, so
+   * the demo clicks the real mic button and speaks the prompt. Only this page's take gets a
+   * Chromium launched with fake-media flags and microphone permission; every other page keeps
+   * the shared browser and its launch flags unchanged.
+   */
+  fakeMicWav?: string;
+
   /** Per-page overrides of the recorder's fixed waits. See `RecorderTimeouts`. */
   timeouts?: Partial<RecorderTimeouts>;
 

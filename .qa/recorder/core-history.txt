@@ -56,3 +56,7 @@ a90e6c15a2bb65d0  timeline.ts
 068eccc8224fc093  doc-evidence.ts
 # 2026-11-17 no generic doc-code drag on evidence clips
 51d6e0658a5b2dfa  engine.ts
+# doctor.ts before the Angular route-check skip (2026-11-18)
+f0507d947a0222fa  doctor.ts
+a81d07b94e712282  engine.ts
+71de5852d2a65d8a  types.ts

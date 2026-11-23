@@ -10,7 +10,10 @@ import { createTranscriptionService } from "@/lib/transcription-service";
 
 const AGENT_URL = process.env.AGENT_URL || "http://localhost:8000";
 
-const voiceDemoAgent = new HttpAgent({ url: `${AGENT_URL}/voice` });
+// HARNESS (2026-11-20): the doc route points at ${AGENT_URL}/voice, an agent the Voice page never shows;
+// the voice feature is transcription on the runtime, so any agent works -> the quickstart agent at /.
+// Doc line: const voiceDemoAgent = new HttpAgent({ url: `${AGENT_URL}/voice` });
+const voiceDemoAgent = new HttpAgent({ url: `${AGENT_URL}/` });
 
 let cachedHandler: ((req: Request) => Promise<Response>) | null = null;
 function getHandler(): (req: Request) => Promise<Response> {
