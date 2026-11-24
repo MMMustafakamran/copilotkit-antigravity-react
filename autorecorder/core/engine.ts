@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, unlinkSync, writeFileSync } from 'node:fs';
-import { basename, isAbsolute, join } from 'node:path';
+import { basename, dirname, isAbsolute, join } from 'node:path';
 import { chromium, type Browser, type BrowserContext, type Page } from 'playwright';
 import { executePageAction } from '../actions';
 import { endTimeline, mark, saveTimeline, setTimelinePage, startTimeline, timelineCheckpoints } from './timeline';
@@ -814,6 +814,37 @@ export class RecordingEngine {
    * Throws on failure: the IDE view is generated from local files, so a
    * failure here is a real defect in this repo, never a flaky-network excuse.
    */
+  /**
+   * Every page clip shows the installed versions (owner, 2026-11-24): append a
+   * VERSIONS.md tab (scrolled, never selected, no mark) unless the page already
+   * lists one. Found by walking up from each tab's folder to the repo root, so
+   * frontend/, my-copilot-app/ and the RN root copy all resolve. Missing (local
+   * runs before CI writes it) -> skipped with a log line.
+   */
+  private withVersionsTab(tabs: IdeTabConfig[]): IdeTabConfig[] {
+    if (tabs.some((t) => basename(t.filePath) === 'VERSIONS.md')) return tabs;
+    const seen = new Set<string>();
+    for (const t of tabs) {
+      let dir = dirname(t.filePath.split('\\').join('/'));
+      for (;;) {
+        const rel = dir === '.' || dir === '' ? 'VERSIONS.md' : `${dir}/VERSIONS.md`;
+        if (!seen.has(rel)) {
+          seen.add(rel);
+          const full = join(this.rootDir, rel);
+          if (existsSync(full)) {
+            const n = readFileSync(full, 'utf-8').split(/\r?\n/).length;
+            console.log(`   📋 Adding ${rel} tab (installed versions).`);
+            return [...tabs, { filePath: rel, startLine: 1, endLine: Math.max(1, Math.min(n, 20)), scrollOnly: true }];
+          }
+        }
+        if (dir === '.' || dir === '' || dir === '/') break;
+        dir = dirname(dir);
+      }
+    }
+    console.log('   ℹ️  No VERSIONS.md found (written in CI), versions tab skipped.');
+    return tabs;
+  }
+
   private async showIde(
     page: Page,
     tabs: IdeTabConfig[],
@@ -855,10 +886,12 @@ export class RecordingEngine {
 
       // Scroll, then select the snippet by hand -- scoped to the active tab.
       await humanScrollCodeViewport(page, tabs[idx].startLine, idx);
-      const dragMs = await this.dragSelectSnippet(page, idx, tabs[idx].startLine, tabs[idx].endLine);
+      const dragMs = tabs[idx].scrollOnly
+        ? 0
+        : await this.dragSelectSnippet(page, idx, tabs[idx].startLine, tabs[idx].endLine);
       // The drag is time spent looking at the code, so it comes out of the
       // dwell rather than on top of it; the take stays the same length.
-      await pause(Math.max(600, opts.dwellMs - dragMs));
+      await pause(tabs[idx].scrollOnly ? Math.max(3200, opts.dwellMs) : Math.max(600, opts.dwellMs - dragMs));
 
       // Error clips: point at the line the tester added because the doc page
       // did not give it. Found by its exact text, so a moved line never
@@ -1416,10 +1449,10 @@ export class RecordingEngine {
       try {
         await this.showIde(
           page,
-          [
+          this.withVersionsTab([
             { filePath: config.ideFile, startLine: config.startLine, endLine: config.endLine, addedText: config.ideAddedText },
             ...(config.extraTabs ?? []),
-          ],
+          ]),
           config.demoUrl,
           { dwellMs: hasExtraTabs ? 1500 : 1800, clickTabs: true },
         );

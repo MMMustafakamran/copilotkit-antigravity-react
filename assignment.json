@@ -750,14 +750,14 @@
     90
    ],
    "notes": [
-    "Issue: no standard component renders; the agent replies with a plain markdown table."
+    "Issue: no standard component renders; the reply is text only."
    ],
    "block": null,
    "links": [
     {
      "text": "Issue",
      "clip": "ANTIGRAVITY-react-30-StandardCatalog",
-     "loom": "https://www.loom.com/share/a2b0e12c8bfb4e0da3fe1bf85d8c3fa2",
+     "loom": "https://www.loom.com/share/60df002ab0a24efba376e849dc8a8364",
      "filmed": "2026-11-24"
     }
    ],
@@ -810,7 +810,7 @@
     {
      "text": "Issue",
      "clip": "ANTIGRAVITY-react-32-Theming",
-     "loom": "https://www.loom.com/share/f72efb5916074f218bde1ad429d19331",
+     "loom": "https://www.loom.com/share/0ecf3cf209f3404d9c0dd1f78a0430a8",
      "filmed": "2026-11-24"
     }
    ],
@@ -837,7 +837,7 @@
     {
      "text": "Issue",
      "clip": "ANTIGRAVITY-react-33-Transports",
-     "loom": "https://www.loom.com/share/9470386e1f7c42eaac523d8fbdca56ac",
+     "loom": "https://www.loom.com/share/2dda817e667942ecb3fd18d730e3862c",
      "filmed": "2026-11-24"
     }
    ],
@@ -864,7 +864,7 @@
     {
      "text": "Issue",
      "clip": "ANTIGRAVITY-react-34-MarkdownMode",
-     "loom": "https://www.loom.com/share/c530a7025070429a8ab53ce798bef248",
+     "loom": "https://www.loom.com/share/dc3458bc4a4f4387a0bda8fd0192fb96",
      "filmed": "2026-11-24"
     }
    ],
@@ -918,7 +918,7 @@
     {
      "text": "Issue",
      "clip": "ANTIGRAVITY-react-41-A2UI",
-     "loom": "https://www.loom.com/share/ab2e970f9a0845c4a622a64e1047c58d",
+     "loom": "https://www.loom.com/share/32e3c623e8c448aba94efaacbc065aeb",
      "filmed": "2026-11-24"
     }
    ],

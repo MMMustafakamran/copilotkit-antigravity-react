@@ -40,7 +40,7 @@ export const FINDING_NOTES: Record<string, string> = {
   'a2ui': [
     "a2ui page says the frontend renders the agents schema as cards rows columns badges",
     "asked for a sales kpi dashboard, no dashboard shows up",
-    "agent just errors out,sometimes a catalog error sometimes a bunch of render calls,or it dumps raw json in the chat",
+    "the run ends in an a2ui render error instead,the error changes from run to run",
     "page sends u to dynamic schema for the catalog and agent and that setup doesnt render either",
   ].join('\n'),
   'a2ui-styling': [
@@ -81,7 +81,7 @@ export const FINDING_NOTES: Record<string, string> = {
   ].join('\n'),
   'gui-standard-catalog': [
     "standard catalog page says standardui gives u ready made components",
-    "asked to compare starter team and enterprise in a table, the agent gave a plain markdown table",
+    "asked to compare starter team and enterprise in a table, the reply is just text",
     "no standard component renders, and the page never names the antigravity agent",
     "i added the agent id myself to get this far",
   ].join('\n'),

@@ -40,9 +40,9 @@ Stack: `@copilotkit/react-core`/`runtime` 1.90.0 (npm latest, CI 2026-11-23), `@
 - **Result:** the agent calls `generate_image` instead of `render_ui`, then the run fails: `AntigravityExecutionError ... Error 400, Message: Multimodal function responses are not supported for this model., Status: INVALID_ARGUMENT`. No ProductGrid/ProductCard, empty assistant bubble. Seen in two CI takes of 2026-11-16 (CopilotKit 1.88.0); a third take that day failed with "Model produced invalid output" instead, same empty result; before that (2026-11-12) the run reached `render_ui` with "no renderer is registered".
 
 ### [Standard catalog](https://docs.copilotkit.ai/google-antigravity/generative-ui/components/standard-catalog)
-**#90 No standard component renders; the agent answers with a plain Markdown table.**
+**#90 No standard component renders; the reply is text only.**
 - **Doc:** `<CopilotKitProvider runtimeUrl="/api/copilotkit" generativeUI={{ ui: standardUI }}>`.
-- **Result:** "Compare the Starter, Team, and Enterprise plans in a table" gets a Markdown table, no standard Table/Card. Same on the doc's own runtime shape (re-checked 2026-11-12).
+- **Result:** "Compare the Starter, Team, and Enterprise plans in a table" gets a text-only reply (a Markdown table, or in CI 45355942540 a plain-text refusal), no standard Table/Card. Same on the doc's own runtime shape (re-checked 2026-11-12).
 
 ### [State and actions](https://docs.copilotkit.ai/google-antigravity/generative-ui/components/state-and-actions)
 **#91 No product card renders: the page has no Antigravity agent setup (same as Components and surfaces), and the existing agent never renders the card.**
@@ -70,9 +70,9 @@ Stack: `@copilotkit/react-core`/`runtime` 1.90.0 (npm latest, CI 2026-11-23), `@
 - **Result:** no Airport/Arrow UI ever shows up; runs end in an empty reply or a failed run (3 probes 2026-11-13). Same on the doc's own runtime shape (re-checked 2026-11-12).
 
 ### [A2UI](https://docs.copilotkit.ai/google-antigravity/generative-ui/a2ui)
-**#103 No dashboard renders: the agent from the page errors out (the error varies by run: a catalog error, several render_a2ui calls, AntigravityExecutionError) or dumps raw JSON.**
+**#103 No dashboard renders: the run ends in an error instead (the error varies by run) or dumps raw JSON.**
 - **Doc:** "The frontend renders that schema as cards, rows, columns, badges, and price tags from a catalog of components"; catalog and agent come from the linked Dynamic Schema page.
-- **Result:** "Show me a quick sales KPI dashboard with revenue, deals and win rate." never gives a dashboard: runs end in "Couldn't generate the UI" (e.g. "Component type 'VStack' is not in the catalog"), "can't render, multiple render_a2ui calls" plus a JSON dump, or a failed run. Failed in CI 45142119181 too. Failed in CI 45067972847 and 45137739455 and in 2 local probes (2026-11-23).
+- **Result:** "Show me a quick sales KPI dashboard with revenue, deals and win rate." never gives a dashboard: runs end in "Couldn't generate the UI" (e.g. "Component type 'VStack' is not in the catalog"), "can't render, multiple render_a2ui calls" plus a JSON dump, or a failed run; in CI 45355942540 (2026-11-24) "A2UI render error: Cannot read properties of undefined (reading 'map')". Failed in CI 45142119181 too. Failed in CI 45067972847 and 45137739455 and in 2 local probes (2026-11-23).
 
 ### [Styling](https://docs.copilotkit.ai/google-antigravity/generative-ui/a2ui/styling) (in-content, linked from A2UI)
 **#104 The themed flight card renders empty: no airline, airports or price, so there is nothing styled to see.**

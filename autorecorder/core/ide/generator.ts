@@ -11,6 +11,8 @@ export interface IdeTabConfig {
    *  did not give it; drag-selected after the doc snippet, ~2 s hold (no new
    *  mark, stays inside `ide`); not found -> warn and skip. */
   addedText?: string | string[];
+  /** Scrolled and rested on, never drag-selected (the auto VERSIONS.md tab). */
+  scrollOnly?: boolean;
 }
 
 function escapeHtml(text: string): string {

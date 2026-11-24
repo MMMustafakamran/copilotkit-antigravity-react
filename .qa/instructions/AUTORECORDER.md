@@ -62,6 +62,8 @@ A failed take still ends with the failure terminal (section 1).
 
 ## 3. Working clips (✅ pages)
 
+- **Every clip, ✅ and ❌/⚠️, shows `VERSIONS.md` (owner, 2026-11-24):** the core appends it as the last IDE tab (scrolled ~3 s, never selected, no mark, never spoken) unless the page lists it already; missing locally → skipped with a log line.
+
 - No Notepad segment, no doc-evidence step.
 - Exception: temperature-only pages get the temperature line highlighted and a short "temp issue" note ([QA-RULES.md](QA-RULES.md) section 7).
 
