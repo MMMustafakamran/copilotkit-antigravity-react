@@ -35,10 +35,11 @@ In this order, each part separated by `<br>`:
 
 1. **Emoji on its own line:** `✅`, `⚠️` or `❌` (criteria: [QA-RULES.md](QA-RULES.md) section 8). With no clip: `N/A` (plus `Note:` why, e.g. needs the Intelligence Platform) or `–`.
 2. **Loom link** to the clip. Link text:
-   - ✅: `<Page> - JS` (suffix per variant: `- JS`, `- Vue`), e.g. `Frontend Tools - JS`.
+   - ✅: `<Page> - JS` (status-style tables: `✅ <Page>`; never the word `Working`, the tick already says it, owner 2026-11-23) (suffix per variant: `- JS`, `- Vue`), e.g. `Frontend Tools - JS`.
    - ⚠️ / ❌: `Issue`, or `Not Working` when the page is unusable. `Working` is also used in the team doc.
    - Temperature fix clip, when linked: `Issue + Fix ( Backend Code)`.
 3. **Notes** (optional, short, plain slightly informal English; not every row has one). **Keep it short (owner, 2026-11-20):** one line, about 15 words at most: what breaks, plus the missing piece. No file lists, no run counts, no "expected to work", no harness details (those go in `FINDINGS.md`). E.g. `Issue: /api/weather never provided, card shows index.html.`
+   - **✅ rows (owner, 2026-11-23):** no `Note:` for small code gaps (missing imports, helpers/components the page never shows, your-own-function placeholders, fragments, agent-id renames). Those stay only in `FINDINGS.md` *Minor notes*. A ✅ row gets a Note only when a reader really hits something: a crash/404/install failure, a missing server or backend, a needed key or Intelligence setup, or a visible defect in the demo.
    - `Issue: ...`
    - `Note: ...` (the team doc also writes `Note : ...`)
    - Several minor issues: `Minor Issue: ` then `1) ...`, `2) ...`, each on its own line.

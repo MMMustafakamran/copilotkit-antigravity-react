@@ -371,6 +371,13 @@ const runSubagentsTake: PageActionHandler = async (page, config, _root, ctx) => 
   }
   mark('action', 'first delegation in the log');
   await glideTo(page, entries.first(), 2000);
+  // The supervisor goes quiet between sub-agents for longer than the settle grace, so the
+  // 2026-11-24 take stopped after writing. Wait (bounded) for the third sub-agent first.
+  await page
+    .locator('[data-testid="subagent-indicators"] [data-fired="true"]')
+    .nth(2)
+    .waitFor({ state: 'attached', timeout: 240000 })
+    .catch(() => {});
   await settle(page, msgCount, ctx);
   const fired = await page
     .locator('[data-testid="subagent-indicators"] [data-fired="true"]')

@@ -1,6 +1,6 @@
 {
  "root": "google-antigravity",
- "savedAt": "2026-11-22",
+ "savedAt": "2026-11-24",
  "pages": {
   "/google-antigravity/prebuilt-components/sidebar": [
    "/google-antigravity/custom-look-and-feel/slots",
@@ -435,6 +435,13 @@
    "/google-antigravity/vs-code-extension"
   ],
   "/google-antigravity/telemetry": [],
-  "/google-antigravity/community-frameworks": []
+  "/google-antigravity/community-frameworks": [],
+  "/google-antigravity/generative-ui/a2ui/advanced": [
+   "/google-antigravity/generative-ui/a2ui/dynamic-schema",
+   "/google-antigravity/generative-ui/a2ui/fixed-schema"
+  ],
+  "/google-antigravity/generative-ui/a2ui/styling": [
+   "/google-antigravity/generative-ui/components/theming"
+  ]
  }
 }

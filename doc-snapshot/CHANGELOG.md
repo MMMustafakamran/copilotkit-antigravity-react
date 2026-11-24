@@ -68,6 +68,11 @@ What each `drift.mjs --sync` took into the snapshot (newest first).
 
 ## 2026-11-18
 
+## 2026-11-24 (generative-ui/a2ui/advanced, generative-ui/a2ui/styling)
+
+- generative-ui/a2ui/styling: NEW new (+125 / -0)
+- generative-ui/a2ui/advanced: NEW new (+185 / -0)
+
 ## 2026-11-22 (shared-state/streaming)
 
 - shared-state/streaming: live HTTP 404, snapshot left as is

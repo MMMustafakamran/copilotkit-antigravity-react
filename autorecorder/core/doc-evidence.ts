@@ -220,9 +220,21 @@ async function locateText(target: Locator, text: string): Promise<TextSpan | nul
         nodes.push(n as Text);
         full += (n as Text).data;
       }
-      for (let at = full.indexOf(needle); at >= 0; at = full.indexOf(needle, at + 1)) {
+      // Match with whitespace collapsed, like Playwright's getByText: the docs source now wraps
+      // prose lines, so a text node can hold "It\nrenders" (2026-11-24). `map` maps each char of
+      // the collapsed text back to its index in `full`.
+      let flat = '';
+      const map: number[] = [];
+      for (let i = 0; i < full.length; i++) {
+        const ws = /\s/.test(full[i]);
+        if (ws && flat.endsWith(' ')) continue;
+        flat += ws ? ' ' : full[i];
+        map.push(i);
+      }
+      const want = needle.replace(/\s+/g, ' ').trim();
+      for (let fat = flat.indexOf(want); fat >= 0; fat = flat.indexOf(want, fat + 1)) {
         const rects: DOMRect[] = [];
-        for (const pos of [at, at + needle.length - 1]) {
+        for (const pos of [map[fat], map[fat + want.length - 1]]) {
           let acc = 0;
           for (const node of nodes) {
             if (pos < acc + node.data.length) {

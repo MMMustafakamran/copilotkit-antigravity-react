@@ -109,6 +109,7 @@ We test as the human reviewer the company asked for: we were given the docs link
 | `none` | Exists at a real URL, but nothing in the docs links to it: found only by guessing URLs, the `.md` export, `llms.txt`, a sitemap or automated crawling | **No.** Don't record, don't report, don't log findings for it. |
 
 - **Out of scope by the owner's decision (2026-11-08), even when in the sidebar:** Intelligence pages (`intelligence/*`), Backend pages (`backend/*`) and Deploy pages (`deploy/*`, `deploy-*`). Don't add them to `assignment.json`, don't record, don't report.
+- **Backend = the sidebar's Backend section, not just the URL (owner, 2026-11-23).** Any page under the **Backend** heading of the live docs sidebar (`doc-snapshot/sidebar-order.json`) is out of scope, even when its URL doesn't start with `backend/` (e.g. Inspector, VS Code Extension, Authentication). Mark it `excluded` in `assignment.json`: no CI recording, no report row, no findings. `build.py` also skips any row whose sidebar group starts with Backend.
 - Doc changes and new package versions: [DRIFT.md](DRIFT.md).
 - Automated fetching (drift check, `.md` export) is an internal tool only. A page it discovers counts only once it is in the sidebar or linked from a reachable page's content.
 - Check by hand: new pages with no route or recorder entry, removed pages whose stale route still records a green clip, legacy code left beside new code, silent failures, React vs Vue/Angular divergence.

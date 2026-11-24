@@ -70,8 +70,13 @@ def status_cell(a, p):
     if links and links[0].get('clip') is None and not links[0].get('loom'):
         warnings.append(f"{a['repo']}: {p['id']}: clip not recorded yet")
         links = []
-    # status style: the link text is always the status label (emoji + word), never a per-clip text
-    first = [f'<a href="{href(l)}">{esc(head)}</a>' for l in links] or [esc(head)]
+    # status style: the link text is the status label (emoji + word). Owner 2026-11-23: on ✅ rows the
+    # tick already says "working", so the link text is the page name (or the clip's own text) instead.
+    if st == '✅':
+        lab = lambda l: f"{st} {l.get('text') or p['label']}"
+        first = [f'<a href="{href(l)}">{esc(lab(l))}</a>' for l in links] or [esc(st)]
+    else:
+        first = [f'<a href="{href(l)}">{esc(head)}</a>' for l in links] or [esc(head)]
     notes = [f'<span style="font-size:9pt">{esc(n)}</span>' for n in p.get('notes', [])]
     return '<br>'.join(first + notes)
 
@@ -87,7 +92,8 @@ def cell(a, p):
 
 
 def label_cell(a, p):
-    text = ('- ' if p.get('child') else '') + p['label']
+    ch = p.get('child')
+    text = ('- ' * ch if isinstance(ch, int) and not isinstance(ch, bool) else ('- ' if ch else '')) + p['label']
     u = page_url(a, p)
     return f'<a href="{html.escape(u)}">{esc(text)}</a>' if u else esc(text)
 
@@ -121,6 +127,9 @@ def sidebar_rows(a, pages, sb, cols, rc, center):
     for _, p in ranked:
         d = norm(p.get('docPath'))
         parts = gpath.get(d)
+        if parts and parts[0] == 'Backend':  # owner 2026-11-23: the sidebar's Backend section is out of scope
+            warnings.append(f"{a['repo']}: {p.get('id')} is under the sidebar's Backend section, skipped (mark it excluded)")
+            continue
         if parts is None:
             if not tail:
                 warnings.append(f"{a['repo']}: not in the docs sidebar, listed last: " +
@@ -134,9 +143,9 @@ def sidebar_rows(a, pages, sb, cols, rc, center):
             for n in range(max(c, 0), len(parts)):
                 if n == c and parts[n] == last:
                     continue  # folder labelled by its own page (e.g. Components and surfaces): that page row heads it
-                out.append(group_row(parts[n], cols))
+                out.append(group_row('- ' * max(0, n - 1) + parts[n], cols))  # folders 2+ deep indented like the sidebar
         cur, last = list(parts), sbname.get(d)
-        q = dict(p, child=len(parts) >= 2 and not tail)
+        q = dict(p, child=0 if tail else max(0, len(parts) - 1))  # one '- ' per folder level below the section
         vals = [''] * len(cols)
         vals[0], vals[rc] = label_cell(a, q), cell(a, q)
         out.append(row(td(v, ';width:30%' if i == 0 else (center if i == rc else '')) for i, v in enumerate(vals)))
